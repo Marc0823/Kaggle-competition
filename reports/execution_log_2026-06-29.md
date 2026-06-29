@@ -1081,6 +1081,45 @@ Decision:
 - It checks planned-slot count, release rows, audit/readiness coverage, duplicate hashes, missing audits, and blocker behavior.
 - Official submissions should not be made unless this validation has zero error failures.
 
+## Result Branch Matrix
+
+Added:
+
+```text
+scripts/result_branch_matrix.py
+```
+
+Run command:
+
+```text
+python3 scripts/result_branch_matrix.py
+```
+
+Outputs:
+
+```text
+experiments/result_branch_matrix.csv
+reports/result_branch_matrix.md
+```
+
+Current branch rules:
+
+```text
+B01_baseline_anchor_valid -> promote baseline anchor, allow SP45 projection review
+B02_baseline_anchor_failed -> block dependent submissions and repair baseline path
+B03_fleongg_competitive -> prioritize SP45+Fleongg blend sweep
+B04_fleongg_weak -> downweight blends and prefer pure SP45/plateau
+B05_degnonguidi_complete_clean -> insert distinct Degnonguidi output ahead of lower-priority slots
+B06_degnonguidi_error_or_defer -> allow Baidalin-derived slots if scores resolve and gate passes
+B07_no_external_change -> continue preparation without official submission
+```
+
+Decision:
+
+- The branch matrix is now part of `scripts/poll_and_refresh_state.py`.
+- It makes the pending-result response explicit before scores arrive, reducing the chance of ad hoc public-LB chasing.
+- Current state still follows `B07_no_external_change`.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1089,5 +1128,5 @@ Decision:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md` and `reports/planning_state_validation_report.md`.
+7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md`, `reports/planning_state_validation_report.md`, and `reports/result_branch_matrix.md`.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

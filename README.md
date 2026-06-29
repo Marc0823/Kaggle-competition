@@ -208,6 +208,19 @@ experiments/planning_state_validation.csv
 reports/planning_state_validation_report.md
 ```
 
+Build the result-branch matrix for pending public scores and reference kernels:
+
+```powershell
+python scripts\result_branch_matrix.py
+```
+
+Outputs:
+
+```text
+experiments/result_branch_matrix.csv
+reports/result_branch_matrix.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell

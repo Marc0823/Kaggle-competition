@@ -104,6 +104,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/next_submission_batch_plan.md`",
             "- `reports/submission_release_gate_report.md`",
             "- `reports/planning_state_validation_report.md`",
+            "- `reports/result_branch_matrix.md`",
             f"- `{output_csv.as_posix()}`",
             f"- `{report.as_posix()}`",
         ]
@@ -151,6 +152,7 @@ def main() -> int:
     run_checked([sys.executable, "scripts/candidate_audit_summary.py"])
     run_checked([sys.executable, "scripts/next_submission_batch_plan.py"])
     run_checked([sys.executable, "scripts/submission_release_gate.py"])
+    run_checked([sys.executable, "scripts/result_branch_matrix.py"])
 
     submissions = safe_read_csv(Path("experiments/submission_ledger.csv"))
     kernels = safe_read_csv(Path("experiments/kernel_run_ledger.csv"))
@@ -158,6 +160,7 @@ def main() -> int:
     audit_summary = safe_read_csv(Path("experiments/candidate_audit_summary.csv"))
     batch_plan = safe_read_csv(Path("experiments/next_submission_batch_plan.csv"))
     release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
+    result_matrix = safe_read_csv(Path("experiments/result_branch_matrix.csv"))
 
     summary = {
         "kernel_updates_detected": len(kernel_summary.get("updated", [])),
@@ -176,6 +179,7 @@ def main() -> int:
         "planned_slots": len(batch_plan),
         "current_action_counts": count_values(batch_plan, "current_action"),
         "release_gate_counts": count_values(release_gate, "release_gate"),
+        "result_branch_rules": len(result_matrix),
     }
 
     write_outputs(summary, args.summary_csv, args.report)
