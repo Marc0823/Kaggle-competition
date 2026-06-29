@@ -1233,6 +1233,32 @@ Decision:
 - `plateau_recent_quantile_v1` is `SINGLE_WELL_DOMINATED`, changing only well `00e12e8b`; keep it as a sparse information slot unless stronger evidence arrives.
 - `scripts/validate_planning_state.py` now requires every planned slot to have a well-impact row and impact bucket.
 
+## Planned Candidate Diversity
+
+Added:
+
+```text
+scripts/planned_candidate_diversity.py
+experiments/planned_candidate_diversity.csv
+experiments/planned_candidate_diversity_summary.csv
+reports/planned_candidate_diversity_report.md
+```
+
+Current validation:
+
+```text
+diversity_flag_counts: REDUNDANT_REVIEW=3; OK=2
+planning validation: PASS=32, error_failures=0
+```
+
+Decision:
+
+- The diversity report is now part of `scripts/poll_and_refresh_state.py`.
+- SP45 projection and plateau slots have `OK` diversity flags versus the rest of the planned batch.
+- The three SP45+Fleongg blend weights are intentionally redundant: adjacent pairs have pair RMSE about `0.172` and diff correlation above `0.998`.
+- Keep all three blend slots only if the batch question is explicitly to calibrate the blend curve; otherwise use fewer blend slots and prefer a more diverse candidate.
+- `scripts/validate_planning_state.py` now requires every planned slot to have a diversity row and diversity flag.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1248,3 +1274,4 @@ Decision:
 11. Require `reports/final_submission_package_report.md` to show the selected slot can be packaged, then prepare it locally before any official Kaggle submission.
 12. Use `reports/result_application_plan.md` as the first stop after any new score/kernel update before editing ledgers or releasing slots.
 13. Use `reports/planned_candidate_well_impact_report.md` during final review to decide whether a candidate is broad enough for promotion or only useful as a sparse information slot.
+14. Use `reports/planned_candidate_diversity_report.md` during final review to avoid spending multiple slots on redundant outputs unless they answer a deliberate calibration-sweep question.

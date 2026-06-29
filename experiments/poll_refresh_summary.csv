@@ -15,10 +15,11 @@ batch_status,WAIT_EXTERNAL_CONTEXT
 planned_slots,5
 current_action_counts,do_not_submit_yet=5
 well_impact_bucket_counts,BROAD=4; SINGLE_WELL_DOMINATED=1
+diversity_flag_counts,REDUNDANT_REVIEW=3; OK=2
 artifact_manifest_gate_counts,PASS_SOURCE_POINTER=5
 release_gate_counts,BLOCKED_EXTERNAL_CONTEXT=5
 final_package_gate_counts,BLOCKED_RELEASE_GATE=5
 result_branch_rules,7
 result_application_status_counts,WAIT=4; PASS=1
-planning_validation_status_counts,PASS=29
+planning_validation_status_counts,PASS=32
 planning_validation_error_failures,0

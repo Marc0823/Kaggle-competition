@@ -22,12 +22,13 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | planned_slots | 5 |
 | current_action_counts | do_not_submit_yet=5 |
 | well_impact_bucket_counts | BROAD=4; SINGLE_WELL_DOMINATED=1 |
+| diversity_flag_counts | REDUNDANT_REVIEW=3; OK=2 |
 | artifact_manifest_gate_counts | PASS_SOURCE_POINTER=5 |
 | release_gate_counts | BLOCKED_EXTERNAL_CONTEXT=5 |
 | final_package_gate_counts | BLOCKED_RELEASE_GATE=5 |
 | result_branch_rules | 7 |
 | result_application_status_counts | WAIT=4; PASS=1 |
-| planning_validation_status_counts | PASS=29 |
+| planning_validation_status_counts | PASS=32 |
 | planning_validation_error_failures | 0 |
 
 ## Interpretation
@@ -42,6 +43,7 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 - `reports/candidate_audit_summary_report.md`
 - `reports/next_submission_batch_plan.md`
 - `reports/planned_candidate_well_impact_report.md`
+- `reports/planned_candidate_diversity_report.md`
 - `reports/candidate_artifact_manifest_report.md`
 - `reports/submission_release_gate_report.md`
 - `reports/final_submission_package_report.md`

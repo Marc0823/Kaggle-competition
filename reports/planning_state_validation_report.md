@@ -12,7 +12,7 @@ This report validates consistency between polling, readiness, audit summary, bat
 
 | severity | status | count |
 | --- | --- | --- |
-| ERROR | PASS | 27 |
+| ERROR | PASS | 30 |
 | INFO | PASS | 2 |
 
 ## Checks
@@ -24,6 +24,7 @@ This report validates consistency between polling, readiness, audit summary, bat
 | input_audit_summary_exists | ERROR | PASS | candidate audit summary CSV is readable |
 | input_plan_exists | ERROR | PASS | next submission batch plan CSV is readable |
 | input_well_impact_summary_exists | ERROR | PASS | planned candidate well-impact summary CSV is readable |
+| input_candidate_diversity_summary_exists | ERROR | PASS | planned candidate diversity summary CSV is readable |
 | input_release_gate_exists | ERROR | PASS | submission release gate CSV is readable |
 | input_artifact_manifest_summary_exists | ERROR | PASS | candidate artifact manifest summary CSV is readable |
 | input_final_submission_package_summary_exists | ERROR | PASS | final submission package summary CSV is readable |
@@ -33,6 +34,7 @@ This report validates consistency between polling, readiness, audit summary, bat
 | planned_slots_have_audit_rows | ERROR | PASS | missing audit rows=[] |
 | planned_slots_have_readiness_rows | ERROR | PASS | missing readiness rows=[] |
 | planned_slots_have_well_impact_rows | ERROR | PASS | missing well-impact rows=[] |
+| planned_slots_have_diversity_rows | ERROR | PASS | missing diversity rows=[] |
 | planned_slots_have_artifact_manifest_rows | ERROR | PASS | missing manifest rows=[] |
 | planned_slots_have_final_package_rows | ERROR | PASS | missing package rows=[] |
 | planned_paths_unique | ERROR | PASS | no duplicate planned submission paths |
@@ -43,6 +45,7 @@ This report validates consistency between polling, readiness, audit summary, bat
 | no_unapplied_poll_updates | INFO | PASS | poll refresh detected no unapplied kernel/submission updates |
 | planned_slots_have_passing_audit_gate | ERROR | PASS | nonpassing planned audit rows=0 |
 | planned_slots_have_impact_buckets | ERROR | PASS | well-impact rows=5; buckets=['BROAD', 'SINGLE_WELL_DOMINATED'] |
+| planned_slots_have_diversity_flags | ERROR | PASS | diversity rows=5; flags=['OK', 'REDUNDANT_REVIEW'] |
 | planned_slots_have_valid_artifact_manifests | ERROR | PASS | nonpassing planned manifest rows=0; manifest rows=5 |
 | planned_slots_have_no_final_package_failures | ERROR | PASS | failing planned package rows=0; package rows=5 |
 | blocked_release_blocks_final_packaging | ERROR | PASS | package gates while external context pending=['BLOCKED_RELEASE_GATE'] |

@@ -293,6 +293,14 @@ python scripts\planned_candidate_well_impact.py
 
 This shows whether a candidate is broad, concentrated, sparse, or single-well dominated relative to the active-account baseline.
 
+Review pairwise diversity between planned candidates:
+
+```powershell
+python scripts\planned_candidate_diversity.py
+```
+
+This flags near-duplicate or highly redundant planned slots so blend sweeps remain deliberate calibration experiments rather than accidental duplicate submissions.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

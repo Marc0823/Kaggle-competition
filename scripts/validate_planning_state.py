@@ -16,6 +16,7 @@ DEFAULT_READINESS = Path("experiments/next_batch_readiness.csv")
 DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
 DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_WELL_IMPACT = Path("experiments/planned_candidate_well_impact_summary.csv")
+DEFAULT_DIVERSITY = Path("experiments/planned_candidate_diversity_summary.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
@@ -81,6 +82,7 @@ def validate(
     audit: pd.DataFrame,
     plan: pd.DataFrame,
     well_impact: pd.DataFrame,
+    diversity: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
@@ -104,6 +106,13 @@ def validate(
         "ERROR",
         status_from_condition(not well_impact.empty),
         "planned candidate well-impact summary CSV is readable",
+    )
+    add(
+        checks,
+        "input_candidate_diversity_summary_exists",
+        "ERROR",
+        status_from_condition(not diversity.empty),
+        "planned candidate diversity summary CSV is readable",
     )
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
     add(
@@ -133,6 +142,7 @@ def validate(
     audit_paths = set(audit.get("path", pd.Series(dtype=str)).astype(str))
     readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
     well_impact_paths = set(well_impact.get("path", pd.Series(dtype=str)).astype(str))
+    diversity_paths = set(diversity.get("path", pd.Series(dtype=str)).astype(str))
     manifest_paths = set(manifest.get("path", pd.Series(dtype=str)).astype(str))
     package_paths = set(final_package.get("path", pd.Series(dtype=str)).astype(str))
 
@@ -170,6 +180,13 @@ def validate(
         "ERROR",
         status_from_condition(plan_paths.issubset(well_impact_paths)),
         f"missing well-impact rows={sorted(plan_paths - well_impact_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_diversity_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(diversity_paths)),
+        f"missing diversity rows={sorted(plan_paths - diversity_paths)[:5]}",
     )
     add(
         checks,
@@ -267,6 +284,16 @@ def validate(
             "ERROR",
             status_from_condition(len(planned_impact) == len(plan_paths) and planned_impact["impact_bucket"].astype(str).ne("").all()),
             f"well-impact rows={len(planned_impact)}; buckets={sorted(set(planned_impact.get('impact_bucket', pd.Series(dtype=str)).astype(str)))}",
+        )
+
+    if "diversity_flag" in diversity.columns:
+        planned_diversity = diversity[diversity["path"].astype(str).isin(plan_paths)].copy()
+        add(
+            checks,
+            "planned_slots_have_diversity_flags",
+            "ERROR",
+            status_from_condition(len(planned_diversity) == len(plan_paths) and planned_diversity["diversity_flag"].astype(str).ne("").all()),
+            f"diversity rows={len(planned_diversity)}; flags={sorted(set(planned_diversity.get('diversity_flag', pd.Series(dtype=str)).astype(str)))}",
         )
 
     if "manifest_gate" in manifest.columns:
@@ -377,6 +404,7 @@ def main() -> int:
     parser.add_argument("--audit", type=Path, default=DEFAULT_AUDIT)
     parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
     parser.add_argument("--well-impact", type=Path, default=DEFAULT_WELL_IMPACT)
+    parser.add_argument("--diversity", type=Path, default=DEFAULT_DIVERSITY)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
@@ -391,6 +419,7 @@ def main() -> int:
         audit=safe_read_csv(args.audit),
         plan=safe_read_csv(args.plan),
         well_impact=safe_read_csv(args.well_impact),
+        diversity=safe_read_csv(args.diversity),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),
