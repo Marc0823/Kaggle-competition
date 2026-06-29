@@ -5,4 +5,6 @@ date_utc,submission_id,candidate_id,kernel_slug,kernel_version,file_name,public_
 2026-06-27,54099603,nickson_v5_artifact_inference,,,submission.csv,20.579,complete,reject_known_bad,passed_format_bad_score,,Artifact mismatch or poor transfer.
 2026-06-27,54105734,direct_train_tvt_overlap_lookup,,,submission.csv,11551.955,complete,reject_known_bad,high_shape_risk,,Naive train-target lookup failed catastrophically.
 2026-06-27,54105066,rogii_7159_ourmatch_gr_contact_matching,,,submission.csv,15357.198,complete,reject_known_bad,passed_format_bad_score,,Public 7.159-style attempt failed in current implementation.
+2026-06-29,54162323,sunny80_v10_artifact20_static_notebook,,,submission.csv,,complete,reject_hidden_format_risk,hidden_rerun_static_replay_risk,,Kojimar-style Sunny80/v10 artifact20 notebook completed but returned blank public score; project notes indicate static visible-test replay is not hidden-compatible.
+2026-06-29,54162415,sunny70_v10_artifact30_static_notebook,,,submission.csv,,complete,reject_hidden_format_risk,hidden_rerun_static_replay_risk,,Kojimar-style Sunny70/v10 artifact30 notebook completed but returned blank public score; do not repeat static replay approach.
 2026-06-29,54162612,henry_tabicl_v10_hidden_compatible_retry,,,submission.csv,,pending,monitor,unknown,,Wait for public score before using as calibration.
