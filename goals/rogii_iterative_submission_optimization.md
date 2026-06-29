@@ -81,6 +81,135 @@ Every question should have one of these decision effects:
 
 If a proposed experiment does not have a clear decision effect, rewrite the question before spending time or submissions.
 
+## Codex Decision Protocol
+
+Codex should run the project as a decision engine, not only as a notebook editor.
+
+At the beginning of every work block, Codex must inspect the current state and produce a small decision set:
+
+1. What is the highest-value uncertainty right now?
+2. What 2-4 feasible options could answer it?
+3. Which option or option set should be selected, and why?
+4. What evidence will decide whether the selected option worked?
+5. What follow-up question should be asked for each likely outcome?
+
+The default behavior is for Codex to choose and execute the best option after recording the reasoning. Ask the human before acting only when the choice changes the strategic direction, consumes official submission slots in a way not covered by the daily plan, risks rule/compliance issues, or requires credentials/data that are not already available.
+
+### Required Question Categories
+
+Every full batch should include at least four active questions:
+
+| category | required question |
+| --- | --- |
+| score question | What pending or completed public score changes the next decision? |
+| model question | Which model family or structural idea is most worth testing now? |
+| validation question | What local audit/CV test would prevent a bad submission? |
+| submission question | Which 4-5 candidates should use the next daily submission budget? |
+| operations question | Which kernel, artifact, credential, or data issue blocks progress? |
+
+If there are fewer than four active questions, generate new ones before editing notebooks.
+
+### Option Design Contract
+
+For each top-priority question, list options in these lanes when possible:
+
+| lane | purpose | example |
+| --- | --- | --- |
+| conservative | protect or reproduce a known-good path | active-account `7.235` baseline reproduction |
+| structural / high-upside | introduce new information beyond tuning | GR/typewell alignment or pseudo-test residual correction |
+| diagnostic / cheap | learn quickly without spending a submission | source audit, output distance check, or local pseudo-CV |
+| calibration | tune a low-dimensional choice after a safe branch exists | blend `0.10/0.20/0.30` |
+| block / defer | explicitly reject a low-value path | static replay or near-duplicate output |
+
+Do not select only calibration options unless a structural candidate has already passed audit.
+
+### Option Scoring Rule
+
+Score each option on a simple `0-3` scale before selection:
+
+| factor | 0 means | 3 means |
+| --- | --- | --- |
+| upside | cannot plausibly beat baseline | could plausibly beat `7.235` |
+| information value | result will not change future work | result clearly changes next decisions |
+| independence | near-duplicate of current best | new signal source or method family |
+| audit readiness | likely invalid or hidden-incompatible | already passes format/source checks |
+| validation support | no local evidence possible | pseudo-CV or robustness evidence available |
+| submission efficiency | spends a slot on a duplicate or vague test | one slot answers a clear question |
+| overfit risk | high public-LB chasing risk | low-dimensional or structurally justified |
+| implementation cost | slow, brittle, or blocked | fast and directly executable |
+
+Selection priority:
+
+1. First choose options with high information value and acceptable audit readiness.
+2. Break ties by independence and expected upside.
+3. Use implementation cost to decide timing, not to avoid important work forever.
+4. Prefer a small diverse option set over several variants of the same idea.
+
+### Default Batch Shape
+
+When enough candidates exist, a full batch should contain:
+
+| slot | role | example |
+| --- | --- | --- |
+| 1 | reference / anchor | active-account known-good reproduction or backup reference |
+| 2 | structural candidate | GR/typewell, physics constraint, residual correction, or reference fork |
+| 3 | calibration point | one blend/gate/smoothing setting tied to the structural candidate |
+| 4 | robustness or comparison | gated vs global, missing-GR-safe variant, or backup branch |
+| 5 | flexible information slot | high-novelty audited candidate or late-day release slot |
+
+If fewer than 4 candidates pass audit, do not force invalid submissions. Instead, spend the waiting time creating the next candidate queue.
+
+### Batch Review Contract
+
+After each batch, Codex must update the plan in this order:
+
+1. Record exact outputs:
+   - kernel slug/version;
+   - artifact folder;
+   - submission ID;
+   - score/status;
+   - audit/CV result.
+2. Close or update each question that the batch answered.
+3. Promote, hold, demote, or block each candidate.
+4. Compare public score with local validation and note disagreements.
+5. Decide whether validation thresholds or audit rules need to change.
+6. Generate the next 3-5 concrete questions.
+7. Select the next batch's first action.
+
+The next batch may start only after the previous review produces at least one new model question, one validation question, and one submission question.
+
+### Outcome-To-Question Branching
+
+Each selected option must have prewritten follow-up branches:
+
+| outcome | follow-up question |
+| --- | --- |
+| improves clearly | Which narrow exploitation sweep can confirm the improvement without overfitting? |
+| improves slightly or ties | Does the candidate add ensemble diversity, or is it only noise? |
+| worsens moderately | Which wells changed most, and should the method be gated instead of rejected? |
+| worsens catastrophically | What audit rule or CV test should have blocked it? |
+| blank score / scoring failure | Is the notebook hidden-compatible, or was this static visible-test replay? |
+| pending | What independent kernels, audits, or CV jobs can proceed while waiting? |
+| audit fails | Is the failure fixable, or should the method family be blocked? |
+
+### Human Escalation Boundary
+
+Codex should make routine technical choices directly, including:
+
+- choosing the next source audit;
+- selecting among equivalent local validation commands;
+- blocking invalid submissions;
+- preparing kernel forks;
+- updating ledgers and reports.
+
+Codex should ask for human direction before:
+
+- changing the daily submission philosophy away from 4-5 informative slots;
+- submitting a candidate that fails any required audit;
+- using public score as a training target instead of a low-dimensional calibration signal;
+- adding external datasets or dependencies with unclear competition eligibility;
+- changing repository ownership, visibility, or credential handling.
+
 ## Batch Decision Flow
 
 Each batch follows this exact sequence:

@@ -65,6 +65,14 @@ Use this as the working contract for iterative submission improvement:
 7. Record batch questions and option choices in `experiments/question_decision_log.csv`.
 8. Keep the next concrete questions in `experiments/question_backlog.csv` so each batch begins with a decision, not a vague modeling tweak.
 
+The control loop is:
+
+```text
+specific question -> multiple feasible options -> selected option with reasoning -> execution -> batch review -> next questions
+```
+
+For each top-priority question, compare a conservative option, a structural/high-upside option, and a cheap diagnostic option when possible. The selected option should maximize information value while passing audit and avoiding pure public-leaderboard overfit.
+
 Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day; the operating target is to use 4-5 slots when enough audited, informative candidates exist, with every submission treated as a planned experiment.
 
 ## Data Setup

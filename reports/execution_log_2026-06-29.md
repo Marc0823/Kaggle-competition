@@ -135,6 +135,43 @@ This consumes the fourth official submission slot for 2026-06-29 UTC and answers
 - `reports/fleongg_branch_calibration_audit_2026-06-29.md`
   - Added the v1 rejection, v2 audit, and fifth-slot official submission record.
 
+## Goal Protocol Refinement
+
+Latest Kaggle status recheck on 2026-06-29 UTC:
+
+```text
+54174876 fleongg branch calibration: PENDING
+54174151 active-account baseline reproduction: PENDING
+54162612 Henry TabICL/v10 hidden-compatible retry: PENDING
+```
+
+Because the score-dependent questions are still pending, the next useful work is process and preflight work that does not depend on those public scores.
+
+The goal plan was refined so every work block follows this control loop:
+
+```text
+specific question -> multiple feasible options -> Codex-selected option with reasoning -> execution -> review -> next questions
+```
+
+Added to `goals/rogii_iterative_submission_optimization.md`:
+
+- required active question categories: score, model, validation, submission, and operations;
+- option lanes: conservative, structural/high-upside, diagnostic, calibration, and block/defer;
+- a `0-3` option scoring rule for upside, information value, independence, audit readiness, validation support, submission efficiency, overfit risk, and implementation cost;
+- default batch shape for 4-5 informative daily submissions;
+- required batch review order;
+- outcome-to-question branches for improvements, ties, worsening, catastrophic failures, blank scores, pending scores, and audit failures;
+- human escalation boundaries.
+
+Records added:
+
+- `experiments/question_backlog.csv`
+  - Added `Q20260629-B11` as the active process-control question.
+- `experiments/question_decision_log.csv`
+  - Added `Q20260629-07` recording the selected goal-file protocol.
+- `README.md`
+  - Added the short project control loop and option-comparison rule.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
