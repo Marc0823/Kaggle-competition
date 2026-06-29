@@ -38,6 +38,7 @@ Confirmed project public scores:
 | 7.263 | David v12 budget guarded clean GPU | near-duplicate backup |
 | 7.588-7.606 | Fleongg / Ricardo-style branches | plausible but weaker |
 | 7.703 | David bimodal fastcpu no-sameid | weaker but still useful calibration |
+| 13.453 | Henry TabICL/v10 hidden-compatible retry | weak artifact-stack negative calibration |
 | 20.579 | Nickson artifact inference | known bad |
 | 11551.955 | direct train TVT overlap lookup | known catastrophic |
 | 15357.198 | failed 7.159-style attempts | known catastrophic in current implementation |
@@ -853,7 +854,10 @@ Tracked:
 - `goals/rogii_iterative_submission_optimization.md`: this operating goal.
 - `reports/problem_study_2026-06-29.md`: problem study and official constraints.
 - `reports/local_surrogate_score_report.md`: latest surrogate summary.
+- `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
+- `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
+- `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/big_signal_public_lb_tracker.csv`: prior project tracker.
 - `experiments/submission_ledger.csv`: official submission log and decisions.
 - `experiments/question_backlog.csv`: prioritized open questions and candidate option sets.
@@ -973,6 +977,7 @@ Done:
 - Extend `scripts/pre_submit_audit.py` with optional anchor-continuity, jump/curvature, typewell-range, and reference-distance checks.
 - Add `experiments/reference_submission_registry.csv` and `--reference-registry` support for repeatable known-output distance checks.
 - Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
+- Create `scripts/pseudo_test_cv.py` for repeated train-well hidden-suffix validation of method families before submission.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.
@@ -983,10 +988,9 @@ Done:
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every completed kernel output before official submission.
-2. Create `scripts/pseudo_test_cv.py`.
-3. Add a standard candidate output folder convention under ignored `artifacts/`.
-4. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
-5. Add a report generator that ranks candidates by:
+2. Add a standard candidate output folder convention under ignored `artifacts/`.
+3. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
+4. Add a report generator that ranks candidates by:
    - audit status;
    - CV delta;
    - distance to known submissions;

@@ -4,15 +4,15 @@ This report records the first reference-notebook preflight batch after the goal 
 
 ## Current State
 
-Official submissions are still pending:
+Official submissions state:
 
-| submission_id | candidate | status |
-| ---: | --- | --- |
-| 54174876 | fleongg pretrained branch calibration | PENDING |
-| 54174151 | active-account 7.235 baseline reproduction | PENDING |
-| 54162612 | Henry TabICL/v10 hidden-compatible retry | PENDING |
+| submission_id | candidate | status | public score |
+| ---: | --- | --- | ---: |
+| 54174876 | fleongg pretrained branch calibration | PENDING |  |
+| 54174151 | active-account 7.235 baseline reproduction | PENDING |  |
+| 54162612 | Henry TabICL/v10 hidden-compatible retry | COMPLETE | 13.453 |
 
-Because these scores are pending, dependent calibration should wait. Independent reference-notebook preflight can continue without consuming official submission slots.
+Because the baseline and fleongg scores are pending, dependent calibration should wait. Henry's weak score is usable as negative artifact-stack calibration. Independent reference-notebook preflight can continue without consuming official submission slots.
 
 ## Batch Question
 
@@ -242,6 +242,65 @@ Pushed:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 4
+status: ERROR
+official submission: none
+```
+
+## Version 4 Result
+
+Version 4 progressed one nested module deeper, then failed on:
+
+```text
+ModuleNotFoundError: No module named 'koolbox.trainer.trainer'; 'koolbox.trainer' is not a package
+```
+
+Interpretation:
+
+- The pickle references `koolbox.trainer.trainer`.
+- The v4 `koolbox.trainer` stub also needs to behave like a package.
+- This remains a dependency compatibility issue before model inference finishes.
+
+Downloaded log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v4/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+## Version 5 Patch
+
+Patched the ignored working notebook to register all observed nested paths:
+
+```python
+_koolbox_stub = _codex_types.ModuleType("koolbox")
+_koolbox_stub.__path__ = []
+_koolbox_stub.Trainer = CVTrainer
+_koolbox_trainer_stub = _codex_types.ModuleType("koolbox.trainer")
+_koolbox_trainer_stub.__path__ = []
+_koolbox_trainer_stub.Trainer = CVTrainer
+_koolbox_trainer_stub.CVTrainer = CVTrainer
+_koolbox_trainer_trainer_stub = _codex_types.ModuleType("koolbox.trainer.trainer")
+_koolbox_trainer_trainer_stub.Trainer = CVTrainer
+_koolbox_trainer_trainer_stub.CVTrainer = CVTrainer
+_koolbox_stub.trainer = _koolbox_trainer_stub
+_koolbox_trainer_stub.trainer = _koolbox_trainer_trainer_stub
+sys.modules.setdefault("koolbox", _koolbox_stub)
+sys.modules.setdefault("koolbox.trainer", _koolbox_trainer_stub)
+sys.modules.setdefault("koolbox.trainer.trainer", _koolbox_trainer_trainer_stub)
+```
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 5
 status: RUNNING
 official submission: none
 ```
@@ -281,4 +340,4 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 ## Current Decision
 
-Proceed with Degnonguidi no-submit preflight v4 and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v5 and hold Baidalin until its source audit failures are fixed.

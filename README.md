@@ -128,6 +128,14 @@ reports/local_surrogate_score_report.md
 
 Important: this does **not** know hidden labels and cannot exactly predict Public LB. It is mainly used to reject obviously bad or duplicated candidates before spending submissions.
 
+Run pseudo-test CV on training wells by hiding known-TVT suffixes:
+
+```powershell
+python scripts\pseudo_test_cv.py --data-dir data\sample --output-dir experiments --report reports\pseudo_test_cv_report.md
+```
+
+This evaluates method families, not completed `submission.csv` files. Use it to decide whether a structural idea can beat a simple visible-prefix baseline before turning that idea into a Kaggle notebook candidate.
+
 ## Pre-Submit Format Audit
 
 Before spending an official submission slot, audit the generated `submission.csv` against the current sample file:
@@ -233,9 +241,9 @@ Rejected or risky:
 
 ## Current High-Priority Directions
 
-1. Poll and audit `Degnonguidi 7.159` preflight v4 under `joezzzzz`.
+1. Poll and audit `Degnonguidi 7.159` preflight v5 under `joezzzzz`.
 2. Run and audit `Baidalin 7.201` only after its source-audit failures are fixed.
-3. Monitor pending Henry TabICL, active-account baseline, and fleongg branch official submissions.
+3. Monitor active-account baseline and fleongg branch official submissions; treat Henry TabICL score `13.453` as negative artifact-stack calibration.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.
 
 ## Why This Repo Is Lean

@@ -496,16 +496,112 @@ Pushed retry:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 4
+status: ERROR
+official submission: none
+```
+
+Version 4 failure:
+
+```text
+ModuleNotFoundError: No module named 'koolbox.trainer.trainer'; 'koolbox.trainer' is not a package
+```
+
+Decision:
+
+- Keep this as a no-submit dependency preflight.
+- Register the observed nested pickle path `koolbox.trainer.trainer`.
+- If another nested module path or class-contract failure appears, decide between inference-core port and blocking Degnonguidi rather than blindly patching forever.
+
+Source audit after v5 patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed nested retry:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 5
 status: RUNNING
 official submission: none
 ```
 
+## Pseudo-Test CV Utility
+
+Added:
+
+```text
+scripts/pseudo_test_cv.py
+```
+
+Purpose:
+
+- hide suffixes of training wells where true `TVT` is known;
+- run native-prefix and prefix-fraction stress splits;
+- compare simple method families before any official submission;
+- write method-level and split-level evidence to tracked experiment files.
+
+Validation command:
+
+```text
+python3 scripts/pseudo_test_cv.py --data-dir data/sample --output-dir experiments --report reports/pseudo_test_cv_report.md
+```
+
+Generated:
+
+```text
+experiments/pseudo_test_cv_scores.csv
+experiments/pseudo_test_cv_summary.csv
+reports/pseudo_test_cv_report.md
+```
+
+Sample-train result:
+
+| method | weighted RMSE | mean delta vs last_value | win rate vs last_value |
+| --- | ---: | ---: | ---: |
+| last_value | 14.764 | 0.000 | 0.000 |
+| gr_shift_tail_linear | 50.038 | 24.165 | 0.267 |
+| tail_linear_md | 51.699 | 24.151 | 0.267 |
+| best_strat_linear | 100.783 | 81.963 | 0.000 |
+| full_linear_md | 1175.200 | 852.490 | 0.000 |
+
+Interpretation:
+
+- The visible sample train wells have plateau-like hidden suffixes.
+- `last_value` is a strong conservative pseudo-test baseline.
+- Raw MD-linear, strat-feature-linear, and current GR-shift movement variants should not be submitted as a family until a plateau-aware gate beats `last_value` locally.
+
+## Henry Result
+
+Official submission `54162612` completed:
+
+```text
+candidate: Henry TabICL/v10 hidden-compatible retry
+status: COMPLETE
+public score: 13.453
+```
+
+Decision:
+
+- Mark as `negative_calibration`.
+- Do not promote the raw Henry/TabICL artifact stack into the ensemble pool.
+- Use this score to calibrate artifact-stack risk: hidden-compatible execution alone is not enough; alignment/model logic must beat the current references.
+
+Records updated:
+
+- `experiments/submission_ledger.csv`
+- `experiments/daily_submission_plan.csv`
+- `experiments/question_backlog.csv`
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
-2. Poll pending Henry submission `54162612`.
-3. Poll official submission `54174876`.
-4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 4.
-5. If Degnonguidi v4 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
-6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+2. Poll official submission `54174876`.
+3. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 5.
+4. If Degnonguidi v5 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
+5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
+6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+7. Use Q20260629-B12 to build a plateau-aware or stricter-gated local candidate before spending another slot on related GR/typewell movement.
