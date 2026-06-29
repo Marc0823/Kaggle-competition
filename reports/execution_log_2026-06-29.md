@@ -807,6 +807,47 @@ Decision:
 - Use this wrapper when Degnonguidi v6 or Baidalin v1 becomes `COMPLETE`.
 - Do not make an official submission from a kernel output unless this wrapper's audit result is `PASS` and any warnings are reviewed.
 
+## Next Batch Readiness
+
+Added:
+
+```text
+scripts/next_batch_readiness_report.py
+```
+
+Run command:
+
+```text
+python3 scripts/next_batch_readiness_report.py
+```
+
+Outputs:
+
+```text
+experiments/next_batch_readiness.csv
+reports/next_batch_readiness_report.md
+```
+
+Current summary:
+
+```text
+pending official submissions: 2
+running kernels: 2
+ready-after-audit candidates without context blockers: 0
+WAIT_OFFICIAL_SCORE: 3
+HOLD_PENDING_CONTEXT: 3
+HOLD_INFORMATION_SLOT: 1
+HOLD_LOW_UPSIDE: 2
+HOLD_DUPLICATE: 6
+```
+
+Interpretation:
+
+- The learned-signal/fleongg branch is already represented by pending official submission `54174876`; do not resubmit equivalent files.
+- Projection branches and other plausible local candidates should wait for pending scores or running reference kernels.
+- `plateau_recent_quantile_v1` remains a sparse information-slot candidate, not a current submission.
+- The next official batch should not spend another slot until pending scores or reference kernel outputs resolve.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.

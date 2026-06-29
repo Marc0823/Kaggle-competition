@@ -128,6 +128,19 @@ reports/local_surrogate_score_report.md
 
 Important: this does **not** know hidden labels and cannot exactly predict Public LB. It is mainly used to reject obviously bad or duplicated candidates before spending submissions.
 
+Build a next-batch readiness report from surrogate scores, pending submissions, running kernels, and local validation:
+
+```powershell
+python scripts\next_batch_readiness_report.py
+```
+
+Outputs:
+
+```text
+experiments/next_batch_readiness.csv
+reports/next_batch_readiness_report.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell

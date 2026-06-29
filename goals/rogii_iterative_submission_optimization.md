@@ -854,9 +854,11 @@ Tracked:
 - `goals/rogii_iterative_submission_optimization.md`: this operating goal.
 - `reports/problem_study_2026-06-29.md`: problem study and official constraints.
 - `reports/local_surrogate_score_report.md`: latest surrogate summary.
+- `reports/next_batch_readiness_report.md`: latest combined view of pending scores, running kernels, and local candidate readiness.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
+- `experiments/next_batch_readiness.csv`: ranked next-batch candidate readiness table.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -991,6 +993,7 @@ Done:
 - Generate and audit `gr_typewell_light_alpha010_v1`.
 - Generate and audit `gr_typewell_light_alpha020_v1`.
 - Create `scripts/candidate_decision_report.py`.
+- Create `scripts/next_batch_readiness_report.py` to combine pending official scores, running kernels, local surrogate scores, pseudo-CV, and plateau stability into a next-batch readiness report.
 
 Next:
 

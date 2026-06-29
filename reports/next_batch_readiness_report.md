@@ -1,0 +1,52 @@
+# Next Batch Readiness Report
+
+This report ranks local candidates and blockers for the next official submission batch.
+
+## Current Blockers
+
+- Pending official submissions: `2`
+- Running Kaggle kernels: `2`
+- Ready-after-audit candidates with no context blocker: `0`
+
+## Pending Official Submissions
+
+| submission_id | candidate_id | status | decision | public_score |
+| --- | --- | --- | --- | --- |
+| 54174151 | lucifer_baseline_repro_joezzzzz | pending | submitted_calibration |  |
+| 54174876 | fleongg_pretrained_branch_calibration | pending | submitted_calibration |  |
+
+## Running Kernels
+
+| kernel_slug | kernel_version | purpose | status | next_action |
+| --- | --- | --- | --- | --- |
+| joezzzzz/rogii-degnonguidi-7159-preflight-codex | 6 | reference_notebook_preflight | RUNNING | poll_kernel_status |
+| joezzzzz/rogii-baidalin-7-201-preflight-codex | 1 | reference_notebook_preflight | RUNNING | poll_kernel_status |
+
+## Candidate Readiness
+
+| path | family | readiness_status | base_decision | estimated_public_band | rmse_to_current_best_7p235 | anchor_first_abs_p90 | jump_rate_abs_slope_gt3 | next_action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/fleongg_pretrained_submission.csv | learned_signal | WAIT_OFFICIAL_SCORE | LOCAL_CANDIDATE | plausible_7p2_to_7p8_band | 3.68124 | 0.125039 | 0 | Equivalent learned-signal branch is already submitted as pending. |
+| artifacts/fleongg_branch_calibration_joezzzzz_v2/fleongg_pretrained_submission.csv | learned_signal | WAIT_OFFICIAL_SCORE | LOCAL_CANDIDATE | plausible_7p2_to_7p8_band | 3.92105 | 0.124812 | 0 | Equivalent learned-signal branch is already submitted as pending. |
+| artifacts/fleongg_branch_calibration_joezzzzz_v1/fleongg_pretrained_submission.csv | learned_signal | WAIT_OFFICIAL_SCORE | LOCAL_CANDIDATE | plausible_7p2_to_7p8_band | 3.92669 | 0.123879 | 0 | Equivalent learned-signal branch is already submitted as pending. |
+| artifacts/fleongg_branch_calibration_joezzzzz_v1/sp45_projection_submission.csv | projection_branch | HOLD_PENDING_CONTEXT | LOCAL_CANDIDATE | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | Wait for pending official scores or running reference kernels before spending another slot. |
+| artifacts/fleongg_branch_calibration_joezzzzz_v2/sp45_projection_submission.csv | projection_branch | HOLD_PENDING_CONTEXT | LOCAL_CANDIDATE | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | Wait for pending official scores or running reference kernels before spending another slot. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/sp45_projection_submission.csv | projection_branch | HOLD_PENDING_CONTEXT | LOCAL_CANDIDATE | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | Wait for pending official scores or running reference kernels before spending another slot. |
+| artifacts/plateau_recent_quantile_v1/submission.csv | plateau_signal | HOLD_INFORMATION_SLOT | LOCAL_CANDIDATE | unknown_possible_but_risky | 4.72239 | 3.28521 | 7.06814e-05 | Sparse local win; hold until pending anchors or stronger validation justify a slot. |
+| artifacts/gr_typewell_light_alpha010_v1/submission.csv | gr_typewell_light | HOLD_LOW_UPSIDE | HOLD_LOW_UPSIDE | likely_around_7p235_low_upside | 0.349534 | 0.0360878 | 7.06814e-05 | Likely safe but low information value. |
+| artifacts/gr_typewell_light_alpha020_v1/submission.csv | gr_typewell_light | HOLD_LOW_UPSIDE | HOLD_LOW_UPSIDE | likely_around_7p235_low_upside | 0.699067 | 0.0360878 | 7.06814e-05 | Likely safe but low information value. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_aggressive.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_balanced.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_conservative.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_pre_gold.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_public_self_verified.csv | anchor_or_duplicate | HOLD_DUPLICATE | HOLD_DUPLICATE | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | Too close to the active baseline; useful as anchor only. |
+
+## Recommendation
+
+Do not spend another official slot on dependent variants until pending scores or reference kernels resolve.
+Continue polling, then audit completed kernel outputs before promoting any reference branch.
+
+## Outputs
+
+- `experiments/next_batch_readiness.csv`
