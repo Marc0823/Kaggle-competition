@@ -27,8 +27,11 @@ The problem is not a simple row-wise tabular regression problem. Strong solution
 ├── scripts/                         # Utility scripts and local surrogate scoring
 ├── reports/                         # Progress notes and decision reports
 ├── experiments/                     # Lightweight experiment trackers
-├── kaggle_kernel_*/                 # Our Kaggle notebook forks / submission kernels
-├── public_kernels/                  # Pulled public reference notebooks
+├── kaggle_kernel_lucifer_wellbore_wizard_pf_stack/      # current 7.235 reference
+├── kaggle_kernel_degnonguidi_7159_submit/                # 7.159 reproduction target
+├── kaggle_kernel_baidalin7201_v2/                        # 7.201 reproduction target
+├── kaggle_kernel_henry_v10_sunny80_blend/                # artifact/physical blend candidate
+├── kaggle_kernel_david_v12_budget_guarded_clean_gpu/     # 7.263 backup reference
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -117,6 +120,17 @@ Rejected or risky:
 3. Monitor Henry TabICL / Sunny blend and Romantamrazov GPU runs.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.
 
+## Why This Repo Is Lean
+
+The local workspace contains many pulled public notebooks and generated artifacts, but the GitHub repo intentionally keeps only the files teammates need immediately:
+
+- core scripts
+- lightweight reports and trackers
+- five important Kaggle kernel forks
+- setup instructions
+
+Large outputs, pulled reference notebooks, and generated submissions are excluded to keep cloning fast and avoid accidentally publishing data or model artifacts.
+
 ## Suggested Collaboration Split
 
 Person A: data and diagnostics
@@ -170,4 +184,3 @@ Do not commit:
 - downloaded artifacts
 - generated submission CSVs
 - large model files
-

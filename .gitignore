@@ -2,6 +2,7 @@
 data/
 artifacts/
 submissions/
+public_kernels/
 *.zip
 *.7z
 *.tar
@@ -38,6 +39,19 @@ access_token
 *.secret
 .env
 .env.*
+
+# Keep the public repo lean. Most pulled Kaggle forks are local references only.
+kaggle_kernel_*/
+!kaggle_kernel_lucifer_wellbore_wizard_pf_stack/
+!kaggle_kernel_lucifer_wellbore_wizard_pf_stack/**
+!kaggle_kernel_degnonguidi_7159_submit/
+!kaggle_kernel_degnonguidi_7159_submit/**
+!kaggle_kernel_baidalin7201_v2/
+!kaggle_kernel_baidalin7201_v2/**
+!kaggle_kernel_henry_v10_sunny80_blend/
+!kaggle_kernel_henry_v10_sunny80_blend/**
+!kaggle_kernel_david_v12_budget_guarded_clean_gpu/
+!kaggle_kernel_david_v12_budget_guarded_clean_gpu/**
 
 # OS / editor noise
 .DS_Store
