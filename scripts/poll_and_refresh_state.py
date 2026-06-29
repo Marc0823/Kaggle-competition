@@ -102,6 +102,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/next_batch_readiness_report.md`",
             "- `reports/candidate_audit_summary_report.md`",
             "- `reports/next_submission_batch_plan.md`",
+            "- `reports/planned_candidate_well_impact_report.md`",
             "- `reports/candidate_artifact_manifest_report.md`",
             "- `reports/submission_release_gate_report.md`",
             "- `reports/final_submission_package_report.md`",
@@ -154,6 +155,7 @@ def main() -> int:
     run_checked([sys.executable, "scripts/next_batch_readiness_report.py"])
     run_checked([sys.executable, "scripts/candidate_audit_summary.py"])
     run_checked([sys.executable, "scripts/next_submission_batch_plan.py"])
+    run_checked([sys.executable, "scripts/planned_candidate_well_impact.py"])
     run_checked([sys.executable, "scripts/candidate_artifact_manifest_summary.py"])
     run_checked([sys.executable, "scripts/submission_release_gate.py"])
     run_checked([sys.executable, "scripts/final_submission_package.py"])
@@ -164,6 +166,7 @@ def main() -> int:
     readiness = safe_read_csv(Path("experiments/next_batch_readiness.csv"))
     audit_summary = safe_read_csv(Path("experiments/candidate_audit_summary.csv"))
     batch_plan = safe_read_csv(Path("experiments/next_submission_batch_plan.csv"))
+    well_impact = safe_read_csv(Path("experiments/planned_candidate_well_impact_summary.csv"))
     manifest_summary = safe_read_csv(Path("experiments/candidate_artifact_manifest_summary.csv"))
     release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
     final_package = safe_read_csv(Path("experiments/final_submission_package_summary.csv"))
@@ -185,6 +188,7 @@ def main() -> int:
         "batch_status": first_or_blank(batch_plan, "batch_status"),
         "planned_slots": len(batch_plan),
         "current_action_counts": count_values(batch_plan, "current_action"),
+        "well_impact_bucket_counts": count_values(well_impact, "impact_bucket"),
         "artifact_manifest_gate_counts": count_values(manifest_summary, "manifest_gate"),
         "release_gate_counts": count_values(release_gate, "release_gate"),
         "final_package_gate_counts": count_values(final_package, "package_gate"),

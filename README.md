@@ -285,6 +285,14 @@ python scripts\result_application_plan.py
 
 This translates pending scores, kernel state, ledger dry-run updates, release gates, and final-package gates into the next concrete action. It does not edit ledgers or submit to Kaggle.
 
+Review per-well impact of the current planned candidates:
+
+```powershell
+python scripts\planned_candidate_well_impact.py
+```
+
+This shows whether a candidate is broad, concentrated, sparse, or single-well dominated relative to the active-account baseline.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

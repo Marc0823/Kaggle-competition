@@ -866,6 +866,7 @@ Tracked:
 - `reports/final_submission_package_report.md`: final local package gate before copying exact outputs into ignored candidate folders.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/result_application_plan.md`: latest external-result-to-action plan for ledger updates, score branches, kernel branches, release sequence, and final packaging.
+- `reports/planned_candidate_well_impact_report.md`: per-well impact profile for planned slots versus the active-account baseline.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/next_batch_readiness.csv`: ranked next-batch candidate readiness table.
@@ -879,6 +880,8 @@ Tracked:
 - `experiments/candidate_artifact_manifest_summary.csv`: machine-readable manifest gate for current planned submission slots.
 - `experiments/final_submission_package_summary.csv`: machine-readable final-package gate for planned slots.
 - `experiments/result_application_plan.csv`: machine-readable current action plan derived from poll state and branch rules.
+- `experiments/planned_candidate_well_impact.csv`: per-well contribution, change size, and top-well diagnostics for planned slots.
+- `experiments/planned_candidate_well_impact_summary.csv`: candidate-level impact buckets for planned slots.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -1025,13 +1028,14 @@ Done:
 - Create `scripts/candidate_artifact_manifest_summary.py` and wire it into the polling wrapper/planning validation so planned slots must have local manifests pointing to exact selected outputs with audit evidence.
 - Create `scripts/final_submission_package.py` and wire it into the polling wrapper/planning validation so final local packaging remains blocked until release gates clear; when explicitly prepared, it copies the exact selected output into the ignored candidate folder and reruns deep audit without submitting to Kaggle.
 - Create `scripts/result_application_plan.py` and wire it into the polling wrapper/planning validation so pending score/kernel outcomes and dry-run ledger updates become explicit next actions before any release.
+- Create `scripts/planned_candidate_well_impact.py` and wire it into the polling wrapper/planning validation so planned slots have per-well impact evidence before release; current planned slots are `BROAD=4` and `SINGLE_WELL_DOMINATED=1`.
 
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every future completed kernel output before official submission.
 2. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/deep_pre_submit_audit.json`.
 3. Use `scripts/init_candidate_artifact.py` before promoting any newly generated local candidate into the official-submission queue.
-4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `result_application_status_counts`, `artifact_manifest_gate_counts`, and `final_package_gate_counts` are compatible with the release decision.
+4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `result_application_status_counts`, `well_impact_bucket_counts`, `artifact_manifest_gate_counts`, and `final_package_gate_counts` are compatible with the release decision.
 5. Do not submit planned slots unless `reports/submission_release_gate_report.md` no longer reports `BLOCKED_*` or `REVIEW_LEDGER_UPDATES`, and `reports/planning_state_validation_report.md` reports zero error failures.
 6. Before any official submission, run `scripts/final_submission_package.py --prepare --planned-slot N` only after release gates clear and final review is complete.
 7. When a pending result resolves, follow `reports/result_application_plan.md` and `reports/result_branch_matrix.md` to promote, downweight, insert, block, or defer candidates before releasing slots.

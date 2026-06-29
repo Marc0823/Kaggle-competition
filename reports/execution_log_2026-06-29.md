@@ -1208,6 +1208,31 @@ Decision:
 - Current state has no unapplied ledger updates, but baseline score, Fleongg score, and Degnonguidi v6 are still pending/running, so release remains blocked.
 - `scripts/validate_planning_state.py` now requires result-application blockers to exist while external context is pending.
 
+## Planned Candidate Well Impact
+
+Added:
+
+```text
+scripts/planned_candidate_well_impact.py
+experiments/planned_candidate_well_impact.csv
+experiments/planned_candidate_well_impact_summary.csv
+reports/planned_candidate_well_impact_report.md
+```
+
+Current validation:
+
+```text
+well_impact_bucket_counts: BROAD=4; SINGLE_WELL_DOMINATED=1
+planning validation: PASS=29, error_failures=0
+```
+
+Decision:
+
+- The well-impact report is now part of `scripts/poll_and_refresh_state.py`.
+- SP45 projection and the three SP45+Fleongg blend slots are `BROAD`, changing all three current test wells versus the active-account baseline.
+- `plateau_recent_quantile_v1` is `SINGLE_WELL_DOMINATED`, changing only well `00e12e8b`; keep it as a sparse information slot unless stronger evidence arrives.
+- `scripts/validate_planning_state.py` now requires every planned slot to have a well-impact row and impact bucket.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1222,3 +1247,4 @@ Decision:
 10. Require `reports/candidate_artifact_manifest_report.md` to show no `FAIL_*` gates before releasing any official slot.
 11. Require `reports/final_submission_package_report.md` to show the selected slot can be packaged, then prepare it locally before any official Kaggle submission.
 12. Use `reports/result_application_plan.md` as the first stop after any new score/kernel update before editing ledgers or releasing slots.
+13. Use `reports/planned_candidate_well_impact_report.md` during final review to decide whether a candidate is broad enough for promotion or only useful as a sparse information slot.

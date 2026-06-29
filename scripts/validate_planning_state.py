@@ -15,6 +15,7 @@ DEFAULT_POLL = Path("experiments/poll_refresh_summary.csv")
 DEFAULT_READINESS = Path("experiments/next_batch_readiness.csv")
 DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
 DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
+DEFAULT_WELL_IMPACT = Path("experiments/planned_candidate_well_impact_summary.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
@@ -79,6 +80,7 @@ def validate(
     readiness: pd.DataFrame,
     audit: pd.DataFrame,
     plan: pd.DataFrame,
+    well_impact: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
@@ -96,6 +98,13 @@ def validate(
     add(checks, "input_readiness_exists", "ERROR", status_from_condition(not readiness.empty), "next-batch readiness CSV is readable")
     add(checks, "input_audit_summary_exists", "ERROR", status_from_condition(not audit.empty), "candidate audit summary CSV is readable")
     add(checks, "input_plan_exists", "ERROR", status_from_condition(not plan.empty), "next submission batch plan CSV is readable")
+    add(
+        checks,
+        "input_well_impact_summary_exists",
+        "ERROR",
+        status_from_condition(not well_impact.empty),
+        "planned candidate well-impact summary CSV is readable",
+    )
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
     add(
         checks,
@@ -123,6 +132,7 @@ def validate(
     release_paths = set(release.get("path", pd.Series(dtype=str)).astype(str))
     audit_paths = set(audit.get("path", pd.Series(dtype=str)).astype(str))
     readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
+    well_impact_paths = set(well_impact.get("path", pd.Series(dtype=str)).astype(str))
     manifest_paths = set(manifest.get("path", pd.Series(dtype=str)).astype(str))
     package_paths = set(final_package.get("path", pd.Series(dtype=str)).astype(str))
 
@@ -153,6 +163,13 @@ def validate(
         "ERROR",
         status_from_condition(plan_paths.issubset(readiness_paths)),
         f"missing readiness rows={sorted(plan_paths - readiness_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_well_impact_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(well_impact_paths)),
+        f"missing well-impact rows={sorted(plan_paths - well_impact_paths)[:5]}",
     )
     add(
         checks,
@@ -240,6 +257,16 @@ def validate(
             "ERROR",
             status_from_condition(bad_audit.empty),
             f"nonpassing planned audit rows={len(bad_audit)}",
+        )
+
+    if "impact_bucket" in well_impact.columns:
+        planned_impact = well_impact[well_impact["path"].astype(str).isin(plan_paths)].copy()
+        add(
+            checks,
+            "planned_slots_have_impact_buckets",
+            "ERROR",
+            status_from_condition(len(planned_impact) == len(plan_paths) and planned_impact["impact_bucket"].astype(str).ne("").all()),
+            f"well-impact rows={len(planned_impact)}; buckets={sorted(set(planned_impact.get('impact_bucket', pd.Series(dtype=str)).astype(str)))}",
         )
 
     if "manifest_gate" in manifest.columns:
@@ -349,6 +376,7 @@ def main() -> int:
     parser.add_argument("--readiness", type=Path, default=DEFAULT_READINESS)
     parser.add_argument("--audit", type=Path, default=DEFAULT_AUDIT)
     parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
+    parser.add_argument("--well-impact", type=Path, default=DEFAULT_WELL_IMPACT)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
@@ -362,6 +390,7 @@ def main() -> int:
         readiness=safe_read_csv(args.readiness),
         audit=safe_read_csv(args.audit),
         plan=safe_read_csv(args.plan),
+        well_impact=safe_read_csv(args.well_impact),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),
