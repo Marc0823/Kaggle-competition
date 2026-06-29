@@ -141,6 +141,19 @@ experiments/next_batch_readiness.csv
 reports/next_batch_readiness_report.md
 ```
 
+Summarize audit evidence for the current readiness candidates:
+
+```powershell
+python scripts\candidate_audit_summary.py
+```
+
+Outputs:
+
+```text
+experiments/candidate_audit_summary.csv
+reports/candidate_audit_summary_report.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell

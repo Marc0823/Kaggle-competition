@@ -884,6 +884,51 @@ Decision:
 - Track `sp45_projection_submission.csv` and the five `submission_sp45_fleongg_w*.csv` blends as real next-batch candidates.
 - Hold all Baidalin-derived candidates until `54174151`, `54174876`, or Degnonguidi v6 gives enough context.
 
+## Candidate Audit Coverage
+
+Polling result before this work:
+
+```text
+official submissions 54174151 and 54174876: unchanged / still pending
+joezzzzz/rogii-degnonguidi-7159-preflight-codex/v6: still RUNNING
+```
+
+Added:
+
+```text
+scripts/candidate_audit_summary.py
+```
+
+Run command:
+
+```text
+python3 scripts/candidate_audit_summary.py
+```
+
+Outputs:
+
+```text
+experiments/candidate_audit_summary.csv
+reports/candidate_audit_summary_report.md
+```
+
+Audit coverage result:
+
+```text
+candidates tracked: 22
+MISSING_AUDIT: 0
+AUDITED_WAIT_CONTEXT: 13
+HOLD_DUPLICATE: 6
+HOLD_LOW_UPSIDE: 2
+HOLD_INFORMATION_SLOT: 1
+```
+
+Decision:
+
+- The current readiness candidate set now has per-file audit evidence.
+- All five Baidalin SP45+Fleongg blend files passed deep pre-submit audit with `WARN` only for missing optional local reference artifacts.
+- No official submission was made; candidates remain held until pending public scores or Degnonguidi v6 resolve.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
