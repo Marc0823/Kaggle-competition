@@ -929,6 +929,50 @@ Decision:
 - All five Baidalin SP45+Fleongg blend files passed deep pre-submit audit with `WARN` only for missing optional local reference artifacts.
 - No official submission was made; candidates remain held until pending public scores or Degnonguidi v6 resolve.
 
+## Conditional Next Submission Batch
+
+Polling result before this work:
+
+```text
+official submissions 54174151 and 54174876: unchanged / still pending
+joezzzzz/rogii-degnonguidi-7159-preflight-codex/v6: still RUNNING
+```
+
+Added:
+
+```text
+scripts/next_submission_batch_plan.py
+```
+
+Run command:
+
+```text
+python3 scripts/next_submission_batch_plan.py
+```
+
+Outputs:
+
+```text
+experiments/next_submission_batch_plan.csv
+reports/next_submission_batch_plan.md
+```
+
+Current planned slots:
+
+```text
+1: Baidalin SP45 projection structural candidate
+2: Baidalin SP45+Fleongg blend w0.50
+3: Baidalin SP45+Fleongg blend w0.55
+4: Baidalin SP45+Fleongg blend w0.60
+5: plateau_recent_quantile_v1 flexible information slot
+```
+
+Decision:
+
+- All planned slots are currently `WAIT_EXTERNAL_CONTEXT` and `do_not_submit_yet`.
+- Release depends on pending official scores and/or explicit Degnonguidi v6 deferral/completion.
+- If Degnonguidi v6 completes and audits cleanly, insert its best distinct output ahead of lower-priority blend or plateau slots.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -937,5 +981,5 @@ Decision:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Re-rank Baidalin SP45 projection/blend candidates against pending score outcomes before spending official slots.
+7. Re-run `scripts/candidate_audit_summary.py` and `scripts/next_submission_batch_plan.py` before spending official slots.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

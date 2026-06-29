@@ -154,6 +154,19 @@ experiments/candidate_audit_summary.csv
 reports/candidate_audit_summary_report.md
 ```
 
+Build a conditional 4-5 slot submission batch plan from the audited candidate pool:
+
+```powershell
+python scripts\next_submission_batch_plan.py
+```
+
+Outputs:
+
+```text
+experiments/next_submission_batch_plan.csv
+reports/next_submission_batch_plan.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell

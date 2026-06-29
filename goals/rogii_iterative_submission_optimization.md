@@ -856,11 +856,13 @@ Tracked:
 - `reports/local_surrogate_score_report.md`: latest surrogate summary.
 - `reports/next_batch_readiness_report.md`: latest combined view of pending scores, running kernels, and local candidate readiness.
 - `reports/candidate_audit_summary_report.md`: audit-gated candidate evidence joined to next-batch readiness.
+- `reports/next_submission_batch_plan.md`: conditional 4-5 slot plan built from audited candidates and current blockers.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/next_batch_readiness.csv`: ranked next-batch candidate readiness table.
 - `experiments/candidate_audit_summary.csv`: audit-gated candidate summary with distance, novelty, and readiness fields.
+- `experiments/next_submission_batch_plan.csv`: current conditional official-submission slot plan.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -998,13 +1000,14 @@ Done:
 - Create `scripts/next_batch_readiness_report.py` to combine pending official scores, running kernels, local surrogate scores, pseudo-CV, and plateau stability into a next-batch readiness report.
 - Download and audit Baidalin v1 outputs after completion; add SP45+Fleongg blend candidates to decision/readiness focus and keep them held pending official scores plus Degnonguidi v6.
 - Create `scripts/candidate_audit_summary.py` and use it to join readiness with per-candidate audit evidence; current readiness set has `MISSING_AUDIT = 0`.
+- Create `scripts/next_submission_batch_plan.py` to turn audited candidates into a conditional 4-5 slot plan with explicit release rules; current planned slots are held by external context.
 
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every future completed kernel output before official submission.
 2. Add a standard candidate output folder convention under ignored `artifacts/`.
 3. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/..._deep_pre_submit_audit.json`.
-4. When public scores arrive, re-run `scripts/candidate_audit_summary.py` and re-rank candidates by audit status, CV delta, distance to known submissions, novelty, and public score calibration.
+4. When public scores arrive, re-run `scripts/candidate_audit_summary.py` and `scripts/next_submission_batch_plan.py` before choosing official submission slots.
 
 ## Stop / Escalation Rules
 
