@@ -855,9 +855,12 @@ Tracked:
 - `reports/problem_study_2026-06-29.md`: problem study and official constraints.
 - `reports/local_surrogate_score_report.md`: latest surrogate summary.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
+- `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
+- `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
+- `experiments/plateau_quantile_sweep_split_scores.csv`: split-level plateau sweep diagnostics.
 - `experiments/big_signal_public_lb_tracker.csv`: prior project tracker.
 - `experiments/submission_ledger.csv`: official submission log and decisions.
 - `experiments/question_backlog.csv`: prioritized open questions and candidate option sets.
@@ -979,6 +982,7 @@ Done:
 - Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
 - Create `scripts/pseudo_test_cv.py` for repeated train-well hidden-suffix validation of method families before submission.
 - Create `scripts/build_plateau_recent_quantile_candidate.py` to turn the first pseudo-test-positive plateau rule into an auditable submission candidate.
+- Create `scripts/plateau_quantile_sweep.py` to test whether the plateau recent-quantile rule is stable across nearby local-validation parameters.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.

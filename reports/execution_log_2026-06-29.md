@@ -652,6 +652,41 @@ Decision:
 - Do not submit immediately while active-account baseline `54174151` and fleongg `54174876` are still pending.
 - Keep as a future information-slot candidate only after pending scores clarify the active anchor and if no higher-value completed reference output is available.
 
+## Plateau Stability Sweep
+
+Added:
+
+```text
+scripts/plateau_quantile_sweep.py
+```
+
+Run command:
+
+```text
+python3 scripts/plateau_quantile_sweep.py --data-dir data/sample
+```
+
+Sweep result:
+
+```text
+parameter combos: 36
+combos beating last_value weighted RMSE: 10
+beat rate: 0.278
+default combo rank: 1
+best combo: window=256, quantile=0.50, min_move=4.0, blend=1.0
+best weighted RMSE: 14.563557
+last_value weighted RMSE: 14.764009
+weighted delta: -0.200451
+win_rate_vs_last_value: 0.133333
+fallback_rate: 0.800000
+```
+
+Interpretation:
+
+- The default plateau candidate is the best tested setting and beats `last_value` on weighted pseudo-test RMSE.
+- The signal is sparse and not broadly dominant: only 10/36 nearby combinations beat `last_value`, and the winning setting improves only 2/15 split rows while falling back on most others.
+- Keep `plateau_recent_quantile_v1` as an information-slot candidate, not a strong promotion candidate, until pending official scores or fuller validation justify spending a submission.
+
 ## Henry Result
 
 Official submission `54162612` completed:
@@ -682,4 +717,4 @@ Records updated:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using an information slot.
+7. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

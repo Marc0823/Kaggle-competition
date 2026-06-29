@@ -136,6 +136,14 @@ python scripts\pseudo_test_cv.py --data-dir data\sample --output-dir experiments
 
 This evaluates method families, not completed `submission.csv` files. Use it to decide whether a structural idea can beat a simple visible-prefix baseline before turning that idea into a Kaggle notebook candidate.
 
+Sweep nearby plateau recent-quantile parameters on the same pseudo-test splits:
+
+```powershell
+python scripts\plateau_quantile_sweep.py --data-dir data\sample
+```
+
+Use this to check whether a plateau candidate is robust across nearby windows, quantiles, and movement thresholds before spending an official information slot.
+
 ## Pre-Submit Format Audit
 
 Before spending an official submission slot, audit the generated `submission.csv` against the current sample file:
