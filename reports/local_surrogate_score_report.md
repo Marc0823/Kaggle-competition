@@ -5,7 +5,7 @@ It cannot replace Kaggle Public LB, but it helps reject implausible candidates b
 
 ## Inputs
 - Data dir: `data/sample`
-- Valid submission files scored: `26`
+- Valid submission files scored: `27`
 - Known public-score calibration rows: `0`
 
 ## Important Limitation
@@ -44,8 +44,8 @@ No known public-score rows were matched.
 | artifacts/fleongg_branch_calibration_joezzzzz_v2/fleongg_pretrained_submission.csv | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.92105 |  |  | 0.124812 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v2/submission.csv | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.92105 |  |  | 0.124812 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/fleongg_pretrained_submission.csv | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.92669 |  |  | 0.123879 | 0 |
+| artifacts/plateau_recent_quantile_v1/submission.csv | plausible_submit_candidate | unknown_possible_but_risky | 4.72239 |  |  | 3.28521 | 7.06814e-05 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/sp45_projection_submission.csv | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 |  |  | 2.65079 | 0 |
-| artifacts/fleongg_branch_calibration_joezzzzz_v2/sp45_projection_submission.csv | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 |  |  | 2.65079 | 0 |
 
 ## Recommended Use
 

@@ -182,6 +182,12 @@ Generate a compact candidate decision table from local surrogate scores:
 python scripts\candidate_decision_report.py
 ```
 
+Build the plateau recent-quantile probe from an audited baseline:
+
+```powershell
+python scripts\build_plateau_recent_quantile_candidate.py --baseline artifacts\lucifer_baseline_repro_joezzzzz_v1\submission.csv --data-dir data\sample --output-dir artifacts\plateau_recent_quantile_v1
+```
+
 ## Submission Ledger
 
 Official submission outcomes should be recorded in:
@@ -241,7 +247,7 @@ Rejected or risky:
 
 ## Current High-Priority Directions
 
-1. Poll and audit `Degnonguidi 7.159` preflight v5 under `joezzzzz`.
+1. Poll and audit `Degnonguidi 7.159` preflight v6 under `joezzzzz`.
 2. Run and audit `Baidalin 7.201` only after its source-audit failures are fixed.
 3. Monitor active-account baseline and fleongg branch official submissions; treat Henry TabICL score `13.453` as negative artifact-stack calibration.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.

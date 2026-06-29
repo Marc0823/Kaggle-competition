@@ -9,7 +9,11 @@ Baseline comparator: `last_value`
 
 | method | splits | eval_rows | weighted_rmse | mean_delta_rmse_vs_baseline | win_rate_vs_baseline | fallback_rate |
 | --- | --- | --- | --- | --- | --- | --- |
+| plateau_recent_quantile | 15 | 57397 | 14.5636 | -0.407934 | 0.133333 | 0.8 |
 | last_value | 15 | 57397 | 14.764 | 0 | 0 | 0 |
+| gr_shift_plateau_quantile | 15 | 57397 | 15.3786 | 0.16478 | 0.266667 | 0.466667 |
+| plateau_gated_tail_linear | 15 | 57397 | 16.6411 | 2.18918 | 0 | 0.666667 |
+| gr_shift_plateau_gated | 15 | 57397 | 17.3177 | 3.06636 | 0.0666667 | 0.333333 |
 | gr_shift_tail_linear | 15 | 57397 | 50.0381 | 24.1649 | 0.266667 | 0.0666667 |
 | tail_linear_md | 15 | 57397 | 51.699 | 24.1515 | 0.266667 | 0 |
 | best_strat_linear | 15 | 57397 | 100.783 | 81.9628 | 0 | 0 |

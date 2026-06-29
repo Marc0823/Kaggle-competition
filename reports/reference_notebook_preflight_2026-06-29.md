@@ -301,6 +301,67 @@ Pushed:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 5
+status: ERROR
+official submission: none
+```
+
+## Version 5 Result
+
+Version 5 fixed the nested module path issue and successfully loaded the first artifact trainer:
+
+```text
+Loading lightgbm-1 from artifacts...
+  loaded with overall RMSE: 10.7668
+```
+
+Then prediction failed because the unpickled object did not have the visible replacement's expected model-list attribute:
+
+```text
+AttributeError: 'CVTrainer' object has no attribute 'models_'
+```
+
+Interpretation:
+
+- The module-path pickle compatibility layer is now sufficient for at least one artifact.
+- The next issue is loaded-object contract compatibility.
+- This is a higher-risk patch than module aliasing, so one compatibility attempt is justified; another unrelated contract failure should trigger an inference-core port/block decision.
+
+Downloaded log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v5/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+## Version 6 Patch
+
+Patched `CVTrainer.predict` in the ignored working notebook to use common model-list aliases:
+
+```text
+models_
+models
+estimators_
+estimators
+fold_models
+fold_models_
+trained_models
+trained_models_
+```
+
+If no compatible attribute exists, the patched method raises an error with the available loaded attributes.
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 6
 status: RUNNING
 official submission: none
 ```
@@ -340,4 +401,4 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 ## Current Decision
 
-Proceed with Degnonguidi no-submit preflight v5 and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v6 and hold Baidalin until its source audit failures are fixed.

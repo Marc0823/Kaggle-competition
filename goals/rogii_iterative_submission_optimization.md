@@ -978,6 +978,7 @@ Done:
 - Add `experiments/reference_submission_registry.csv` and `--reference-registry` support for repeatable known-output distance checks.
 - Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
 - Create `scripts/pseudo_test_cv.py` for repeated train-well hidden-suffix validation of method families before submission.
+- Create `scripts/build_plateau_recent_quantile_candidate.py` to turn the first pseudo-test-positive plateau rule into an auditable submission candidate.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.

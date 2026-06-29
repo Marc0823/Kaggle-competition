@@ -25,10 +25,11 @@ Decision meanings:
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/fleongg_pretrained_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.68124 | 0.125039 | 0 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v2/fleongg_pretrained_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.92105 | 0.124812 | 0 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/fleongg_pretrained_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.92669 | 0.123879 | 0 | 0 |
+| artifacts/plateau_recent_quantile_v1/submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | unknown_possible_but_risky | 4.72239 | 3.28521 | 7.06814e-05 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/sp45_projection_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | 0 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v2/sp45_projection_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | 0 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/sp45_projection_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | 0 |
 
 ## Recommendation
 
-6 focused candidate(s) are eligible for official submission after audit review.
+7 focused candidate(s) are eligible for official submission after audit review.

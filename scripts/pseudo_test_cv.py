@@ -107,6 +107,76 @@ def smooth_move(n: int, shift: float, alpha: float, max_move: float) -> np.ndarr
     return np.clip(alpha * shift * ramp, -max_move, max_move)
 
 
+def plateau_recent_quantile_prediction(
+    prefix_idx: np.ndarray,
+    eval_idx: np.ndarray,
+    y: np.ndarray,
+    args: argparse.Namespace,
+) -> Prediction:
+    prefix = prefix_idx[np.isfinite(y[prefix_idx])]
+    fallback = float(y[prefix[-1]])
+    if len(prefix) < args.plateau_window:
+        return Prediction("plateau_recent_quantile", np.full(len(eval_idx), fallback), "fallback", "short_prefix")
+
+    tail = y[prefix[-min(args.plateau_window, len(prefix)) :]]
+    target = float(np.nanquantile(tail, args.plateau_quantile))
+    raw_move = target - fallback
+    if not np.isfinite(raw_move) or abs(raw_move) < args.plateau_min_move:
+        detail = f"target={target:.4f};move={raw_move:.4f};min_move={args.plateau_min_move:.3f}"
+        return Prediction("plateau_recent_quantile", np.full(len(eval_idx), fallback), "fallback", detail)
+
+    move = float(np.clip(args.plateau_blend * raw_move, -args.max_move, args.max_move))
+    pred = np.full(len(eval_idx), fallback + move, dtype=float)
+    detail = (
+        f"window={args.plateau_window};quantile={args.plateau_quantile:.3f};"
+        f"target={target:.4f};move={move:.4f}"
+    )
+    return Prediction("plateau_recent_quantile", pred, "ok", detail)
+
+
+def plateau_gated_tail_prediction(
+    hw: pd.DataFrame,
+    prefix_idx: np.ndarray,
+    eval_idx: np.ndarray,
+    y: np.ndarray,
+    args: argparse.Namespace,
+) -> Prediction:
+    prefix = prefix_idx[np.isfinite(y[prefix_idx])]
+    fallback = float(y[prefix[-1]])
+    if len(prefix) < args.min_prefix_rows + args.gate_min_holdout_rows:
+        return Prediction("plateau_gated_tail_linear", np.full(len(eval_idx), fallback), "fallback", "short_prefix")
+
+    holdout_n = max(args.gate_min_holdout_rows, int(round(args.gate_holdout_frac * len(prefix))))
+    holdout_n = min(holdout_n, max(args.gate_min_holdout_rows, len(prefix) // 2))
+    train_idx = prefix[:-holdout_n]
+    valid_idx = prefix[-holdout_n:]
+    if len(train_idx) < args.min_prefix_rows or len(valid_idx) < args.gate_min_holdout_rows:
+        return Prediction("plateau_gated_tail_linear", np.full(len(eval_idx), fallback), "fallback", "short_holdout")
+
+    md = pd.to_numeric(hw["MD"], errors="coerce").to_numpy(float)
+    train_tail = train_idx[-min(args.tail_rows, len(train_idx)) :]
+    valid_fallback = float(y[train_idx[-1]])
+    valid_last = np.full(len(valid_idx), valid_fallback, dtype=float)
+    valid_line = predict_line(md[train_tail], y[train_tail], md[valid_idx], valid_fallback)
+
+    valid_y = y[valid_idx]
+    last_rmse = rmse(valid_last, valid_y)
+    line_rmse = rmse(valid_line, valid_y)
+    if not np.isfinite(line_rmse) or line_rmse + args.gate_margin_rmse >= last_rmse:
+        detail = f"holdout_last={last_rmse:.4f};holdout_line={line_rmse:.4f}"
+        return Prediction("plateau_gated_tail_linear", np.full(len(eval_idx), fallback), "fallback", detail)
+
+    eval_tail = prefix[-min(args.tail_rows, len(prefix)) :]
+    raw_eval_line = predict_line(md[eval_tail], y[eval_tail], md[eval_idx], fallback)
+    movement = np.clip(args.gate_slope_damp * (raw_eval_line - fallback), -args.max_move, args.max_move)
+    pred = fallback + movement
+    detail = (
+        f"holdout_last={last_rmse:.4f};holdout_line={line_rmse:.4f};"
+        f"damp={args.gate_slope_damp:.3f};max_move={float(np.max(np.abs(movement))):.3f}"
+    )
+    return Prediction("plateau_gated_tail_linear", pred, "ok", detail)
+
+
 def best_strat_prediction(hw: pd.DataFrame, prefix_idx: np.ndarray, eval_idx: np.ndarray, y: np.ndarray) -> Prediction:
     prefix = prefix_idx[np.isfinite(y[prefix_idx])]
     if len(prefix) < 80:
@@ -251,16 +321,46 @@ def run_split(
     tail_prefix_idx = prefix_idx[-min(args.tail_rows, len(prefix_idx)) :]
     tail_linear = predict_line(md[tail_prefix_idx], true_tvt[tail_prefix_idx], md[eval_idx], fallback)
     full_linear = predict_line(md[prefix_idx], true_tvt[prefix_idx], md[eval_idx], fallback)
+    plateau_quantile = plateau_recent_quantile_prediction(prefix_idx, eval_idx, true_tvt, args)
+    plateau_gated = plateau_gated_tail_prediction(hw, prefix_idx, eval_idx, true_tvt, args)
     strat = best_strat_prediction(hw, prefix_idx, eval_idx, true_tvt)
 
     predictions = [
         Prediction("last_value", np.full(len(eval_idx), fallback, dtype=float)),
         Prediction("tail_linear_md", tail_linear),
         Prediction("full_linear_md", full_linear),
+        plateau_quantile,
+        plateau_gated,
         strat,
         gr_shift_prediction(
             "gr_shift_tail_linear",
             tail_linear,
+            hw,
+            tw,
+            prefix_idx,
+            eval_idx,
+            true_tvt,
+            args.alpha,
+            args.max_move,
+            args.max_prefix_shift_abs,
+            args.min_eval_improvement,
+        ),
+        gr_shift_prediction(
+            "gr_shift_plateau_quantile",
+            plateau_quantile.values,
+            hw,
+            tw,
+            prefix_idx,
+            eval_idx,
+            true_tvt,
+            args.alpha,
+            args.max_move,
+            args.max_prefix_shift_abs,
+            args.min_eval_improvement,
+        ),
+        gr_shift_prediction(
+            "gr_shift_plateau_gated",
+            plateau_gated.values,
             hw,
             tw,
             prefix_idx,
@@ -434,6 +534,14 @@ def main() -> int:
     parser.add_argument("--min-prefix-rows", type=int, default=200)
     parser.add_argument("--min-eval-rows", type=int, default=200)
     parser.add_argument("--tail-rows", type=int, default=256)
+    parser.add_argument("--plateau-window", type=int, default=256)
+    parser.add_argument("--plateau-quantile", type=float, default=0.50)
+    parser.add_argument("--plateau-min-move", type=float, default=4.0)
+    parser.add_argument("--plateau-blend", type=float, default=1.0)
+    parser.add_argument("--gate-holdout-frac", type=float, default=0.20)
+    parser.add_argument("--gate-min-holdout-rows", type=int, default=80)
+    parser.add_argument("--gate-margin-rmse", type=float, default=0.25)
+    parser.add_argument("--gate-slope-damp", type=float, default=0.35)
     parser.add_argument("--alpha", type=float, default=0.20)
     parser.add_argument("--max-move", type=float, default=12.0)
     parser.add_argument("--max-prefix-shift-abs", type=float, default=10.0)
