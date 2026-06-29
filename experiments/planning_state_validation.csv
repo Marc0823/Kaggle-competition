@@ -6,6 +6,7 @@ input_plan_exists,ERROR,PASS,next submission batch plan CSV is readable
 input_release_gate_exists,ERROR,PASS,submission release gate CSV is readable
 input_artifact_manifest_summary_exists,ERROR,PASS,candidate artifact manifest summary CSV is readable
 input_final_submission_package_summary_exists,ERROR,PASS,final submission package summary CSV is readable
+input_result_application_plan_exists,ERROR,PASS,result application plan CSV is readable
 planned_slots_within_daily_limit,ERROR,PASS,planned slots=5; daily official limit=5
 planned_slots_have_release_rows,ERROR,PASS,plan-only=[]; release-only=[]
 planned_slots_have_audit_rows,ERROR,PASS,missing audit rows=[]
@@ -22,4 +23,5 @@ planned_slots_have_passing_audit_gate,ERROR,PASS,nonpassing planned audit rows=0
 planned_slots_have_valid_artifact_manifests,ERROR,PASS,nonpassing planned manifest rows=0; manifest rows=5
 planned_slots_have_no_final_package_failures,ERROR,PASS,failing planned package rows=0; package rows=5
 blocked_release_blocks_final_packaging,ERROR,PASS,package gates while external context pending=['BLOCKED_RELEASE_GATE']
+pending_context_has_result_application_blockers,ERROR,PASS,blocking result-application rows=4
 no_slots_ready_for_submit,INFO,PASS,no planned slot is currently releasable

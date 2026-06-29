@@ -25,7 +25,8 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | release_gate_counts | BLOCKED_EXTERNAL_CONTEXT=5 |
 | final_package_gate_counts | BLOCKED_RELEASE_GATE=5 |
 | result_branch_rules | 7 |
-| planning_validation_status_counts | PASS=24 |
+| result_application_status_counts | WAIT=4; PASS=1 |
+| planning_validation_status_counts | PASS=26 |
 | planning_validation_error_failures | 0 |
 
 ## Interpretation
@@ -44,5 +45,6 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 - `reports/final_submission_package_report.md`
 - `reports/planning_state_validation_report.md`
 - `reports/result_branch_matrix.md`
+- `reports/result_application_plan.md`
 - `experiments/poll_refresh_summary.csv`
 - `reports/poll_refresh_report.md`

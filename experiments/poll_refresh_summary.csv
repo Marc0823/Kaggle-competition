@@ -18,5 +18,6 @@ artifact_manifest_gate_counts,PASS_SOURCE_POINTER=5
 release_gate_counts,BLOCKED_EXTERNAL_CONTEXT=5
 final_package_gate_counts,BLOCKED_RELEASE_GATE=5
 result_branch_rules,7
-planning_validation_status_counts,PASS=24
+result_application_status_counts,WAIT=4; PASS=1
+planning_validation_status_counts,PASS=26
 planning_validation_error_failures,0

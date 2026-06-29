@@ -107,6 +107,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/final_submission_package_report.md`",
             "- `reports/planning_state_validation_report.md`",
             "- `reports/result_branch_matrix.md`",
+            "- `reports/result_application_plan.md`",
             f"- `{output_csv.as_posix()}`",
             f"- `{report.as_posix()}`",
         ]
@@ -191,6 +192,9 @@ def main() -> int:
     }
 
     write_outputs(summary, args.summary_csv, args.report)
+    run_checked([sys.executable, "scripts/result_application_plan.py"])
+    result_application = safe_read_csv(Path("experiments/result_application_plan.csv"))
+    summary["result_application_status_counts"] = count_values(result_application, "status")
     run_checked([sys.executable, "scripts/validate_planning_state.py"])
     validation = safe_read_csv(Path("experiments/planning_state_validation.csv"))
     error_failures = 0

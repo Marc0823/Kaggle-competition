@@ -277,6 +277,14 @@ python scripts\final_submission_package.py
 
 This command does not submit to Kaggle. When release gates clear, use `--prepare --planned-slot N` only after final review to copy the exact selected output into the ignored candidate artifact folder and rerun the deep audit.
 
+After every poll, inspect the result application plan:
+
+```powershell
+python scripts\result_application_plan.py
+```
+
+This translates pending scores, kernel state, ledger dry-run updates, release gates, and final-package gates into the next concrete action. It does not edit ledgers or submit to Kaggle.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

@@ -18,6 +18,7 @@ DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
+DEFAULT_RESULT_APPLICATION = Path("experiments/result_application_plan.csv")
 DEFAULT_OUTPUT_CSV = Path("experiments/planning_state_validation.csv")
 DEFAULT_REPORT = Path("reports/planning_state_validation_report.md")
 
@@ -81,6 +82,7 @@ def validate(
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
+    result_application: pd.DataFrame,
 ) -> pd.DataFrame:
     checks: list[dict[str, Any]] = []
 
@@ -108,6 +110,13 @@ def validate(
         "ERROR",
         status_from_condition(not final_package.empty),
         "final submission package summary CSV is readable",
+    )
+    add(
+        checks,
+        "input_result_application_plan_exists",
+        "ERROR",
+        status_from_condition(not result_application.empty),
+        "result application plan CSV is readable",
     )
 
     plan_paths = set(plan.get("path", pd.Series(dtype=str)).astype(str))
@@ -264,6 +273,26 @@ def validate(
                 f"package gates while external context pending={sorted(package_gates)}",
             )
 
+    if "status" in result_application.columns:
+        result_statuses = set(result_application["status"].astype(str))
+        if kernel_updates or submission_updates:
+            add(
+                checks,
+                "detected_updates_have_application_review_step",
+                "ERROR",
+                status_from_condition("REVIEW_REQUIRED" in result_statuses),
+                f"result application statuses={sorted(result_statuses)}",
+            )
+        if pending or running or batch_status == "WAIT_EXTERNAL_CONTEXT":
+            blocking_rows = result_application[result_application.get("blocks_release", pd.Series(dtype=bool)).astype(str) == "True"]
+            add(
+                checks,
+                "pending_context_has_result_application_blockers",
+                "ERROR",
+                status_from_condition(not blocking_rows.empty),
+                f"blocking result-application rows={len(blocking_rows)}",
+            )
+
     if "release_gate" in release.columns:
         ready_rows = release[release["release_gate"].astype(str) == "READY"]
         if not ready_rows.empty:
@@ -323,6 +352,7 @@ def main() -> int:
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
+    parser.add_argument("--result-application", type=Path, default=DEFAULT_RESULT_APPLICATION)
     parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args()
@@ -335,6 +365,7 @@ def main() -> int:
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),
+        result_application=safe_read_csv(args.result_application),
     )
     args.output_csv.parent.mkdir(parents=True, exist_ok=True)
     checks.to_csv(args.output_csv, index=False)

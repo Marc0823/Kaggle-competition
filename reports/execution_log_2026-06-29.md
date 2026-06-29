@@ -1184,6 +1184,30 @@ Decision:
 - While external context is pending, all final packages must remain `BLOCKED_RELEASE_GATE`.
 - After release gates clear, `scripts/final_submission_package.py --prepare --planned-slot N` can copy the exact selected local output into the ignored candidate folder and rerun deep audit, without submitting to Kaggle.
 
+## Result Application Plan
+
+Added:
+
+```text
+scripts/result_application_plan.py
+experiments/result_application_plan.csv
+reports/result_application_plan.md
+```
+
+Current validation:
+
+```text
+result_application_status_counts: WAIT=4; PASS=1
+planning validation: PASS=26, error_failures=0
+```
+
+Decision:
+
+- The result application plan is now part of `scripts/poll_and_refresh_state.py`.
+- It converts the current poll state into explicit action rows for ledger updates, baseline anchor, Fleongg calibration, Degnonguidi reference, and release sequence.
+- Current state has no unapplied ledger updates, but baseline score, Fleongg score, and Degnonguidi v6 are still pending/running, so release remains blocked.
+- `scripts/validate_planning_state.py` now requires result-application blockers to exist while external context is pending.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1197,3 +1221,4 @@ Decision:
 9. Use `scripts/init_candidate_artifact.py` before promoting any new locally generated output into the official-submission queue.
 10. Require `reports/candidate_artifact_manifest_report.md` to show no `FAIL_*` gates before releasing any official slot.
 11. Require `reports/final_submission_package_report.md` to show the selected slot can be packaged, then prepare it locally before any official Kaggle submission.
+12. Use `reports/result_application_plan.md` as the first stop after any new score/kernel update before editing ledgers or releasing slots.
