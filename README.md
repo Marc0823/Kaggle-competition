@@ -325,6 +325,14 @@ Download kernel output:
 kaggle kernels output leemarc223/<kernel-slug> -p artifacts\<output-folder>
 ```
 
+Download or audit a completed kernel output through the project guardrails:
+
+```powershell
+python scripts\audit_kernel_output.py --kernel joezzzzz/<kernel-slug> --output-dir artifacts\<output-folder> --kaggle-bin kaggle --data-dir data\sample --reference-registry experiments\reference_submission_registry.csv
+```
+
+For an already downloaded folder, add `--skip-download`.
+
 Submit a code-competition notebook output:
 
 ```powershell

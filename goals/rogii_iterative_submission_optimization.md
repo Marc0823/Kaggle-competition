@@ -978,6 +978,7 @@ Done:
 - Create `scripts/pre_submit_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz_v1` against `data/sample/sample_submission.csv`.
 - Extend `scripts/pre_submit_audit.py` with optional anchor-continuity, jump/curvature, typewell-range, and reference-distance checks.
+- Create `scripts/audit_kernel_output.py` to download or reuse kernel outputs and run the standard deep pre-submit/reference-distance audit.
 - Add `experiments/reference_submission_registry.csv` and `--reference-registry` support for repeatable known-output distance checks.
 - Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
 - Create `scripts/sync_kernel_ledger.py` to poll Kaggle kernel statuses into `experiments/kernel_run_ledger.csv` after dry-run review.

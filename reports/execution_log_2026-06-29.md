@@ -772,6 +772,41 @@ Decision:
 - Keep the default as dry-run; use `--apply` only after reviewing changed statuses.
 - If a row reaches `COMPLETE`, the script can set `next_action` to `download_output_and_deep_audit`; if it reaches `ERROR`, `next_action` becomes `download_log_and_triage`.
 
+## Kernel Output Audit Wrapper
+
+Added:
+
+```text
+scripts/audit_kernel_output.py
+```
+
+Purpose:
+
+- download a completed Kaggle kernel output folder, unless `--skip-download` is provided;
+- locate exactly one `submission.csv`;
+- run `scripts/pre_submit_audit.py` with `--data-dir` and `--reference-registry`;
+- write an optional compact JSON summary for the kernel output folder.
+
+Validation command:
+
+```text
+python3 scripts/audit_kernel_output.py --kernel joezzzzz/rogii-lucifer-baseline-repro-codex --output-dir artifacts/lucifer_baseline_repro_joezzzzz_v1 --skip-download --data-dir data/sample --reference-registry experiments/reference_submission_registry.csv --summary-out artifacts/lucifer_baseline_repro_joezzzzz_v1/kernel_output_audit_summary.json
+```
+
+Validation result:
+
+```text
+audit_status: PASS
+risk_status: WARN only because optional historical reference artifacts are absent locally
+rows: 14151
+sha256: fdf4a8175b6ec6a70c9b78fd6916ac3c317e43f7e9c08bbca87cd02314801ca9
+```
+
+Decision:
+
+- Use this wrapper when Degnonguidi v6 or Baidalin v1 becomes `COMPLETE`.
+- Do not make an official submission from a kernel output unless this wrapper's audit result is `PASS` and any warnings are reviewed.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
