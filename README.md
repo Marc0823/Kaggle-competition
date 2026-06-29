@@ -263,6 +263,12 @@ python scripts\init_candidate_artifact.py --candidate-id candidate_folder --fami
 
 The required local files and release checklist are documented in `reports/candidate_artifact_convention.md`.
 
+Check planned-slot manifests before release:
+
+```powershell
+python scripts\candidate_artifact_manifest_summary.py
+```
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

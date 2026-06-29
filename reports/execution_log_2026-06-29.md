@@ -1137,6 +1137,29 @@ Decision:
 - Downloaded multi-output kernel folders can remain under `artifacts/kernel_outputs/`; when one file is promoted, create a manifest folder that points back to that selected source file.
 - The convention keeps generated submissions out of Git while making every official candidate traceable through audit summary, release gate, planning validation, and submission ledger.
 
+## Candidate Artifact Manifest Validation
+
+Added:
+
+```text
+scripts/candidate_artifact_manifest_summary.py
+experiments/candidate_artifact_manifest_summary.csv
+reports/candidate_artifact_manifest_report.md
+```
+
+Current validation:
+
+```text
+artifact_manifest_gate_counts: PASS_SOURCE_POINTER=5
+planning validation: PASS=20, error_failures=0
+```
+
+Decision:
+
+- The manifest summary is now part of `scripts/poll_and_refresh_state.py`.
+- `scripts/validate_planning_state.py` now requires every planned slot to have a manifest row and a non-failing manifest gate.
+- Current planned slots all point to exact selected local outputs and have existing audit JSON evidence; they remain blocked only by external Kaggle context.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1148,3 +1171,4 @@ Decision:
 7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md`, `reports/planning_state_validation_report.md`, and `reports/result_branch_matrix.md`.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.
 9. Use `scripts/init_candidate_artifact.py` before promoting any new locally generated output into the official-submission queue.
+10. Require `reports/candidate_artifact_manifest_report.md` to show no `FAIL_*` gates before releasing any official slot.

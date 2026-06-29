@@ -16,6 +16,7 @@ DEFAULT_READINESS = Path("experiments/next_batch_readiness.csv")
 DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
 DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
+DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_OUTPUT_CSV = Path("experiments/planning_state_validation.csv")
 DEFAULT_REPORT = Path("reports/planning_state_validation_report.md")
 
@@ -77,6 +78,7 @@ def validate(
     audit: pd.DataFrame,
     plan: pd.DataFrame,
     release: pd.DataFrame,
+    manifest: pd.DataFrame,
 ) -> pd.DataFrame:
     checks: list[dict[str, Any]] = []
 
@@ -91,11 +93,19 @@ def validate(
     add(checks, "input_audit_summary_exists", "ERROR", status_from_condition(not audit.empty), "candidate audit summary CSV is readable")
     add(checks, "input_plan_exists", "ERROR", status_from_condition(not plan.empty), "next submission batch plan CSV is readable")
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
+    add(
+        checks,
+        "input_artifact_manifest_summary_exists",
+        "ERROR",
+        status_from_condition(not manifest.empty),
+        "candidate artifact manifest summary CSV is readable",
+    )
 
     plan_paths = set(plan.get("path", pd.Series(dtype=str)).astype(str))
     release_paths = set(release.get("path", pd.Series(dtype=str)).astype(str))
     audit_paths = set(audit.get("path", pd.Series(dtype=str)).astype(str))
     readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
+    manifest_paths = set(manifest.get("path", pd.Series(dtype=str)).astype(str))
 
     add(
         checks,
@@ -124,6 +134,13 @@ def validate(
         "ERROR",
         status_from_condition(plan_paths.issubset(readiness_paths)),
         f"missing readiness rows={sorted(plan_paths - readiness_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_artifact_manifest_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(manifest_paths)),
+        f"missing manifest rows={sorted(plan_paths - manifest_paths)[:5]}",
     )
     add(
         checks,
@@ -199,6 +216,17 @@ def validate(
             f"nonpassing planned audit rows={len(bad_audit)}",
         )
 
+    if "manifest_gate" in manifest.columns:
+        planned_manifest = manifest[manifest["path"].astype(str).isin(plan_paths)].copy()
+        bad_manifest = planned_manifest[~planned_manifest["manifest_gate"].astype(str).str.startswith("PASS")]
+        add(
+            checks,
+            "planned_slots_have_valid_artifact_manifests",
+            "ERROR",
+            status_from_condition(bad_manifest.empty and len(planned_manifest) == len(plan_paths)),
+            f"nonpassing planned manifest rows={len(bad_manifest)}; manifest rows={len(planned_manifest)}",
+        )
+
     if "release_gate" in release.columns:
         ready_rows = release[release["release_gate"].astype(str) == "READY"]
         if not ready_rows.empty:
@@ -256,6 +284,7 @@ def main() -> int:
     parser.add_argument("--audit", type=Path, default=DEFAULT_AUDIT)
     parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
+    parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args()
@@ -266,6 +295,7 @@ def main() -> int:
         audit=safe_read_csv(args.audit),
         plan=safe_read_csv(args.plan),
         release=safe_read_csv(args.release),
+        manifest=safe_read_csv(args.manifest_summary),
     )
     args.output_csv.parent.mkdir(parents=True, exist_ok=True)
     checks.to_csv(args.output_csv, index=False)

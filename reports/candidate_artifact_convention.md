@@ -33,6 +33,18 @@ Write the local manifest:
 python3 scripts/init_candidate_artifact.py --candidate-id baidalin_sp45_projection_v1 --family projection_branch --source-path artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/sp45_projection_submission.csv
 ```
 
+Validate manifests for the current planned official-submission slots:
+
+```bash
+python3 scripts/candidate_artifact_manifest_summary.py
+```
+
+The routine polling command also refreshes this report:
+
+```bash
+python3 scripts/poll_and_refresh_state.py
+```
+
 ## Required Release Evidence
 
 Before an official Kaggle submission:
@@ -46,9 +58,10 @@ python3 scripts/pre_submit_audit.py artifacts/<candidate_id>/submission.csv --da
 
 3. `experiments/candidate_audit_summary.csv` includes the candidate with a non-failing audit gate.
 4. `python3 scripts/poll_and_refresh_state.py` has been rerun after the latest Kaggle status check.
-5. `reports/submission_release_gate_report.md` has no `BLOCKED_*` or `REVIEW_LEDGER_UPDATES` result for the selected slot.
-6. `reports/planning_state_validation_report.md` reports zero error failures.
-7. `experiments/submission_ledger.csv` is updated after the official submission.
+5. `reports/candidate_artifact_manifest_report.md` has no `FAIL_*` manifest gate for the selected slot.
+6. `reports/submission_release_gate_report.md` has no `BLOCKED_*` or `REVIEW_LEDGER_UPDATES` result for the selected slot.
+7. `reports/planning_state_validation_report.md` reports zero error failures.
+8. `experiments/submission_ledger.csv` is updated after the official submission.
 
 ## Current Decision
 
