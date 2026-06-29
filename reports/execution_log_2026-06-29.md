@@ -112,11 +112,17 @@ This consumes the fourth official submission slot for 2026-06-29 UTC and answers
   - Added reusable local format/sample audit and verified it against the baseline output.
 - `scripts/notebook_source_audit.py`
   - Added reusable source scan for hidden-test compatibility risks and verified it against the baseline notebook.
+- `reports/gr_typewell_candidate_plan_2026-06-29.md`
+  - Added the first structural candidate design: gated light GR/typewell correction on top of the audited baseline.
+- `scripts/build_gr_typewell_light_candidate.py`
+  - Added the first local builder for gated light GR/typewell correction.
+  - Generated `artifacts/gr_typewell_light_alpha010_v1/submission.csv` locally; format audit passed.
+  - Surrogate classified it as `near_duplicate_low_upside` with RMSE delta `0.3495` vs the active-account baseline.
 
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-4. Continue Q20260629-B02 by implementing the first light GR/typewell correction candidate.
+4. Wait for `54174151` before deciding whether to run alpha `0.20`, port the GR builder into a Kaggle notebook, or hold the GR branch.
 5. Use both audit scripts before the next official batch.

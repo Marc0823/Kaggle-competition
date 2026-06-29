@@ -138,6 +138,12 @@ python scripts\notebook_source_audit.py kaggle_kernel_lucifer_wellbore_wizard_pf
 
 This source scan flags hardcoded visible wells, fixed visible row counts, static replay patterns, and unsafe train/test row-alignment copies. It is a guardrail, not a proof of model quality.
 
+Build the first local GR/typewell structural probe from an audited baseline:
+
+```powershell
+python scripts\build_gr_typewell_light_candidate.py --baseline artifacts\lucifer_baseline_repro_joezzzzz_v1\submission.csv --data-dir data\sample --output-dir artifacts\gr_typewell_light_alpha010_v1 --alpha 0.10 --max-move 8.0
+```
+
 ## Submission Ledger
 
 Official submission outcomes should be recorded in:

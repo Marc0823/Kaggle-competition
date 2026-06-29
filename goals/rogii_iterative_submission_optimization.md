@@ -841,6 +841,8 @@ Done:
 - Verify it on `lucifer_baseline_repro_joezzzzz_v1` against `data/sample/sample_submission.csv`.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
+- Create `scripts/build_gr_typewell_light_candidate.py`.
+- Generate and audit `gr_typewell_light_alpha010_v1`.
 
 Next:
 
