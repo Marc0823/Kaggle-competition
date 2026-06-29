@@ -855,12 +855,14 @@ Tracked:
 - `reports/problem_study_2026-06-29.md`: problem study and official constraints.
 - `reports/local_surrogate_score_report.md`: latest surrogate summary.
 - `reports/next_batch_readiness_report.md`: latest combined view of pending scores, running kernels, and local candidate readiness.
+- `reports/poll_refresh_report.md`: latest safe polling pass plus refreshed planning report status.
 - `reports/candidate_audit_summary_report.md`: audit-gated candidate evidence joined to next-batch readiness.
 - `reports/next_submission_batch_plan.md`: conditional 4-5 slot plan built from audited candidates and current blockers.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/next_batch_readiness.csv`: ranked next-batch candidate readiness table.
+- `experiments/poll_refresh_summary.csv`: latest safe polling pass summary.
 - `experiments/candidate_audit_summary.csv`: audit-gated candidate summary with distance, novelty, and readiness fields.
 - `experiments/next_submission_batch_plan.csv`: current conditional official-submission slot plan.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
@@ -1001,13 +1003,14 @@ Done:
 - Download and audit Baidalin v1 outputs after completion; add SP45+Fleongg blend candidates to decision/readiness focus and keep them held pending official scores plus Degnonguidi v6.
 - Create `scripts/candidate_audit_summary.py` and use it to join readiness with per-candidate audit evidence; current readiness set has `MISSING_AUDIT = 0`.
 - Create `scripts/next_submission_batch_plan.py` to turn audited candidates into a conditional 4-5 slot plan with explicit release rules; current planned slots are held by external context.
+- Create `scripts/poll_and_refresh_state.py` to run one safe polling pass and refresh readiness, audit summary, and batch plan reports.
 
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every future completed kernel output before official submission.
 2. Add a standard candidate output folder convention under ignored `artifacts/`.
 3. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/..._deep_pre_submit_audit.json`.
-4. When public scores arrive, re-run `scripts/candidate_audit_summary.py` and `scripts/next_submission_batch_plan.py` before choosing official submission slots.
+4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots.
 
 ## Stop / Escalation Rules
 

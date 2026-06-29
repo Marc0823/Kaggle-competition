@@ -973,6 +973,45 @@ Decision:
 - Release depends on pending official scores and/or explicit Degnonguidi v6 deferral/completion.
 - If Degnonguidi v6 completes and audits cleanly, insert its best distinct output ahead of lower-priority blend or plateau slots.
 
+## Poll And Refresh Wrapper
+
+Added:
+
+```text
+scripts/poll_and_refresh_state.py
+```
+
+Run command:
+
+```text
+python3 scripts/poll_and_refresh_state.py
+```
+
+Outputs:
+
+```text
+experiments/poll_refresh_summary.csv
+reports/poll_refresh_report.md
+```
+
+Current safe polling summary:
+
+```text
+kernel_updates_detected: 0
+submission_updates_detected: 0
+pending_official_submissions: 2
+running_kernels: 1
+batch_status: WAIT_EXTERNAL_CONTEXT
+planned_slots: 5
+current_action_counts: do_not_submit_yet=5
+```
+
+Decision:
+
+- Use this wrapper as the default polling pass.
+- The wrapper does not submit to Kaggle and uses dry-run submission syncing by default.
+- If dry-run detects updates, review them and rerun with explicit apply flags before spending official slots.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -981,5 +1020,5 @@ Decision:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Re-run `scripts/candidate_audit_summary.py` and `scripts/next_submission_batch_plan.py` before spending official slots.
+7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

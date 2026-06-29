@@ -141,6 +141,21 @@ experiments/next_batch_readiness.csv
 reports/next_batch_readiness_report.md
 ```
 
+Run the safe polling and refresh pass:
+
+```powershell
+python scripts\poll_and_refresh_state.py
+```
+
+This checks Kaggle kernel/submission status in dry-run mode by default, then refreshes readiness, audit summary, and the conditional submission batch plan.
+
+Outputs:
+
+```text
+experiments/poll_refresh_summary.csv
+reports/poll_refresh_report.md
+```
+
 Summarize audit evidence for the current readiness candidates:
 
 ```powershell
