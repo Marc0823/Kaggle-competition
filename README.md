@@ -63,6 +63,7 @@ Use this as the working contract for iterative submission improvement:
 5. Submit only candidates that pass the gate and answer a specific experiment question.
 6. Record every official result in `experiments/submission_ledger.csv`.
 7. Record batch questions and option choices in `experiments/question_decision_log.csv`.
+8. Keep the next concrete questions in `experiments/question_backlog.csv` so each batch begins with a decision, not a vague modeling tweak.
 
 Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day; the operating target is to use 4-5 slots when enough audited, informative candidates exist, with every submission treated as a planned experiment.
 
@@ -136,6 +137,14 @@ experiments/question_decision_log.csv
 ```
 
 Use it to capture the concrete question, candidate options, selected option, evidence needed, result, and next question for each experiment batch.
+
+Open strategic questions should be maintained in:
+
+```text
+experiments/question_backlog.csv
+```
+
+Use this file as the live queue of what to decide next. Each row includes the question type, decision effect, options, selected path, dependencies, and review trigger.
 
 ## Current Public LB Notes
 

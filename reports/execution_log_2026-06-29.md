@@ -64,8 +64,12 @@ This is a kernel run only. It does not consume an official competition submissio
   - Marked the question-driven process setup as complete.
   - Recorded the baseline reproduction kernel push.
   - Opened the first structural candidate question.
+- `experiments/question_backlog.csv`
+  - Added the prioritized open question queue for baseline reproduction, GR/typewell correction, gating, calibration, robustness, and reference-notebook reproduction.
 - `experiments/daily_submission_plan.csv`
   - Captures the current 5-slot plan, including already-used official submissions and remaining candidate preparation.
+- `goals/rogii_iterative_submission_optimization.md`
+  - Added the continuous question engine, model idea sources, anti-overfit rules, branch rules, and near-term Batch A-D roadmap.
 
 ## Next Actions
 

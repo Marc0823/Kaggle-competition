@@ -57,6 +57,63 @@ Every official submission must answer a specific experimental question, such as:
 
 Do not submit candidates only because they are new. Do submit enough qualified, diverse candidates to learn from public-score feedback every UTC day.
 
+## Continuous Question Engine
+
+The loop should always maintain a small queue of concrete questions. Work should not begin with "try another model"; it should begin with a question that can change the next decision.
+
+At all times keep:
+
+- 3-5 open strategic questions;
+- 2-4 candidate options for the highest-priority question;
+- one selected option set for the current batch;
+- a written rule for what to do if the result improves, worsens, fails audit, or stays pending.
+
+Every question should have one of these decision effects:
+
+| decision effect | meaning |
+| --- | --- |
+| build | create a new candidate/model family |
+| block | reject an unsafe or low-value path |
+| calibrate | tune a low-dimensional choice |
+| route | choose between methods per well or per condition |
+| promote | move a candidate into the ensemble pool |
+| demote | remove or downweight a candidate |
+
+If a proposed experiment does not have a clear decision effect, rewrite the question before spending time or submissions.
+
+## Batch Decision Flow
+
+Each batch follows this exact sequence:
+
+1. Generate questions.
+   - Start from the previous batch review.
+   - Add questions from public-score surprises, CV failures, audit failures, and new public notebook ideas.
+   - Split vague questions into answerable subquestions.
+
+2. List options.
+   - For the top question, list at least 2 options when possible.
+   - Include the conservative baseline-adjacent option, the structural/high-upside option, and the cheapest diagnostic option.
+
+3. Score options.
+   - Use the option selection rubric below.
+   - Prefer options that create reusable knowledge even if they are not the highest expected score.
+   - Avoid spending multiple slots on variants that answer the same question.
+
+4. Select the batch.
+   - Choose one primary option and, when useful, 1-3 support options.
+   - Map selected options to Kaggle kernel runs, local CV jobs, or official submissions.
+   - Predefine the branch decision for each possible result.
+
+5. Execute and record.
+   - Run kernels and audits first.
+   - Submit only audited, informative candidates.
+   - Update ledgers immediately when a kernel starts, output is downloaded, a submission is made, or a score appears.
+
+6. Review and regenerate.
+   - Summarize what changed.
+   - Close or update answered questions.
+   - Create the next 3-5 questions before starting the next batch.
+
 ## Operating Loop
 
 This project should run as a question-driven research loop, not as a stream of disconnected notebook edits.
@@ -248,6 +305,114 @@ Expected outputs:
 - next batch plan;
 - no model changes unless needed.
 
+## Model Idea Sources
+
+Do not rely only on parameter tuning. New candidates should come from several independent idea sources so the daily 4-5 submissions are informative and not just public-LB overfit.
+
+### 1. Reference Notebook Reproduction
+
+Use public high-score notebooks as anchors, but fork them into the active account and audit hidden compatibility before trusting them.
+
+Useful when asking:
+
+- Can we reproduce a known public score under `joezzzzz`?
+- Is a notebook truly hidden-compatible, or did it only work on visible examples?
+- Does a public notebook add signal independent from the `7.235` baseline?
+
+Typical outputs:
+
+- baseline reproduction kernel;
+- clean active-account fork;
+- exact output distance vs known scored references;
+- eligibility decision for official submission.
+
+### 2. Physics And Sequence Constraints
+
+Create candidates from the structure of TVT trajectories instead of arbitrary model changes.
+
+Idea families:
+
+- anchor-continuity correction from the last known `TVT_input`;
+- monotonicity and slope bounds;
+- curvature/smoothing constraints;
+- particle filtering or beam search around physically plausible paths;
+- fallback to the current `7.235` trajectory when a correction is uncertain.
+
+Useful question:
+
+- Which physical constraint fixes high-error wells without damaging already-good wells?
+
+### 3. GR / Typewell Alignment
+
+Use geological signal alignment as a structural source of new information.
+
+Idea families:
+
+- GR-to-typewell correlation or dynamic time warping;
+- per-well alignment confidence;
+- local TVT shifts derived from strongest GR matches;
+- missing-GR robustness fallback;
+- light correction on top of the baseline rather than a full replacement.
+
+Useful question:
+
+- Does GR/typewell alignment add independent signal beyond the physics/PF baseline?
+
+### 4. Pseudo-Test Residual Learning
+
+Train simple correction models on repeated grouped train pseudo-tests, not on public score directly.
+
+Allowed model classes:
+
+- shallow residual models;
+- low-dimensional correction rules;
+- per-well class routers;
+- uncertainty estimators for gating.
+
+Avoid high-capacity models that only explain a few public-score observations.
+
+Useful question:
+
+- Can pseudo-test residual patterns identify when the baseline should be corrected?
+
+### 5. Ensemble And Gating
+
+Combine only vetted candidates.
+
+Idea families:
+
+- global blend among 2-3 known-good methods;
+- weighted median or trimmed mean;
+- per-well gate based on alignment confidence, shape risk, and model disagreement;
+- safe fallback to `7.235` when confidence is low.
+
+Useful question:
+
+- Does a gate improve over a global blend by applying risky signal only where evidence is strong?
+
+### 6. Negative Controls
+
+Occasionally use diagnostic candidates to calibrate the validation framework, but do not waste official submissions on already-known failures.
+
+Useful when asking:
+
+- Does our audit detect the kind of failure that caused `20.579`, `11551.955`, or `15357.198`?
+- Does pseudo-CV warn us before a public-score disaster?
+
+## Anti-Overfit Rules
+
+Public score should guide low-dimensional decisions, not become the training target.
+
+Rules:
+
+- A parameter sweep should change only 1-2 dimensions at a time.
+- Every sweep must be attached to a structural question.
+- Do not run a second sweep in the same direction unless the first sweep gives a monotonic or interpretable signal.
+- If public score improves but pseudo-CV and physics audits disagree, mark the result as `public_promising_private_risk` and require a robustness follow-up.
+- If public score worsens but CV improves, inspect whether the candidate targets private-like robustness before discarding it.
+- Keep at least one structural/new-signal candidate in each full daily batch when possible.
+- Do not let a bad method enter an ensemble only because it is different.
+
 ## Option Selection Rubric
 
 When several options are available, select the next tests by expected information value, not only by expected score.
@@ -282,6 +447,37 @@ The review must answer:
 8. Which 4-5 submissions should be planned for the next available day?
 
 The next batch should not start from a blank slate. It should start from the review's next questions.
+
+### Next-Question Generation Rules
+
+After a batch, generate questions from four sources:
+
+| source | ask |
+| --- | --- |
+| score movement | What changed relative to `7.235`, and is the movement explainable? |
+| validation disagreement | Where did public score, pseudo-CV, shape audit, or known-submission distance disagree? |
+| model disagreement | Which wells changed most across candidate outputs, and are those changes plausible? |
+| operations | Which pending kernels, failed notebooks, or missing artifacts block the next informative batch? |
+
+Each completed batch must produce:
+
+- one exploitation question if a candidate improved or nearly improved;
+- one robustness question if any candidate looked promising but risky;
+- one replacement question if a selected direction failed;
+- one operational question if Kaggle status, runtime, or hidden compatibility blocked progress.
+
+### Result Branch Rules
+
+Before executing a candidate, write the branch rule:
+
+| result | next action |
+| --- | --- |
+| clear improvement | run one narrow exploitation sweep and one robustness check |
+| small improvement / tie | compare distance and shape; keep only if it adds ensemble diversity |
+| moderate worsening | inspect per-well differences; decide whether to downweight or gate |
+| catastrophic worsening | block method family or add audit rule that would have caught it |
+| blank score / scoring failure | treat as operational failure until hidden compatibility is proven |
+| pending | continue independent kernels, audits, and question planning |
 
 ## Submission Budget Policy
 
@@ -531,6 +727,9 @@ Tracked:
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/big_signal_public_lb_tracker.csv`: prior project tracker.
 - `experiments/submission_ledger.csv`: official submission log and decisions.
+- `experiments/question_backlog.csv`: prioritized open questions and candidate option sets.
+- `experiments/question_decision_log.csv`: closed/open question decisions and outcomes.
+- `experiments/daily_submission_plan.csv`: daily slot plan, status, and next actions.
 
 Ignored / local only:
 
@@ -540,6 +739,99 @@ Ignored / local only:
 - model files;
 - Kaggle credentials;
 - generated `submission.csv` files.
+
+## Near-Term Strategy Roadmap
+
+### Batch A: Account-Owned Baseline And Safety
+
+Main question:
+
+- Can `joezzzzz` reproduce the current `7.235` baseline through a hidden-compatible kernel?
+
+Options:
+
+- run the current physics/PF stack exactly under `joezzzzz`;
+- fork the `7.263` backup reference as a fallback;
+- block static replay candidates until they pass hidden-compatibility audit.
+
+Preferred selection:
+
+- run the `7.235` baseline reproduction first, because all future comparisons need an active-account reference output.
+
+Exit criteria:
+
+- kernel completes;
+- output downloads;
+- `submission.csv` passes audit;
+- decide whether an official submission is useful as an account-owned calibration point.
+
+### Batch B: First Structural Signal
+
+Main question:
+
+- Does GR/typewell alignment add useful correction signal beyond the baseline?
+
+Options:
+
+- light baseline correction from GR/typewell confidence;
+- pure GR alignment path search;
+- per-well gate between baseline and GR branch;
+- artifact-stack branch from accessible datasets.
+
+Preferred selection:
+
+- start with light correction plus gate design. It has lower blast radius than replacing the whole trajectory and can fall back to `7.235`.
+
+Exit criteria:
+
+- pseudo-test split result;
+- missing-GR robustness result;
+- distance and shape comparison to `7.235`;
+- decide whether one official submission is justified.
+
+### Batch C: Low-Dimensional Calibration Sweep
+
+Main question:
+
+- If a structural branch is safe, what blend/gate strength is best?
+
+Options:
+
+- global blend weights such as `0.10`, `0.20`, `0.30`;
+- per-well gate thresholds;
+- smoothing strength around corrected sections.
+
+Preferred selection:
+
+- use 2-3 official slots in one planned sweep only after Batch B passes audit.
+
+Exit criteria:
+
+- public-score curve is interpretable;
+- choose one exploitation candidate or reject the branch.
+
+### Batch D: Ensemble Pool Refresh
+
+Main question:
+
+- Which vetted candidates should enter the ensemble pool, and which should be excluded?
+
+Options:
+
+- weighted blend of `7.235`, `7.263`, and the best structural branch;
+- weighted median / trimmed mean;
+- per-well uncertainty gate;
+- conservative fallback ensemble with baseline dominance.
+
+Preferred selection:
+
+- favor gated or trimmed combinations if any branch shows high per-well disagreement.
+
+Exit criteria:
+
+- ensemble candidates pass audit;
+- official submissions answer distinct blend/gate questions;
+- update the next question backlog from results.
 
 ## Initial Implementation Backlog
 
