@@ -832,10 +832,10 @@ Current summary:
 
 ```text
 pending official submissions: 2
-running kernels: 2
+running kernels: 1
 ready-after-audit candidates without context blockers: 0
-WAIT_OFFICIAL_SCORE: 3
-HOLD_PENDING_CONTEXT: 3
+WAIT_OFFICIAL_SCORE: 4
+HOLD_PENDING_CONTEXT: 9
 HOLD_INFORMATION_SLOT: 1
 HOLD_LOW_UPSIDE: 2
 HOLD_DUPLICATE: 6
@@ -844,17 +844,53 @@ HOLD_DUPLICATE: 6
 Interpretation:
 
 - The learned-signal/fleongg branch is already represented by pending official submission `54174876`; do not resubmit equivalent files.
-- Projection branches and other plausible local candidates should wait for pending scores or running reference kernels.
+- The Baidalin preflight output added one SP45 projection candidate and five SP45+Fleongg blend candidates; they are locally plausible but held for pending context.
+- Projection branches and other plausible local candidates should wait for pending scores or the remaining running reference kernel.
 - `plateau_recent_quantile_v1` remains a sparse information-slot candidate, not a current submission.
-- The next official batch should not spend another slot until pending scores or reference kernel outputs resolve.
+- The next official batch should not spend another slot until pending scores or Degnonguidi v6 resolves.
+
+## Baidalin Completion And Output Audit
+
+Polling command:
+
+```text
+python3 scripts/sync_kernel_ledger.py --kaggle-bin /home/ubuntu/workstation/JoeProject/kaggle-api-workbench/.venv/bin/kaggle --apply
+```
+
+Result:
+
+```text
+joezzzzz/rogii-baidalin-7-201-preflight-codex/v1: RUNNING -> COMPLETE
+joezzzzz/rogii-degnonguidi-7159-preflight-codex/v6: still RUNNING
+```
+
+Output audit commands:
+
+```text
+python3 scripts/audit_kernel_output.py --kernel joezzzzz/rogii-baidalin-7-201-preflight-codex --output-dir artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1 --kaggle-bin /home/ubuntu/workstation/JoeProject/kaggle-api-workbench/.venv/bin/kaggle --force-download --summary-out artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/audit_summary.json
+python3 scripts/audit_kernel_output.py --kernel joezzzzz/rogii-baidalin-7-201-preflight-codex --output-dir artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1 --skip-download --data-dir data/sample --reference-registry experiments/reference_submission_registry.csv --submission-name sp45_projection_submission.csv --audit-name sp45_projection_deep_pre_submit_audit.json --summary-out artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/sp45_projection_audit_summary.json
+```
+
+Audit result:
+
+```text
+default submission.csv: PASS, risk WARN only for missing optional local reference files
+sp45_projection_submission.csv: PASS, risk WARN only for missing optional local reference files
+```
+
+Decision:
+
+- Do not submit the default Baidalin `submission.csv`; it is a near-duplicate low-upside anchor copy.
+- Track `sp45_projection_submission.csv` and the five `submission_sp45_fleongg_w*.csv` blends as real next-batch candidates.
+- Hold all Baidalin-derived candidates until `54174151`, `54174876`, or Degnonguidi v6 gives enough context.
 
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll official submission `54174876`.
 3. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 6.
-4. Poll `joezzzzz/rogii-baidalin-7-201-preflight-codex` version 1.
-5. If a reference kernel completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
-6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
+5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
+6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+7. Re-rank Baidalin SP45 projection/blend candidates against pending score outcomes before spending official slots.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

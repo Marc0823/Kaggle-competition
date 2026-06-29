@@ -52,7 +52,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scores", type=Path, default=Path("experiments/local_surrogate_scores.csv"))
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--focus", default="gr_typewell|plateau_recent|lucifer_baseline|fleongg_pretrained|sp45_projection")
+    parser.add_argument(
+        "--focus",
+        default="gr_typewell|plateau_recent|lucifer_baseline|fleongg_pretrained|sp45_projection|sp45_fleongg",
+    )
     args = parser.parse_args()
 
     scores = pd.read_csv(args.scores)

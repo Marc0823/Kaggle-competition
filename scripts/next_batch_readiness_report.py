@@ -55,6 +55,8 @@ def running_kernel_rows(kernels: pd.DataFrame) -> pd.DataFrame:
 
 def candidate_family(path: str) -> str:
     text = path.lower()
+    if "sp45_fleongg" in text:
+        return "projection_learned_blend"
     if "sp45_projection" in text:
         return "projection_branch"
     if "fleongg_pretrained" in text:
@@ -174,7 +176,7 @@ def build_candidate_rows(
         return pd.DataFrame()
     focus = scores[
         scores["path"].astype(str).str.contains(
-            "gr_typewell|plateau_recent|lucifer_baseline|fleongg_pretrained|sp45_projection",
+            "gr_typewell|plateau_recent|lucifer_baseline|fleongg_pretrained|sp45_projection|sp45_fleongg",
             case=False,
             regex=True,
             na=False,

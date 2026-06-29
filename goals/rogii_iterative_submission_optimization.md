@@ -994,6 +994,7 @@ Done:
 - Generate and audit `gr_typewell_light_alpha020_v1`.
 - Create `scripts/candidate_decision_report.py`.
 - Create `scripts/next_batch_readiness_report.py` to combine pending official scores, running kernels, local surrogate scores, pseudo-CV, and plateau stability into a next-batch readiness report.
+- Download and audit Baidalin v1 outputs after completion; add SP45+Fleongg blend candidates to decision/readiness focus and keep them held pending official scores plus Degnonguidi v6.
 
 Next:
 
