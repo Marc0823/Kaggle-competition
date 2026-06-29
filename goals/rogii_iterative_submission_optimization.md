@@ -870,6 +870,7 @@ Tracked:
 - `reports/planned_candidate_diversity_report.md`: pairwise redundancy/diversity profile for planned slots.
 - `reports/planned_slot_review.md`: slot-level synthesis of release gates, final-package state, per-well impact, and pairwise diversity.
 - `reports/planned_slot_contingency.md`: scenario-level keep/replace/drop rules for planned slots after pending scores or kernels resolve.
+- `reports/replacement_candidate_queue.md`: concrete build, audit, and design queue for replacement candidates when planned slots are redundant or weak.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
 - `experiments/next_batch_readiness.csv`: ranked next-batch candidate readiness table.
@@ -890,6 +891,7 @@ Tracked:
 - `experiments/planned_slot_review.csv`: machine-readable slot action and evidence review for each planned official slot.
 - `experiments/planned_slot_contingency.csv`: scenario matrix for keeping, replacing, or dropping planned slots.
 - `experiments/planned_slot_replacement_pool.csv`: ranked replacement pool for slots that should not be spent on redundant outputs.
+- `experiments/replacement_candidate_queue.csv`: actionable replacement-candidate build/audit/design queue.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -1040,16 +1042,18 @@ Done:
 - Create `scripts/planned_candidate_diversity.py` and wire it into the polling wrapper/planning validation so redundant planned slots are explicit; current planned slots are `REDUNDANT_REVIEW=3` and `OK=2`.
 - Create `scripts/planned_slot_review.py` and wire it into the polling wrapper/planning validation so every planned slot has one combined gate-aware action plus a latent evidence review; current planned slots are `HOLD_EXTERNAL_CONTEXT=5`, with evidence `KEEP_FOR_FINAL_REVIEW=1`, `KEEP_ONLY_IF_CALIBRATION_SWEEP=3`, and `SPARSE_INFO_SLOT_REVIEW=1`.
 - Create `scripts/planned_slot_contingency.py` and wire it into the polling wrapper/planning validation so pending-result branches have explicit keep/replace/drop rules; current scenarios include `WAIT_NO_SUBMIT`, `FINAL_REVIEW_BLEND_SWEEP`, `PARTIAL_RELEASE_NEEDS_REPLACEMENTS`, `BLOCK_ALL_DEPENDENT_SLOTS`, `INSERT_DEGNONGUIDI_AND_RERANK`, `FOLLOW_SCORE_BRANCH_WITHOUT_DEGNONGUIDI`, and `KEEP_ONE_BLEND_FIND_REPLACEMENTS`.
+- Create `scripts/replacement_candidate_queue.py` and wire it into the polling wrapper/planning validation so replacement needs become concrete build/audit/design tasks; built and audited `artifacts/gr_typewell_light_alpha040_v1/submission.csv` locally as the first stronger GR/typewell replacement candidate.
 
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every future completed kernel output before official submission.
 2. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/deep_pre_submit_audit.json`.
 3. Use `scripts/init_candidate_artifact.py` before promoting any newly generated local candidate into the official-submission queue.
-4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `result_application_status_counts`, `well_impact_bucket_counts`, `diversity_flag_counts`, `slot_review_counts`, `slot_evidence_review_counts`, `slot_contingency_action_counts`, `replacement_pool_role_counts`, `artifact_manifest_gate_counts`, and `final_package_gate_counts` are compatible with the release decision.
+4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `result_application_status_counts`, `well_impact_bucket_counts`, `diversity_flag_counts`, `slot_review_counts`, `slot_evidence_review_counts`, `slot_contingency_action_counts`, `replacement_pool_role_counts`, `replacement_queue_status_counts`, `artifact_manifest_gate_counts`, and `final_package_gate_counts` are compatible with the release decision.
 5. Do not submit planned slots unless `reports/submission_release_gate_report.md` no longer reports `BLOCKED_*` or `REVIEW_LEDGER_UPDATES`, and `reports/planning_state_validation_report.md` reports zero error failures.
 6. Before any official submission, run `scripts/final_submission_package.py --prepare --planned-slot N` only after release gates clear and final review is complete.
 7. When a pending result resolves, follow `reports/result_application_plan.md`, `reports/result_branch_matrix.md`, `reports/planned_slot_review.md`, and `reports/planned_slot_contingency.md` to promote, downweight, insert, block, or defer candidates before releasing slots.
+8. Use `reports/replacement_candidate_queue.md` to build or audit replacement candidates only while external context keeps official slots blocked; do not promote a replacement until it appears in readiness/audit reports and passes release review.
 
 ## Stop / Escalation Rules
 

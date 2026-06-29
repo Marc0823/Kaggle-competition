@@ -317,6 +317,14 @@ python scripts\planned_slot_contingency.py
 
 This records which slots to keep, replace, or drop if the baseline anchor fails, Fleongg is weak/competitive, Degnonguidi completes cleanly, or the blend sweep is no longer an explicit experiment.
 
+Build the replacement-candidate queue for redundant or weak planned slots:
+
+```powershell
+python scripts\replacement_candidate_queue.py
+```
+
+This turns contingency replacement needs into concrete build, audit, and design tasks. It is also where newly built local replacements such as GR/typewell alpha variants are tracked before they can enter readiness review.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

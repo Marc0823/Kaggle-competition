@@ -5,7 +5,7 @@ It cannot replace Kaggle Public LB, but it helps reject implausible candidates b
 
 ## Inputs
 - Data dir: `data/sample`
-- Valid submission files scored: `40`
+- Valid submission files scored: `41`
 - Known public-score calibration rows: `0`
 
 ## Important Limitation

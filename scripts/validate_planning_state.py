@@ -20,6 +20,7 @@ DEFAULT_DIVERSITY = Path("experiments/planned_candidate_diversity_summary.csv")
 DEFAULT_SLOT_REVIEW = Path("experiments/planned_slot_review.csv")
 DEFAULT_SLOT_CONTINGENCY = Path("experiments/planned_slot_contingency.csv")
 DEFAULT_REPLACEMENT_POOL = Path("experiments/planned_slot_replacement_pool.csv")
+DEFAULT_REPLACEMENT_QUEUE = Path("experiments/replacement_candidate_queue.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
@@ -89,6 +90,7 @@ def validate(
     slot_review: pd.DataFrame,
     slot_contingency: pd.DataFrame,
     replacement_pool: pd.DataFrame,
+    replacement_queue: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
@@ -140,6 +142,13 @@ def validate(
         "ERROR",
         status_from_condition(not replacement_pool.empty),
         "planned slot replacement pool CSV is readable",
+    )
+    add(
+        checks,
+        "input_replacement_candidate_queue_exists",
+        "ERROR",
+        status_from_condition(not replacement_queue.empty),
+        "replacement candidate queue CSV is readable",
     )
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
     add(
@@ -391,6 +400,39 @@ def validate(
             f"replacement roles={sorted(roles)}",
         )
 
+    if {"task_id", "task_type", "status", "replacement_need"}.issubset(replacement_queue.columns):
+        tasks = set(replacement_queue["task_id"].astype(str))
+        add(
+            checks,
+            "replacement_queue_has_core_tasks",
+            "ERROR",
+            status_from_condition({"RCQ01_replacement_need_guard", "RCQ03_build_gr_typewell_alpha040"}.issubset(tasks)),
+            f"replacement queue tasks={sorted(tasks)}",
+        )
+        need_values = pd.to_numeric(replacement_queue["replacement_need"], errors="coerce")
+        need = int(need_values.max()) if need_values.notna().any() else 0
+        if need > 0:
+            build_or_review = replacement_queue[
+                replacement_queue["task_type"].astype(str).isin(["build_new_candidate", "existing_candidate_review", "design_new_candidate"])
+            ]
+            add(
+                checks,
+                "replacement_need_has_actionable_queue",
+                "ERROR",
+                status_from_condition(len(build_or_review) >= need),
+                f"replacement_need={need}; actionable_tasks={len(build_or_review)}",
+            )
+        built_or_ready = replacement_queue[
+            replacement_queue["status"].astype(str).isin(["ARTIFACT_AND_AUDIT_EXIST", "ARTIFACT_NEEDS_AUDIT", "TODO_BUILD", "REVIEW_EXISTING"])
+        ]
+        add(
+            checks,
+            "replacement_queue_has_build_or_review_paths",
+            "INFO",
+            status_from_condition(not built_or_ready.empty),
+            f"build/review task rows={len(built_or_ready)}",
+        )
+
     if "manifest_gate" in manifest.columns:
         planned_manifest = manifest[manifest["path"].astype(str).isin(plan_paths)].copy()
         bad_manifest = planned_manifest[~planned_manifest["manifest_gate"].astype(str).str.startswith("PASS")]
@@ -503,6 +545,7 @@ def main() -> int:
     parser.add_argument("--slot-review", type=Path, default=DEFAULT_SLOT_REVIEW)
     parser.add_argument("--slot-contingency", type=Path, default=DEFAULT_SLOT_CONTINGENCY)
     parser.add_argument("--replacement-pool", type=Path, default=DEFAULT_REPLACEMENT_POOL)
+    parser.add_argument("--replacement-queue", type=Path, default=DEFAULT_REPLACEMENT_QUEUE)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
@@ -521,6 +564,7 @@ def main() -> int:
         slot_review=safe_read_csv(args.slot_review),
         slot_contingency=safe_read_csv(args.slot_contingency),
         replacement_pool=safe_read_csv(args.replacement_pool),
+        replacement_queue=safe_read_csv(args.replacement_queue),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),

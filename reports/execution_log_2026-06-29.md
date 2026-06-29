@@ -1314,6 +1314,42 @@ Decision:
 - If Degnonguidi completes cleanly and passes audit, insert it ahead of the sparse plateau slot and at least one redundant blend.
 - `scripts/validate_planning_state.py` now requires the contingency scenarios to exist and to include a `WAIT_NO_SUBMIT` path while external context is pending.
 
+## Replacement Candidate Queue
+
+Added:
+
+```text
+scripts/replacement_candidate_queue.py
+experiments/replacement_candidate_queue.csv
+reports/replacement_candidate_queue.md
+```
+
+Local candidate built and audited:
+
+```text
+artifacts/gr_typewell_light_alpha040_v1/submission.csv
+artifacts/gr_typewell_light_alpha040_v1/local_pre_submit_audit.json
+```
+
+Current validation:
+
+```text
+replacement_queue_status_counts: TODO_BUILD=2; ACTIVE=1; REVIEW_EXISTING=1; ARTIFACT_AND_AUDIT_EXIST=1; DESIGN_REQUIRED=1; WAIT_KERNEL=1
+replacement_queue_ready_now_counts: True=4; False=3
+readiness_status_counts: HOLD_PENDING_CONTEXT=10; HOLD_DUPLICATE=6; WAIT_OFFICIAL_SCORE=4; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1
+submission_gate_counts: AUDITED_WAIT_CONTEXT=14; HOLD_DUPLICATE=6; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1
+planning validation: PASS=45, error_failures=0
+```
+
+Decision:
+
+- The replacement queue is now part of `scripts/poll_and_refresh_state.py`.
+- It converts the contingency requirement for two non-duplicate replacements into concrete build, audit, and design tasks.
+- Built `gr_typewell_light_alpha040_v1`; it changes 2 visible wells, has RMSE distance `1.398` from the active baseline, passes pre-submit audit, and is held by external context.
+- The existing backup SP45 projection paths are duplicate with each other and should provide at most one replacement candidate.
+- Remaining queue tasks include a relaxed GR/typewell candidate, a non-default plateau variant, an SP45/plateau gate design, and Degnonguidi output audit if v6 completes.
+- No official Kaggle submission was made.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1332,3 +1368,4 @@ Decision:
 14. Use `reports/planned_candidate_diversity_report.md` during final review to avoid spending multiple slots on redundant outputs unless they answer a deliberate calibration-sweep question.
 15. Use `reports/planned_slot_review.md` as the combined per-slot release/evidence review before final packaging or any official submission.
 16. Use `reports/planned_slot_contingency.md` after scores/kernel outcomes resolve to decide whether to keep the blend sweep, replace redundant slots, block dependent slots, or insert a clean Degnonguidi output.
+17. Use `reports/replacement_candidate_queue.md` while waiting on external results to build or audit non-duplicate replacements; next concrete build candidates are `gr_typewell_light_alpha030_relaxed_v1` and `plateau_recent_quantile_w512_q0p65_m8p0_b1p0_v1`.

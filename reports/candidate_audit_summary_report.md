@@ -4,22 +4,22 @@ This report joins next-batch readiness with local audit JSON evidence.
 
 ## Counts
 
-- Candidates tracked: `22`
-- Audited candidates waiting on external context: `13`
+- Candidates tracked: `23`
+- Audited candidates waiting on external context: `14`
 - Candidates missing audit evidence: `0`
 
 ## Audit Gates
 
 | audit_gate | count |
 | --- | --- |
-| AUDIT_PASS_WARN_REVIEW | 19 |
+| AUDIT_PASS_WARN_REVIEW | 20 |
 | AUDIT_PASS | 3 |
 
 ## Submission Gates
 
 | submission_gate | count |
 | --- | --- |
-| AUDITED_WAIT_CONTEXT | 13 |
+| AUDITED_WAIT_CONTEXT | 14 |
 | HOLD_DUPLICATE | 6 |
 | HOLD_LOW_UPSIDE | 2 |
 | HOLD_INFORMATION_SLOT | 1 |
@@ -31,6 +31,7 @@ This report joins next-batch readiness with local audit JSON evidence.
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/fleongg_pretrained_submission.csv | learned_signal | AUDITED_WAIT_CONTEXT | WAIT_OFFICIAL_SCORE | AUDIT_PASS | plausible_7p2_to_7p8_band | high | 3.68124 |  | 0.125039 | 0 |  |
 | artifacts/gr_typewell_light_alpha010_v1/submission.csv | gr_typewell_light | HOLD_LOW_UPSIDE | HOLD_LOW_UPSIDE | AUDIT_PASS | likely_around_7p235_low_upside | low | 0.349534 |  | 0.0360878 | 7.06814e-05 |  |
 | artifacts/gr_typewell_light_alpha020_v1/submission.csv | gr_typewell_light | HOLD_LOW_UPSIDE | HOLD_LOW_UPSIDE | AUDIT_PASS | likely_around_7p235_low_upside | low | 0.699067 |  | 0.0360878 | 7.06814e-05 |  |
+| artifacts/gr_typewell_light_alpha040_v1/submission.csv | gr_typewell_light | AUDITED_WAIT_CONTEXT | HOLD_PENDING_CONTEXT | AUDIT_PASS_WARN_REVIEW | plausible_7p2_to_7p8_band | moderate | 1.39813 | 3.67903 | 0.0360878 | 7.06814e-05 |  |
 | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/sp45_projection_submission.csv | projection_branch | AUDITED_WAIT_CONTEXT | HOLD_PENDING_CONTEXT | AUDIT_PASS_WARN_REVIEW | plausible_7p2_to_7p8_band | moderate | 1.45864 | 3.42373 | 6.39778 | 0 |  |
 | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.60.csv | projection_learned_blend | AUDITED_WAIT_CONTEXT | HOLD_PENDING_CONTEXT | AUDIT_PASS_WARN_REVIEW | plausible_7p2_to_7p8_band | moderate | 2.15794 | 2.09107 | 3.85775 | 0 |  |
 | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.58.csv | projection_learned_blend | AUDITED_WAIT_CONTEXT | HOLD_PENDING_CONTEXT | AUDIT_PASS_WARN_REVIEW | plausible_7p2_to_7p8_band | moderate | 2.20956 | 2.02586 | 3.73075 | 0 |  |
