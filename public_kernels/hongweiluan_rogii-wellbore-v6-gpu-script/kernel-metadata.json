@@ -1,0 +1,25 @@
+{
+  "id": "hongweiluan/rogii-wellbore-v6-gpu-script",
+  "id_no": 122629093,
+  "title": "ROGII Wellbore V6 GPU Script",
+  "code_file": "rogii-wellbore-v6-gpu-script.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "hongweiluan/rogii-label-quality-v2"
+  ],
+  "kernel_sources": [
+    "hongweiluan/rogii-wellbore-v11-feat-script"
+  ],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

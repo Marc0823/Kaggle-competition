@@ -1,0 +1,23 @@
+{
+  "id": "leemarc223/rogii-super6-improved-public-fork",
+  "title": "ROGII Super6 Improved Public Fork",
+  "code_file": "rogii-super6-improved.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

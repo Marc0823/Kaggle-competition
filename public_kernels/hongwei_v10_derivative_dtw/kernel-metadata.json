@@ -1,0 +1,19 @@
+{
+  "id": "hongweiluan/rogii-wellbore-v10-feat-script-derivative-dtw",
+  "id_no": 124525739,
+  "title": "ROGII Wellbore v10 Feat Script (+ Derivative DTW)",
+  "code_file": "rogii-wellbore-v10-feat-script-derivative-dtw.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

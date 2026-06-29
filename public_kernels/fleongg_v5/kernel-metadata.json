@@ -1,0 +1,23 @@
+{
+  "id": "fleongg/fle3n-rogii-v5",
+  "id_no": 122283732,
+  "title": "fle3n ROGII v5",
+  "code_file": "fle3n-rogii-v5.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

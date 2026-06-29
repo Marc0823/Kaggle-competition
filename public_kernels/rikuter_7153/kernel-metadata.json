@@ -1,0 +1,23 @@
+{
+  "id": "rikuter67/rogii-lb7295-v1-7153-reproduction-rikuter",
+  "id_no": 125184013,
+  "title": "ROGII LB7295 V1 7153 Reproduction Rikuter",
+  "code_file": "rogii-lb7295-v1-7153-reproduction-rikuter.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

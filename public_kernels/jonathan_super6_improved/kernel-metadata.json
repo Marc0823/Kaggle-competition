@@ -1,0 +1,24 @@
+{
+  "id": "jonathanncoletti/rogii-super6-improved",
+  "id_no": 124095576,
+  "title": "Rogii Super6 Improved",
+  "code_file": "rogii-super6-improved.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

@@ -1,0 +1,46 @@
+# Local data and Kaggle downloads
+data/
+artifacts/
+submissions/
+*.zip
+*.7z
+*.tar
+*.tar.gz
+
+# Model artifacts / large binary outputs
+*.pkl
+*.joblib
+*.ckpt
+*.pth
+*.pt
+*.onnx
+*.bin
+
+# Generated outputs
+outputs/
+working/
+.numba_cache/
+__pycache__/
+*.pyc
+*.log
+experiments/local_surrogate_pairwise_distance.csv
+
+# Python environments
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Secrets and local credentials
+kaggle.json
+access_token
+*.token
+*.secret
+.env
+.env.*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

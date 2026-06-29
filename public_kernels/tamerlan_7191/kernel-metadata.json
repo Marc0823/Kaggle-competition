@@ -1,0 +1,23 @@
+{
+  "id": "tamerlanomralinov/rogii-lb-7-191-copy-n-upgrade",
+  "id_no": 123904235,
+  "title": "rogii [lb: 7.191] (Copy n Upgrade)",
+  "code_file": "rogii-lb-7-191-copy-n-upgrade.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

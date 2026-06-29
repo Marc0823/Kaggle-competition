@@ -1,0 +1,22 @@
+{
+  "id": "leemarc223/rogii-v12-budget-guarded-clean-gpu-fork",
+  "title": "ROGII v12 budget guarded clean gpu fork",
+  "code_file": "rogii-v12-budget-guarded-clean-gpu-20260626.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

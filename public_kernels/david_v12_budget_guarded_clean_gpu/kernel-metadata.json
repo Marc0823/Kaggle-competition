@@ -1,0 +1,23 @@
+{
+  "id": "davidsarrat/rogii-v12-budget-guarded-clean-gpu-20260626",
+  "id_no": 124841409,
+  "title": "ROGII v12 budget guarded clean gpu 20260626",
+  "code_file": "rogii-v12-budget-guarded-clean-gpu-20260626.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

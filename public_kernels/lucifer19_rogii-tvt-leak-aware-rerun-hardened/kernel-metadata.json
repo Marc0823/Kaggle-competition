@@ -1,0 +1,23 @@
+{
+  "id": "lucifer19/rogii-tvt-leak-aware-rerun-hardened",
+  "id_no": 124945179,
+  "title": "\ud83d\udee2\ufe0f\ud83d\udee1\ufe0f ROGII TVT \u2014 Leak-Aware & Rerun-Hardened",
+  "code_file": "rogii-tvt-leak-aware-rerun-hardened.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "model_sources": []
+}

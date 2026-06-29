@@ -1,0 +1,21 @@
+{
+  "id": "leemarc223/rogii-sunny80-v10-artifact20-submit",
+  "title": "ROGII Sunny80 v10 Artifact20 Submit",
+  "code_file": "rogii-sunny80-v10-artifact20-submit.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "rogii",
+    "submission"
+  ],
+  "competition_sources": [
+    "rogii-wellbore-geology-prediction"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
