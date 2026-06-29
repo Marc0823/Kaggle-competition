@@ -128,12 +128,14 @@ This consumes the fourth official submission slot for 2026-06-29 UTC and answers
 - `joezzzzz/rogii-fleongg-branch-calibration-codex`
   - Directly submitting `fleongg_pretrained_submission.csv` from the baseline kernel failed with Kaggle API `400`.
   - Created and pushed a dedicated branch kernel whose final `submission.csv` is the fleongg pretrained branch.
-  - Kernel version `1` is currently `RUNNING`.
+  - Kernel version `1` completed, but audit rejected it before official submission because final `submission.csv` still matched the baseline and `fleongg_branch_submission_audit.json` was absent.
+  - Fixed the notebook override cell and pushed kernel version `2`.
+  - Kernel version `2` is currently `RUNNING`.
 
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-4. Poll `joezzzzz/rogii-fleongg-branch-calibration-codex`; when complete, download and audit output.
-5. If fleongg branch audit passes, submit it as the fifth official slot for learned-signal calibration.
+4. Poll `joezzzzz/rogii-fleongg-branch-calibration-codex` version `2`; when complete, download and audit output.
+5. If fleongg branch audit proves final `submission.csv` equals the fleongg branch, submit it as the fifth official slot for learned-signal calibration.
