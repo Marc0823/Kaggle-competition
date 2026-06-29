@@ -1259,6 +1259,32 @@ Decision:
 - Keep all three blend slots only if the batch question is explicitly to calibrate the blend curve; otherwise use fewer blend slots and prefer a more diverse candidate.
 - `scripts/validate_planning_state.py` now requires every planned slot to have a diversity row and diversity flag.
 
+## Planned Slot Review
+
+Added:
+
+```text
+scripts/planned_slot_review.py
+experiments/planned_slot_review.csv
+reports/planned_slot_review.md
+```
+
+Current validation:
+
+```text
+slot_review_counts: HOLD_EXTERNAL_CONTEXT=5
+slot_evidence_review_counts: KEEP_ONLY_IF_CALIBRATION_SWEEP=3; KEEP_FOR_FINAL_REVIEW=1; SPARSE_INFO_SLOT_REVIEW=1
+planning validation: PASS=35, error_failures=0
+```
+
+Decision:
+
+- The planned slot review is now part of `scripts/poll_and_refresh_state.py`.
+- It combines release gate, final-package state, per-well impact, and pairwise diversity into one per-slot action.
+- Current release remains blocked by external Kaggle context for all 5 planned slots.
+- Latent evidence review keeps slot 1 for final review, keeps slots 2-4 only if we deliberately spend slots on blend-curve calibration, and treats slot 5 as a sparse information slot.
+- `scripts/validate_planning_state.py` now requires every planned slot to have slot-review and evidence-review rows.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1275,3 +1301,4 @@ Decision:
 12. Use `reports/result_application_plan.md` as the first stop after any new score/kernel update before editing ledgers or releasing slots.
 13. Use `reports/planned_candidate_well_impact_report.md` during final review to decide whether a candidate is broad enough for promotion or only useful as a sparse information slot.
 14. Use `reports/planned_candidate_diversity_report.md` during final review to avoid spending multiple slots on redundant outputs unless they answer a deliberate calibration-sweep question.
+15. Use `reports/planned_slot_review.md` as the combined per-slot release/evidence review before final packaging or any official submission.

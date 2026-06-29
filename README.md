@@ -301,6 +301,14 @@ python scripts\planned_candidate_diversity.py
 
 This flags near-duplicate or highly redundant planned slots so blend sweeps remain deliberate calibration experiments rather than accidental duplicate submissions.
 
+Review planned official slots with all gate and evidence signals combined:
+
+```powershell
+python scripts\planned_slot_review.py
+```
+
+This joins release gates, final-package state, per-well impact, and pairwise diversity into one slot-level review. Use it as the final planning view before packaging or submitting any slot.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

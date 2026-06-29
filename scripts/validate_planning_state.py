@@ -17,6 +17,7 @@ DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
 DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_WELL_IMPACT = Path("experiments/planned_candidate_well_impact_summary.csv")
 DEFAULT_DIVERSITY = Path("experiments/planned_candidate_diversity_summary.csv")
+DEFAULT_SLOT_REVIEW = Path("experiments/planned_slot_review.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
@@ -83,6 +84,7 @@ def validate(
     plan: pd.DataFrame,
     well_impact: pd.DataFrame,
     diversity: pd.DataFrame,
+    slot_review: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
@@ -114,6 +116,13 @@ def validate(
         status_from_condition(not diversity.empty),
         "planned candidate diversity summary CSV is readable",
     )
+    add(
+        checks,
+        "input_planned_slot_review_exists",
+        "ERROR",
+        status_from_condition(not slot_review.empty),
+        "planned slot review CSV is readable",
+    )
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
     add(
         checks,
@@ -143,6 +152,7 @@ def validate(
     readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
     well_impact_paths = set(well_impact.get("path", pd.Series(dtype=str)).astype(str))
     diversity_paths = set(diversity.get("path", pd.Series(dtype=str)).astype(str))
+    slot_review_paths = set(slot_review.get("path", pd.Series(dtype=str)).astype(str))
     manifest_paths = set(manifest.get("path", pd.Series(dtype=str)).astype(str))
     package_paths = set(final_package.get("path", pd.Series(dtype=str)).astype(str))
 
@@ -187,6 +197,13 @@ def validate(
         "ERROR",
         status_from_condition(plan_paths.issubset(diversity_paths)),
         f"missing diversity rows={sorted(plan_paths - diversity_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_slot_review_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(slot_review_paths)),
+        f"missing slot-review rows={sorted(plan_paths - slot_review_paths)[:5]}",
     )
     add(
         checks,
@@ -294,6 +311,20 @@ def validate(
             "ERROR",
             status_from_condition(len(planned_diversity) == len(plan_paths) and planned_diversity["diversity_flag"].astype(str).ne("").all()),
             f"diversity rows={len(planned_diversity)}; flags={sorted(set(planned_diversity.get('diversity_flag', pd.Series(dtype=str)).astype(str)))}",
+        )
+
+    if {"slot_review", "evidence_review"}.issubset(slot_review.columns):
+        planned_reviews = slot_review[slot_review["path"].astype(str).isin(plan_paths)].copy()
+        add(
+            checks,
+            "planned_slots_have_slot_reviews",
+            "ERROR",
+            status_from_condition(
+                len(planned_reviews) == len(plan_paths)
+                and planned_reviews["slot_review"].astype(str).ne("").all()
+                and planned_reviews["evidence_review"].astype(str).ne("").all()
+            ),
+            f"slot-review rows={len(planned_reviews)}; reviews={sorted(set(planned_reviews.get('slot_review', pd.Series(dtype=str)).astype(str)))}",
         )
 
     if "manifest_gate" in manifest.columns:
@@ -405,6 +436,7 @@ def main() -> int:
     parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
     parser.add_argument("--well-impact", type=Path, default=DEFAULT_WELL_IMPACT)
     parser.add_argument("--diversity", type=Path, default=DEFAULT_DIVERSITY)
+    parser.add_argument("--slot-review", type=Path, default=DEFAULT_SLOT_REVIEW)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
@@ -420,6 +452,7 @@ def main() -> int:
         plan=safe_read_csv(args.plan),
         well_impact=safe_read_csv(args.well_impact),
         diversity=safe_read_csv(args.diversity),
+        slot_review=safe_read_csv(args.slot_review),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),
