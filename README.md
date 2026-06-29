@@ -120,6 +120,24 @@ reports/local_surrogate_score_report.md
 
 Important: this does **not** know hidden labels and cannot exactly predict Public LB. It is mainly used to reject obviously bad or duplicated candidates before spending submissions.
 
+## Pre-Submit Format Audit
+
+Before spending an official submission slot, audit the generated `submission.csv` against the current sample file:
+
+```powershell
+python scripts\pre_submit_audit.py artifacts\candidate_folder\submission.csv --sample data\sample\sample_submission.csv
+```
+
+This checks columns, row count, ID order, duplicate IDs, finite predictions, summary stats, and sha256. It does not replace hidden-compatibility source review or pseudo-test validation.
+
+Audit the notebook source for common hidden-test risks:
+
+```powershell
+python scripts\notebook_source_audit.py kaggle_kernel_lucifer_wellbore_wizard_pf_stack\wellbore-wizard-physics-pf-stack.ipynb
+```
+
+This source scan flags hardcoded visible wells, fixed visible row counts, static replay patterns, and unsafe train/test row-alignment copies. It is a guardrail, not a proof of model quality.
+
 ## Submission Ledger
 
 Official submission outcomes should be recorded in:

@@ -49,32 +49,74 @@ Pushed to Kaggle:
 ```text
 joezzzzz/rogii-lucifer-baseline-repro-codex
 version: 1
-status: RUNNING
+status: COMPLETE
 url: https://www.kaggle.com/code/joezzzzz/rogii-lucifer-baseline-repro-codex
 ```
 
-This is a kernel run only. It does not consume an official competition submission slot.
+Downloaded output to ignored local artifacts:
+
+```text
+artifacts/lucifer_baseline_repro_joezzzzz_v1/
+```
+
+Local pre-submit audit:
+
+```text
+status: PASS
+rows: 14151
+columns: id,tvt
+id_order_matches_sample: true
+sha256: fdf4a8175b6ec6a70c9b78fd6916ac3c317e43f7e9c08bbca87cd02314801ca9
+```
+
+Notebook source audit:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+required_signals: sample_submission, dynamic_horizontal_well_discovery, test_split_reference, submission_write
+```
+
+Official submission:
+
+```text
+submission_id: 54174151
+status: PENDING
+message: Codex active-account 7.235 baseline reproduction audit pass
+```
+
+This consumes the fourth official submission slot for 2026-06-29 UTC and answers the active-account baseline calibration question.
 
 ## Records Updated
 
 - `experiments/submission_ledger.csv`
   - Added static Sunny80/Sunny70 completed blank-score rows.
   - Kept Henry retry as pending.
+  - Added `54174151` baseline reproduction as submitted/pending with audit pass.
 - `experiments/question_decision_log.csv`
   - Marked the question-driven process setup as complete.
-  - Recorded the baseline reproduction kernel push.
+  - Recorded the baseline reproduction kernel push, output audit, and official pending submission.
   - Opened the first structural candidate question.
 - `experiments/question_backlog.csv`
   - Added the prioritized open question queue for baseline reproduction, GR/typewell correction, gating, calibration, robustness, and reference-notebook reproduction.
+  - Moved baseline reproduction to `submitted_pending`.
+  - Moved GR/typewell correction to the active next implementation path.
 - `experiments/daily_submission_plan.csv`
-  - Captures the current 5-slot plan, including already-used official submissions and remaining candidate preparation.
+  - Captures the current 5-slot plan, including already-used official submissions, submitted baseline calibration, and remaining candidate preparation.
 - `goals/rogii_iterative_submission_optimization.md`
   - Added the continuous question engine, model idea sources, anti-overfit rules, branch rules, and near-term Batch A-D roadmap.
+- `reports/baseline_repro_audit_2026-06-29.md`
+  - Added the kernel/output/submission audit details for the active-account baseline reproduction.
+- `scripts/pre_submit_audit.py`
+  - Added reusable local format/sample audit and verified it against the baseline output.
+- `scripts/notebook_source_audit.py`
+  - Added reusable source scan for hidden-test compatibility risks and verified it against the baseline notebook.
 
 ## Next Actions
 
-1. Poll `joezzzzz/rogii-lucifer-baseline-repro-codex`.
-2. When complete, download output to ignored `artifacts/`.
-3. Audit `submission.csv` before considering any official submission.
-4. If audit passes, decide whether it is worth spending an official slot as an active-account baseline calibration point.
-5. Continue Q20260629-04 by drafting the first light GR/typewell correction candidate.
+1. Poll official submission `54174151`.
+2. Poll pending Henry submission `54162612`.
+3. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
+4. Continue Q20260629-B02 by implementing the first light GR/typewell correction candidate.
+5. Use both audit scripts before the next official batch.

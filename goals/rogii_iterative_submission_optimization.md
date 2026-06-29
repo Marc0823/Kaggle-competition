@@ -835,7 +835,16 @@ Exit criteria:
 
 ## Initial Implementation Backlog
 
-1. Create `scripts/pre_submit_audit.py`.
+Done:
+
+- Create `scripts/pre_submit_audit.py`.
+- Verify it on `lucifer_baseline_repro_joezzzzz_v1` against `data/sample/sample_submission.csv`.
+- Create `scripts/notebook_source_audit.py`.
+- Verify it on `lucifer_baseline_repro_joezzzzz`.
+
+Next:
+
+1. Extend audit automation with known-bad distance and anchor-jump checks.
 2. Create `scripts/pseudo_test_cv.py`.
 3. Add a standard candidate output folder convention under ignored `artifacts/`.
 4. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
