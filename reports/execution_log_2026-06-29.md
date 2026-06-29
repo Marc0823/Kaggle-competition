@@ -172,10 +172,60 @@ Records added:
 - `README.md`
   - Added the short project control loop and option-comparison rule.
 
+## Reference Notebook Preflight
+
+Latest official submission check:
+
+```text
+54174876 fleongg branch calibration: PENDING
+54174151 active-account baseline reproduction: PENDING
+54162612 Henry TabICL/v10 hidden-compatible retry: PENDING
+```
+
+Because the score-dependent questions are still pending, the active independent question is:
+
+```text
+Q20260629-08: Which reference notebook should be prepared while official scores are still pending?
+```
+
+Options reviewed:
+
+| option | decision | reason |
+| --- | --- | --- |
+| Degnonguidi 7.159 no-submit preflight | selected | source audit PASS; high-upside reference; tests dependencies/output without spending official submission |
+| Baidalin 7.201 no-submit preflight | hold/fix required | source audit FAIL on hardcoded visible well and unsafe train/test `TVT_input` row copy |
+| wait for scores only | rejected | does not prepare the next candidate queue |
+
+Source audit artifacts were written locally under ignored `artifacts/reference_audits/`.
+
+Degnonguidi active-account preflight:
+
+```text
+working copy: working/kaggle_kernel_degnonguidi_7159_preflight_joezzzzz
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 1
+status: RUNNING
+official submission: none
+```
+
+Records updated:
+
+- `reports/reference_notebook_preflight_2026-06-29.md`
+  - Added the reference-notebook preflight decision, source audit results, metadata notes, and branch rules.
+- `experiments/kernel_run_ledger.csv`
+  - Added kernel run records for baseline, fleongg branch, and Degnonguidi preflight.
+- `experiments/question_backlog.csv`
+  - Moved Q20260629-B07 to `kernel_running`.
+  - Moved Q20260629-B08 to `hold_fix_required`.
+- `experiments/question_decision_log.csv`
+  - Added Q20260629-08 for this preflight decision.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. Poll official submission `54174876`.
-4. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-5. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex`.
+5. If Degnonguidi completes, download output and run pre-submit/distance audit before any official submission decision.
+6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
+7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.

@@ -184,6 +184,14 @@ experiments/question_backlog.csv
 
 Use this file as the live queue of what to decide next. Each row includes the question type, decision effect, options, selected path, dependencies, and review trigger.
 
+Kaggle kernel runs that do not necessarily become official submissions should be tracked in:
+
+```text
+experiments/kernel_run_ledger.csv
+```
+
+Use it for kernel slug, version, status, output artifact location, audit status, and next action.
+
 ## Current Public LB Notes
 
 Confirmed useful references from our tracker:

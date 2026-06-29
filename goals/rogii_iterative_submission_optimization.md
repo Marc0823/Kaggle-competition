@@ -859,6 +859,7 @@ Tracked:
 - `experiments/question_backlog.csv`: prioritized open questions and candidate option sets.
 - `experiments/question_decision_log.csv`: closed/open question decisions and outcomes.
 - `experiments/daily_submission_plan.csv`: daily slot plan, status, and next actions.
+- `experiments/kernel_run_ledger.csv`: Kaggle kernel runs, versions, statuses, output artifacts, and next actions.
 
 Ignored / local only:
 
