@@ -969,6 +969,7 @@ Done:
 
 - Create `scripts/pre_submit_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz_v1` against `data/sample/sample_submission.csv`.
+- Extend `scripts/pre_submit_audit.py` with optional anchor-continuity, jump/curvature, typewell-range, and reference-distance checks.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.
@@ -978,12 +979,13 @@ Done:
 
 Next:
 
-1. Extend audit automation with known-bad distance and anchor-jump checks.
-2. Create `scripts/pseudo_test_cv.py`.
-3. Add a standard candidate output folder convention under ignored `artifacts/`.
-4. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
-5. Add an update command that appends Kaggle submission results to `experiments/submission_ledger.csv`.
-6. Add a report generator that ranks candidates by:
+1. Run deep pre-submit audit on every completed kernel output before official submission.
+2. Add a standard reference bundle for known-good and known-bad distance checks.
+3. Create `scripts/pseudo_test_cv.py`.
+4. Add a standard candidate output folder convention under ignored `artifacts/`.
+5. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
+6. Add an update command that appends Kaggle submission results to `experiments/submission_ledger.csv`.
+7. Add a report generator that ranks candidates by:
    - audit status;
    - CV delta;
    - distance to known submissions;

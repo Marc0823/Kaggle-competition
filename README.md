@@ -146,6 +146,14 @@ python scripts\notebook_source_audit.py kaggle_kernel_lucifer_wellbore_wizard_pf
 
 This source scan flags hardcoded visible wells, fixed visible row counts, static replay patterns, and unsafe train/test row-alignment copies. It is a guardrail, not a proof of model quality.
 
+Run a deeper pre-submit audit with anchor continuity, jump/curvature checks, typewell range checks, and distance to reference submissions:
+
+```powershell
+python scripts\pre_submit_audit.py artifacts\candidate_folder\submission.csv --data-dir data\sample --reference current_best=artifacts\lucifer_baseline_repro_joezzzzz_v1\submission.csv --json-out artifacts\candidate_folder\deep_pre_submit_audit.json
+```
+
+This still cannot see hidden labels, but it helps block physically implausible outputs, near-duplicates, and candidates that drift far from known references before spending an official slot.
+
 Build the first local GR/typewell structural probe from an audited baseline:
 
 ```powershell

@@ -220,12 +220,75 @@ Records updated:
 - `experiments/question_decision_log.csv`
   - Added Q20260629-08 for this preflight decision.
 
+## Deep Pre-Submit Audit
+
+Latest status recheck:
+
+```text
+official submissions: 54174876, 54174151, 54162612 still PENDING
+Degnonguidi preflight kernel: RUNNING
+```
+
+Because no external result was ready, the next independent validation question was:
+
+```text
+Q20260629-09: What validation work should proceed while official scores and Degnonguidi preflight are pending?
+```
+
+Selected option:
+
+```text
+Implement deep pre-submit audit.
+```
+
+Reason:
+
+- The next completed kernel output needs stronger checks before any official submission.
+- Deep audit is reusable for every candidate output.
+- It directly supports Q20260629-B05: detect shape and hidden-format risks before spending slots.
+
+Updated `scripts/pre_submit_audit.py` with optional:
+
+- `--data-dir` for sample/test-aware checks;
+- `--reference LABEL=PATH` for distance to known outputs;
+- anchor continuity metrics;
+- slope/jump/curvature metrics;
+- typewell TVT range metrics;
+- JSON output for per-candidate audit artifacts.
+
+Validation commands passed:
+
+```text
+python3 -m py_compile scripts/pre_submit_audit.py
+python3 scripts/pre_submit_audit.py artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv --data-dir data/sample --reference current_best=artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv --reference fleongg=artifacts/fleongg_branch_calibration_joezzzzz_v2/submission.csv --json-out artifacts/lucifer_baseline_repro_joezzzzz_v1/deep_pre_submit_audit.json
+python3 scripts/pre_submit_audit.py artifacts/fleongg_branch_calibration_joezzzzz_v2/submission.csv --data-dir data/sample --reference current_best=artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv --json-out artifacts/fleongg_branch_calibration_joezzzzz_v2/deep_pre_submit_audit.json
+```
+
+Key validation results:
+
+| candidate | status | risk_status | reference | rmse | p95 abs diff | anchor p90 | jump rate |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| baseline vs baseline | PASS | PASS | current_best | 0.000000 | 0.000000 | 0.036088 | 0.000071 |
+| baseline vs fleongg | PASS | PASS | fleongg | 3.921052 | 9.255842 | 0.036088 | 0.000071 |
+| fleongg vs baseline | PASS | PASS | current_best | 3.921052 | 9.255842 | 0.124812 | 0.000000 |
+
+Records updated:
+
+- `experiments/question_backlog.csv`
+  - Moved Q20260629-B05 to `implemented_needs_field_use`.
+- `experiments/question_decision_log.csv`
+  - Added Q20260629-09.
+- `README.md`
+  - Added the deep pre-submit audit command.
+- `goals/rogii_iterative_submission_optimization.md`
+  - Moved deep pre-submit audit extension into Done and added next reference-bundle work.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. Poll official submission `54174876`.
 4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex`.
-5. If Degnonguidi completes, download output and run pre-submit/distance audit before any official submission decision.
+5. If Degnonguidi completes, download output and run deep pre-submit/distance audit before any official submission decision.
 6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
