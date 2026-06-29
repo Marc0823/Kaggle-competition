@@ -217,7 +217,7 @@ def build_plan(candidates: pd.DataFrame, submissions: pd.DataFrame, kernels: pd.
     work = drop_sha_duplicates(work)
 
     eligible = work[
-        work["submission_gate"].isin(["AUDITED_WAIT_CONTEXT", "HOLD_INFORMATION_SLOT"])
+        work["submission_gate"].isin(["READY", "READY_REVIEW_WARNINGS", "AUDITED_WAIT_CONTEXT", "HOLD_INFORMATION_SLOT"])
         & work["audit_gate"].isin(["AUDIT_PASS", "AUDIT_PASS_WARN_REVIEW"])
     ].copy()
 

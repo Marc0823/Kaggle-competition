@@ -182,6 +182,19 @@ experiments/next_submission_batch_plan.csv
 reports/next_submission_batch_plan.md
 ```
 
+Check whether planned official submission slots may be released:
+
+```powershell
+python scripts\submission_release_gate.py
+```
+
+Outputs:
+
+```text
+experiments/submission_release_gate.csv
+reports/submission_release_gate_report.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell

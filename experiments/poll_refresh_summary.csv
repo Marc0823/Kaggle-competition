@@ -14,3 +14,4 @@ submission_gate_counts,AUDITED_WAIT_CONTEXT=13; HOLD_DUPLICATE=6; HOLD_LOW_UPSID
 batch_status,WAIT_EXTERNAL_CONTEXT
 planned_slots,5
 current_action_counts,do_not_submit_yet=5
+release_gate_counts,BLOCKED_EXTERNAL_CONTEXT=5

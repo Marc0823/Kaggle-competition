@@ -1012,6 +1012,40 @@ Decision:
 - The wrapper does not submit to Kaggle and uses dry-run submission syncing by default.
 - If dry-run detects updates, review them and rerun with explicit apply flags before spending official slots.
 
+## Submission Release Gate
+
+Added:
+
+```text
+scripts/submission_release_gate.py
+```
+
+Run command:
+
+```text
+python3 scripts/submission_release_gate.py
+```
+
+Outputs:
+
+```text
+experiments/submission_release_gate.csv
+reports/submission_release_gate_report.md
+```
+
+Current gate result:
+
+```text
+overall status: BLOCKED_EXTERNAL_CONTEXT
+release_gate_counts: BLOCKED_EXTERNAL_CONTEXT=5
+```
+
+Decision:
+
+- The release gate is now part of `scripts/poll_and_refresh_state.py`.
+- All five currently planned slots are explicitly blocked because pending official scores and Degnonguidi v6 still affect interpretation.
+- `scripts/next_submission_batch_plan.py` now accepts future `READY` and `READY_REVIEW_WARNINGS` audit-summary states, so candidates will not disappear from the plan after blockers clear.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1020,5 +1054,5 @@ Decision:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots.
+7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md`.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

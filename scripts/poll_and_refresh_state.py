@@ -102,6 +102,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/next_batch_readiness_report.md`",
             "- `reports/candidate_audit_summary_report.md`",
             "- `reports/next_submission_batch_plan.md`",
+            "- `reports/submission_release_gate_report.md`",
             f"- `{output_csv.as_posix()}`",
             f"- `{report.as_posix()}`",
         ]
@@ -148,12 +149,14 @@ def main() -> int:
     run_checked([sys.executable, "scripts/next_batch_readiness_report.py"])
     run_checked([sys.executable, "scripts/candidate_audit_summary.py"])
     run_checked([sys.executable, "scripts/next_submission_batch_plan.py"])
+    run_checked([sys.executable, "scripts/submission_release_gate.py"])
 
     submissions = safe_read_csv(Path("experiments/submission_ledger.csv"))
     kernels = safe_read_csv(Path("experiments/kernel_run_ledger.csv"))
     readiness = safe_read_csv(Path("experiments/next_batch_readiness.csv"))
     audit_summary = safe_read_csv(Path("experiments/candidate_audit_summary.csv"))
     batch_plan = safe_read_csv(Path("experiments/next_submission_batch_plan.csv"))
+    release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
 
     summary = {
         "kernel_updates_detected": len(kernel_summary.get("updated", [])),
@@ -171,6 +174,7 @@ def main() -> int:
         "batch_status": first_or_blank(batch_plan, "batch_status"),
         "planned_slots": len(batch_plan),
         "current_action_counts": count_values(batch_plan, "current_action"),
+        "release_gate_counts": count_values(release_gate, "release_gate"),
     }
     write_outputs(summary, args.summary_csv, args.report)
     print(json.dumps(summary, indent=2, sort_keys=True))
