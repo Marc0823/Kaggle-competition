@@ -133,6 +133,61 @@ Pushed:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 2
+status: ERROR
+official submission: none
+```
+
+## Version 2 Result
+
+Version 2 passed the first failure point:
+
+```text
+Pipeline A: filling missing test feature columns from train medians:
+beam_vcons_d, beam_vloose_d, beam_stiff_d, and td*/tda*/tdbc*/tdsc*/tdpf* columns
+Pipeline A features built in 329s | train rows=3783989 test rows=14151 features=195
+```
+
+Then it failed while loading pre-trained artifact trainers:
+
+```text
+ModuleNotFoundError: No module named 'koolbox'
+```
+
+Interpretation:
+
+- The feature-schema guard worked.
+- The next blocker is pickle compatibility: artifact trainer files reference `koolbox.Trainer`.
+- This remains a no-submit runtime preflight issue, not an official submission issue.
+
+## Version 3 Patch
+
+Patched the ignored working notebook after the visible `CVTrainer` replacement is defined:
+
+```python
+import types as _codex_types
+_koolbox_stub = _codex_types.ModuleType("koolbox")
+_koolbox_stub.Trainer = CVTrainer
+sys.modules.setdefault("koolbox", _koolbox_stub)
+```
+
+Rationale:
+
+- The notebook already defines `CVTrainer` as a visible replacement for `koolbox.Trainer`.
+- Registering it under the expected module/class name lets `joblib.load` unpickle artifact trainers without internet or private source access.
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 3
 status: RUNNING
 official submission: none
 ```
@@ -163,7 +218,7 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 | result | next action |
 | --- | --- |
-| kernel COMPLETE and output audit PASS | download output, run deep pre-submit audit, compare distance to `7.235`, decide whether it is a future submission candidate |
+| kernel COMPLETE and output audit PASS | download output, run deep pre-submit audit with `experiments/reference_submission_registry.csv`, compare distance to `7.235`, decide whether it is a future submission candidate |
 | kernel COMPLETE but audit FAIL | block official submission and add the failure to audit rules |
 | kernel FAILED due dependency/schema | record missing source; choose between another minimal patch, inference-core port, or blocking this reference |
 | output is near-duplicate of current best | hold as low-upside reference |
@@ -172,4 +227,4 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 ## Decision
 
-Proceed with Degnonguidi no-submit preflight v2 and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v3 and hold Baidalin until its source audit failures are fixed.

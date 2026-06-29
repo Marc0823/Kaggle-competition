@@ -332,28 +332,91 @@ Pushed retry:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 2
+status: ERROR
+official submission: none
+```
+
+Version 2 log diagnosis:
+
+```text
+Feature-schema patch worked:
+Pipeline A features built in 329s | train rows=3783989 test rows=14151 features=195
+
+Then artifact trainer loading failed:
+ModuleNotFoundError: No module named 'koolbox'
+```
+
+Decision:
+
+- Do not submit anything.
+- Keep Baidalin held because its source audit remains failed.
+- Add a visible `koolbox.Trainer` compatibility stub that maps to the notebook's `CVTrainer` replacement, so joblib can unpickle artifact trainers without internet or private source access.
+
+Source audit after v3 patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed second retry:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 3
 status: RUNNING
 official submission: none
 ```
 
+## Standard Reference Registry
+
+Added a standard reference bundle for deep pre-submit audits:
+
+```text
+experiments/reference_submission_registry.csv
+```
+
+Updated `scripts/pre_submit_audit.py` with:
+
+```text
+--reference-registry experiments/reference_submission_registry.csv
+```
+
+Validation command:
+
+```text
+python3 scripts/pre_submit_audit.py artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv --data-dir data/sample --reference-registry experiments/reference_submission_registry.csv --json-out artifacts/lucifer_baseline_repro_joezzzzz_v1/registry_pre_submit_audit.json
+```
+
+Key validation results:
+
+| reference | status | rmse | p95 abs diff |
+| --- | --- | ---: | ---: |
+| current_best_7p235 | PASS | 0.000000 | 0.000000 |
+| fleongg_branch_pending | PASS | 3.921052 | 9.255842 |
+| unavailable historical artifact paths | SKIP |  |  |
+
+The baseline registry audit returned `status=PASS` and `risk_status=WARN` only because several optional historical artifact files are not present in the lean local workspace.
+
 Records updated:
 
 - `experiments/kernel_run_ledger.csv`
-  - Marked v1 as `ERROR`.
-  - Added v2 as `RUNNING`.
+  - Marked v2 as `ERROR`.
+  - Added v3 as `RUNNING`.
 - `experiments/question_backlog.csv`
-  - Updated Q20260629-B07 to `kernel_running`.
+  - Updated Q20260629-B05 and Q20260629-B07.
 - `experiments/question_decision_log.csv`
-  - Added Q20260629-10.
+  - Added Q20260629-11 and Q20260629-12.
 - `reports/reference_notebook_preflight_2026-06-29.md`
-  - Added v1 failure details and v2 patch branch rules.
+  - Added v2 failure details and v3 patch branch rules.
 
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. Poll official submission `54174876`.
-4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 2.
-5. If Degnonguidi v2 completes, download output and run deep pre-submit/distance audit before any official submission decision.
+4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 3.
+5. If Degnonguidi v3 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.

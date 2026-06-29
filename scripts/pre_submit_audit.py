@@ -312,6 +312,29 @@ def parse_reference_args(values: list[str]) -> list[tuple[str, Path]]:
     return out
 
 
+def truthy(value: object) -> bool:
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def load_reference_registry(path: Path) -> list[tuple[str, Path]]:
+    if not path.is_file():
+        raise FileNotFoundError(f"reference registry not found: {path}")
+    registry = pd.read_csv(path)
+    required = {"label", "path"}
+    missing = required - set(registry.columns)
+    if missing:
+        raise ValueError(f"reference registry missing columns: {sorted(missing)}")
+    if "enabled" in registry.columns:
+        registry = registry[registry["enabled"].map(truthy)]
+    references = []
+    for _, row in registry.iterrows():
+        label = str(row["label"]).strip()
+        ref_path = Path(str(row["path"]).strip())
+        if label and str(ref_path):
+            references.append((label, ref_path))
+    return references
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("submission", type=Path, help="Path to submission.csv")
@@ -323,10 +346,21 @@ def main() -> int:
         default=[],
         help="Optional reference submission as LABEL=PATH. Can be passed multiple times.",
     )
+    parser.add_argument(
+        "--reference-registry",
+        type=Path,
+        default=None,
+        help="Optional CSV with label,path,enabled columns for reference submissions.",
+    )
     parser.add_argument("--json-out", type=Path, default=None, help="Optional audit JSON output path")
     args = parser.parse_args()
 
-    result = audit(args.submission, args.sample, args.data_dir, parse_reference_args(args.reference))
+    references = []
+    if args.reference_registry is not None:
+        references.extend(load_reference_registry(args.reference_registry))
+    references.extend(parse_reference_args(args.reference))
+
+    result = audit(args.submission, args.sample, args.data_dir, references)
     text = json.dumps(result, indent=2, sort_keys=True)
     print(text)
 

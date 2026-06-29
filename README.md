@@ -154,6 +154,14 @@ python scripts\pre_submit_audit.py artifacts\candidate_folder\submission.csv --d
 
 This still cannot see hidden labels, but it helps block physically implausible outputs, near-duplicates, and candidates that drift far from known references before spending an official slot.
 
+Use the standard reference registry for repeatable distance checks:
+
+```powershell
+python scripts\pre_submit_audit.py artifacts\candidate_folder\submission.csv --data-dir data\sample --reference-registry experiments\reference_submission_registry.csv --json-out artifacts\candidate_folder\deep_pre_submit_audit.json
+```
+
+The registry includes known-good, pending, and known-bad reference paths. Missing local artifacts are skipped as warnings so the same command can run on lean clones and fuller workspaces.
+
 Build the first local GR/typewell structural probe from an audited baseline:
 
 ```powershell
