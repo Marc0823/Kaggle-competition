@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+"""Validate consistency between ROGII planning reports before submission."""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+
+DEFAULT_POLL = Path("experiments/poll_refresh_summary.csv")
+DEFAULT_READINESS = Path("experiments/next_batch_readiness.csv")
+DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
+DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
+DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
+DEFAULT_OUTPUT_CSV = Path("experiments/planning_state_validation.csv")
+DEFAULT_REPORT = Path("reports/planning_state_validation_report.md")
+
+
+def fmt(value: Any) -> str:
+    if isinstance(value, float):
+        return "" if not np.isfinite(value) else f"{value:.6g}"
+    if pd.isna(value):
+        return ""
+    return str(value)
+
+
+def markdown_table(df: pd.DataFrame) -> str:
+    if df.empty:
+        return "No rows."
+    cols = list(df.columns)
+    lines = [
+        "| " + " | ".join(cols) + " |",
+        "| " + " | ".join(["---"] * len(cols)) + " |",
+    ]
+    for _, row in df.iterrows():
+        lines.append("| " + " | ".join(fmt(row[c]) for c in cols) + " |")
+    return "\n".join(lines)
+
+
+def safe_read_csv(path: Path) -> pd.DataFrame:
+    if not path.is_file():
+        return pd.DataFrame()
+    return pd.read_csv(path)
+
+
+def poll_value(poll: pd.DataFrame, key: str, default: str = "") -> str:
+    if poll.empty or not {"metric", "value"}.issubset(poll.columns):
+        return default
+    rows = poll[poll["metric"].astype(str) == key]
+    if rows.empty:
+        return default
+    return str(rows.iloc[0]["value"])
+
+
+def int_poll_value(poll: pd.DataFrame, key: str) -> int:
+    try:
+        return int(float(poll_value(poll, key, "0")))
+    except ValueError:
+        return 0
+
+
+def add(checks: list[dict[str, Any]], name: str, severity: str, status: str, detail: str) -> None:
+    checks.append({"check": name, "severity": severity, "status": status, "detail": detail})
+
+
+def status_from_condition(condition: bool) -> str:
+    return "PASS" if condition else "FAIL"
+
+
+def validate(
+    poll: pd.DataFrame,
+    readiness: pd.DataFrame,
+    audit: pd.DataFrame,
+    plan: pd.DataFrame,
+    release: pd.DataFrame,
+) -> pd.DataFrame:
+    checks: list[dict[str, Any]] = []
+
+    pending = int_poll_value(poll, "pending_official_submissions")
+    running = int_poll_value(poll, "running_kernels")
+    kernel_updates = int_poll_value(poll, "kernel_updates_detected")
+    submission_updates = int_poll_value(poll, "submission_updates_detected")
+    batch_status = poll_value(poll, "batch_status", "")
+
+    add(checks, "input_poll_summary_exists", "ERROR", status_from_condition(not poll.empty), "poll refresh summary is readable")
+    add(checks, "input_readiness_exists", "ERROR", status_from_condition(not readiness.empty), "next-batch readiness CSV is readable")
+    add(checks, "input_audit_summary_exists", "ERROR", status_from_condition(not audit.empty), "candidate audit summary CSV is readable")
+    add(checks, "input_plan_exists", "ERROR", status_from_condition(not plan.empty), "next submission batch plan CSV is readable")
+    add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
+
+    plan_paths = set(plan.get("path", pd.Series(dtype=str)).astype(str))
+    release_paths = set(release.get("path", pd.Series(dtype=str)).astype(str))
+    audit_paths = set(audit.get("path", pd.Series(dtype=str)).astype(str))
+    readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
+
+    add(
+        checks,
+        "planned_slots_within_daily_limit",
+        "ERROR",
+        status_from_condition(len(plan) <= 5),
+        f"planned slots={len(plan)}; daily official limit=5",
+    )
+    add(
+        checks,
+        "planned_slots_have_release_rows",
+        "ERROR",
+        status_from_condition(plan_paths == release_paths),
+        f"plan-only={sorted(plan_paths - release_paths)[:5]}; release-only={sorted(release_paths - plan_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_audit_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(audit_paths)),
+        f"missing audit rows={sorted(plan_paths - audit_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_readiness_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(readiness_paths)),
+        f"missing readiness rows={sorted(plan_paths - readiness_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_paths_unique",
+        "ERROR",
+        status_from_condition(len(plan_paths) == len(plan)),
+        "no duplicate planned submission paths",
+    )
+
+    if "sha256_submission_csv" in audit.columns and not plan.empty:
+        planned_audit = audit[audit["path"].astype(str).isin(plan_paths)].copy()
+        dup_sha = planned_audit["sha256_submission_csv"].dropna().duplicated().sum()
+        add(
+            checks,
+            "planned_submission_hashes_unique",
+            "ERROR",
+            status_from_condition(int(dup_sha) == 0),
+            f"duplicate planned sha count={int(dup_sha)}",
+        )
+
+    missing_audit = int((audit.get("audit_gate", pd.Series(dtype=str)).astype(str) == "MISSING_AUDIT").sum()) if not audit.empty else 0
+    add(
+        checks,
+        "no_missing_audit_in_candidate_pool",
+        "ERROR",
+        status_from_condition(missing_audit == 0),
+        f"MISSING_AUDIT rows={missing_audit}",
+    )
+
+    release_gates = set(release.get("release_gate", pd.Series(dtype=str)).astype(str))
+    blocked_or_review = any(gate.startswith("BLOCKED") or gate == "REVIEW_LEDGER_UPDATES" for gate in release_gates)
+    if pending or running or batch_status == "WAIT_EXTERNAL_CONTEXT":
+        add(
+            checks,
+            "external_context_blocks_release",
+            "ERROR",
+            status_from_condition(blocked_or_review),
+            f"pending={pending}; running={running}; batch_status={batch_status}; gates={sorted(release_gates)}",
+        )
+        actions = set(plan.get("current_action", pd.Series(dtype=str)).astype(str))
+        add(
+            checks,
+            "blocked_plan_does_not_submit",
+            "ERROR",
+            status_from_condition(actions <= {"do_not_submit_yet"}),
+            f"current actions={sorted(actions)}",
+        )
+
+    if kernel_updates or submission_updates:
+        add(
+            checks,
+            "detected_updates_block_release_until_applied",
+            "ERROR",
+            status_from_condition("REVIEW_LEDGER_UPDATES" in release_gates),
+            f"kernel_updates={kernel_updates}; submission_updates={submission_updates}; gates={sorted(release_gates)}",
+        )
+    else:
+        add(
+            checks,
+            "no_unapplied_poll_updates",
+            "INFO",
+            "PASS",
+            "poll refresh detected no unapplied kernel/submission updates",
+        )
+
+    if "audit_gate" in plan.columns:
+        bad_audit = plan[~plan["audit_gate"].astype(str).isin(["AUDIT_PASS", "AUDIT_PASS_WARN_REVIEW"])]
+        add(
+            checks,
+            "planned_slots_have_passing_audit_gate",
+            "ERROR",
+            status_from_condition(bad_audit.empty),
+            f"nonpassing planned audit rows={len(bad_audit)}",
+        )
+
+    if "release_gate" in release.columns:
+        ready_rows = release[release["release_gate"].astype(str) == "READY"]
+        if not ready_rows.empty:
+            add(
+                checks,
+                "ready_rows_require_final_review_action",
+                "ERROR",
+                status_from_condition(set(ready_rows["current_action"].astype(str)) == {"final_review_before_submit"}),
+                "READY slots must be in final_review_before_submit state",
+            )
+        else:
+            add(checks, "no_slots_ready_for_submit", "INFO", "PASS", "no planned slot is currently releasable")
+
+    return pd.DataFrame(checks)
+
+
+def write_report(checks: pd.DataFrame, output: Path, csv_path: Path) -> None:
+    errors = checks[(checks["severity"] == "ERROR") & (checks["status"] != "PASS")]
+    warnings = checks[(checks["severity"] == "WARN") & (checks["status"] != "PASS")]
+    overall = "PASS" if errors.empty else "FAIL"
+
+    counts = checks.groupby(["severity", "status"]).size().reset_index(name="count") if not checks.empty else pd.DataFrame()
+    lines = [
+        "# Planning State Validation",
+        "",
+        "This report validates consistency between polling, readiness, audit summary, batch plan, and release gate state.",
+        "",
+        "## Overall",
+        "",
+        f"- Status: `{overall}`",
+        f"- Error failures: `{len(errors)}`",
+        f"- Warning failures: `{len(warnings)}`",
+        "",
+        "## Counts",
+        "",
+        markdown_table(counts),
+        "",
+        "## Checks",
+        "",
+        markdown_table(checks),
+        "",
+        "## Outputs",
+        "",
+        f"- `{csv_path.as_posix()}`",
+        f"- `{output.as_posix()}`",
+    ]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--poll", type=Path, default=DEFAULT_POLL)
+    parser.add_argument("--readiness", type=Path, default=DEFAULT_READINESS)
+    parser.add_argument("--audit", type=Path, default=DEFAULT_AUDIT)
+    parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
+    parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
+    parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
+    parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    args = parser.parse_args()
+
+    checks = validate(
+        poll=safe_read_csv(args.poll),
+        readiness=safe_read_csv(args.readiness),
+        audit=safe_read_csv(args.audit),
+        plan=safe_read_csv(args.plan),
+        release=safe_read_csv(args.release),
+    )
+    args.output_csv.parent.mkdir(parents=True, exist_ok=True)
+    checks.to_csv(args.output_csv, index=False)
+    write_report(checks, args.report, args.output_csv)
+
+    failing_errors = checks[(checks["severity"] == "ERROR") & (checks["status"] != "PASS")]
+    print(f"wrote {args.output_csv}")
+    print(f"wrote {args.report}")
+    print(f"status={'PASS' if failing_errors.empty else 'FAIL'} error_failures={len(failing_errors)}")
+    return 0 if failing_errors.empty else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

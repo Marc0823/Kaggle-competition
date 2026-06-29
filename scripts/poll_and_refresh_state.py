@@ -103,6 +103,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/candidate_audit_summary_report.md`",
             "- `reports/next_submission_batch_plan.md`",
             "- `reports/submission_release_gate_report.md`",
+            "- `reports/planning_state_validation_report.md`",
             f"- `{output_csv.as_posix()}`",
             f"- `{report.as_posix()}`",
         ]
@@ -176,6 +177,15 @@ def main() -> int:
         "current_action_counts": count_values(batch_plan, "current_action"),
         "release_gate_counts": count_values(release_gate, "release_gate"),
     }
+
+    write_outputs(summary, args.summary_csv, args.report)
+    run_checked([sys.executable, "scripts/validate_planning_state.py"])
+    validation = safe_read_csv(Path("experiments/planning_state_validation.csv"))
+    error_failures = 0
+    if not validation.empty and {"severity", "status"}.issubset(validation.columns):
+        error_failures = int(((validation["severity"] == "ERROR") & (validation["status"] != "PASS")).sum())
+    summary["planning_validation_status_counts"] = count_values(validation, "status")
+    summary["planning_validation_error_failures"] = error_failures
     write_outputs(summary, args.summary_csv, args.report)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0

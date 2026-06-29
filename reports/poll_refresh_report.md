@@ -22,6 +22,8 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | planned_slots | 5 |
 | current_action_counts | do_not_submit_yet=5 |
 | release_gate_counts | BLOCKED_EXTERNAL_CONTEXT=5 |
+| planning_validation_status_counts | PASS=17 |
+| planning_validation_error_failures | 0 |
 
 ## Interpretation
 
@@ -35,5 +37,6 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 - `reports/candidate_audit_summary_report.md`
 - `reports/next_submission_batch_plan.md`
 - `reports/submission_release_gate_report.md`
+- `reports/planning_state_validation_report.md`
 - `experiments/poll_refresh_summary.csv`
 - `reports/poll_refresh_report.md`

@@ -1046,6 +1046,41 @@ Decision:
 - All five currently planned slots are explicitly blocked because pending official scores and Degnonguidi v6 still affect interpretation.
 - `scripts/next_submission_batch_plan.py` now accepts future `READY` and `READY_REVIEW_WARNINGS` audit-summary states, so candidates will not disappear from the plan after blockers clear.
 
+## Planning State Validation
+
+Added:
+
+```text
+scripts/validate_planning_state.py
+```
+
+Run command:
+
+```text
+python3 scripts/validate_planning_state.py
+```
+
+Outputs:
+
+```text
+experiments/planning_state_validation.csv
+reports/planning_state_validation_report.md
+```
+
+Current validation result:
+
+```text
+overall status: PASS
+error failures: 0
+checks passed: 17
+```
+
+Decision:
+
+- The validation step is now part of `scripts/poll_and_refresh_state.py`.
+- It checks planned-slot count, release rows, audit/readiness coverage, duplicate hashes, missing audits, and blocker behavior.
+- Official submissions should not be made unless this validation has zero error failures.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1054,5 +1089,5 @@ Decision:
 4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md`.
+7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md` and `reports/planning_state_validation_report.md`.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.

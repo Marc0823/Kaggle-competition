@@ -859,6 +859,7 @@ Tracked:
 - `reports/candidate_audit_summary_report.md`: audit-gated candidate evidence joined to next-batch readiness.
 - `reports/next_submission_batch_plan.md`: conditional 4-5 slot plan built from audited candidates and current blockers.
 - `reports/submission_release_gate_report.md`: explicit release gate for planned official submission slots.
+- `reports/planning_state_validation_report.md`: consistency validation across polling, readiness, audit summary, batch plan, and release gate state.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
@@ -867,6 +868,7 @@ Tracked:
 - `experiments/candidate_audit_summary.csv`: audit-gated candidate summary with distance, novelty, and readiness fields.
 - `experiments/next_submission_batch_plan.csv`: current conditional official-submission slot plan.
 - `experiments/submission_release_gate.csv`: per-slot release gate and blocking reason.
+- `experiments/planning_state_validation.csv`: machine-readable planning consistency checks.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -1007,6 +1009,7 @@ Done:
 - Create `scripts/next_submission_batch_plan.py` to turn audited candidates into a conditional 4-5 slot plan with explicit release rules; current planned slots are held by external context.
 - Create `scripts/poll_and_refresh_state.py` to run one safe polling pass and refresh readiness, audit summary, and batch plan reports.
 - Create `scripts/submission_release_gate.py` and wire it into the polling wrapper so planned slots must pass an explicit release gate before official submission.
+- Create `scripts/validate_planning_state.py` and wire it into the polling wrapper so release, audit, readiness, and planned-slot invariants are checked before submission.
 
 Next:
 
@@ -1014,7 +1017,7 @@ Next:
 2. Add a standard candidate output folder convention under ignored `artifacts/`.
 3. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/..._deep_pre_submit_audit.json`.
 4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots.
-5. Do not submit planned slots unless `reports/submission_release_gate_report.md` no longer reports `BLOCKED_*` or `REVIEW_LEDGER_UPDATES`.
+5. Do not submit planned slots unless `reports/submission_release_gate_report.md` no longer reports `BLOCKED_*` or `REVIEW_LEDGER_UPDATES`, and `reports/planning_state_validation_report.md` reports zero error failures.
 
 ## Stop / Escalation Rules
 

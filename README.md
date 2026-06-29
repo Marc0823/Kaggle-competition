@@ -195,6 +195,19 @@ experiments/submission_release_gate.csv
 reports/submission_release_gate_report.md
 ```
 
+Validate planning state consistency before any official submission:
+
+```powershell
+python scripts\validate_planning_state.py
+```
+
+Outputs:
+
+```text
+experiments/planning_state_validation.csv
+reports/planning_state_validation_report.md
+```
+
 Run pseudo-test CV on training wells by hiding known-TVT suffixes:
 
 ```powershell
