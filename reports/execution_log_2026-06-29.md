@@ -1120,6 +1120,23 @@ Decision:
 - It makes the pending-result response explicit before scores arrive, reducing the chance of ad hoc public-LB chasing.
 - Current state still follows `B07_no_external_change`.
 
+## Candidate Artifact Convention
+
+Added:
+
+```text
+scripts/init_candidate_artifact.py
+experiments/candidate_artifact_convention.csv
+reports/candidate_artifact_convention.md
+```
+
+Decision:
+
+- Future promoted candidate outputs should use a standard ignored `artifacts/<candidate_id>/` folder.
+- The local folder should contain the exact selected `submission.csv`, `deep_pre_submit_audit.json`, `candidate_manifest.json`, and optional build notes/audits.
+- Downloaded multi-output kernel folders can remain under `artifacts/kernel_outputs/`; when one file is promoted, create a manifest folder that points back to that selected source file.
+- The convention keeps generated submissions out of Git while making every official candidate traceable through audit summary, release gate, planning validation, and submission ledger.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1130,3 +1147,4 @@ Decision:
 6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
 7. Re-run `scripts/poll_and_refresh_state.py` before spending official slots, then inspect `reports/submission_release_gate_report.md`, `reports/planning_state_validation_report.md`, and `reports/result_branch_matrix.md`.
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.
+9. Use `scripts/init_candidate_artifact.py` before promoting any new locally generated output into the official-submission queue.

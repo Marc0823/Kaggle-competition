@@ -46,6 +46,14 @@ Not included in Git:
 - Kaggle credentials
 - generated submission files
 
+Candidate outputs should still follow the local convention in
+`reports/candidate_artifact_convention.md`. Initialize a new ignored candidate
+folder with:
+
+```bash
+python3 scripts/init_candidate_artifact.py --candidate-id my_candidate_v1 --family projection_branch --source-path path/to/source.csv
+```
+
 ## Operating Goal
 
 The current optimization workflow is documented in:
@@ -246,6 +254,14 @@ python scripts\pre_submit_audit.py artifacts\candidate_folder\submission.csv --s
 ```
 
 This checks columns, row count, ID order, duplicate IDs, finite predictions, summary stats, and sha256. It does not replace hidden-compatibility source review or pseudo-test validation.
+
+For future candidates, first create a standard ignored artifact folder:
+
+```powershell
+python scripts\init_candidate_artifact.py --candidate-id candidate_folder --family projection_branch
+```
+
+The required local files and release checklist are documented in `reports/candidate_artifact_convention.md`.
 
 Audit the notebook source for common hidden-test risks:
 
