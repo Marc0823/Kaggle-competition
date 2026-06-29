@@ -63,7 +63,7 @@ Use this as the working contract for iterative submission improvement:
 5. Submit only candidates that pass the gate and answer a specific experiment question.
 6. Record every official result in `experiments/submission_ledger.csv`.
 
-Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day and should be treated as planned experiments.
+Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day; the operating target is to use 4-5 slots when enough audited, informative candidates exist, with every submission treated as a planned experiment.
 
 ## Data Setup
 
