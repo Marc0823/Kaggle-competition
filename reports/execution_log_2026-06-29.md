@@ -742,6 +742,36 @@ Records updated:
 - `experiments/daily_submission_plan.csv`
 - `experiments/question_backlog.csv`
 
+## Kernel Ledger Sync
+
+Added:
+
+```text
+scripts/sync_kernel_ledger.py
+```
+
+Dry-run command:
+
+```text
+python3 scripts/sync_kernel_ledger.py --kaggle-bin /home/ubuntu/workstation/JoeProject/kaggle-api-workbench/.venv/bin/kaggle
+```
+
+Dry-run result:
+
+```text
+checked:
+  - joezzzzz/rogii-degnonguidi-7159-preflight-codex/v6: RUNNING -> RUNNING
+  - joezzzzz/rogii-baidalin-7-201-preflight-codex/v1: RUNNING -> RUNNING
+updated: []
+errors: []
+```
+
+Decision:
+
+- Use this script at the beginning of each polling pass.
+- Keep the default as dry-run; use `--apply` only after reviewing changed statuses.
+- If a row reaches `COMPLETE`, the script can set `next_action` to `download_output_and_deep_audit`; if it reaches `ERROR`, `next_action` becomes `download_log_and_triage`.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.

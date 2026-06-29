@@ -238,6 +238,18 @@ experiments/kernel_run_ledger.csv
 
 Use it for kernel slug, version, status, output artifact location, audit status, and next action.
 
+Poll running kernel rows from Kaggle without editing the ledger:
+
+```powershell
+python scripts\sync_kernel_ledger.py --kaggle-bin kaggle
+```
+
+Apply terminal status updates only after reviewing the dry-run output:
+
+```powershell
+python scripts\sync_kernel_ledger.py --kaggle-bin kaggle --apply
+```
+
 ## Current Public LB Notes
 
 Confirmed useful references from our tracker:

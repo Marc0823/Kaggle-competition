@@ -980,6 +980,7 @@ Done:
 - Extend `scripts/pre_submit_audit.py` with optional anchor-continuity, jump/curvature, typewell-range, and reference-distance checks.
 - Add `experiments/reference_submission_registry.csv` and `--reference-registry` support for repeatable known-output distance checks.
 - Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
+- Create `scripts/sync_kernel_ledger.py` to poll Kaggle kernel statuses into `experiments/kernel_run_ledger.csv` after dry-run review.
 - Create `scripts/pseudo_test_cv.py` for repeated train-well hidden-suffix validation of method families before submission.
 - Create `scripts/build_plateau_recent_quantile_candidate.py` to turn the first pseudo-test-positive plateau rule into an auditable submission candidate.
 - Create `scripts/plateau_quantile_sweep.py` to test whether the plateau recent-quantile rule is stable across nearby local-validation parameters.
