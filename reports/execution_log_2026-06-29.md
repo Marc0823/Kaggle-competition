@@ -283,12 +283,77 @@ Records updated:
 - `goals/rogii_iterative_submission_optimization.md`
   - Moved deep pre-submit audit extension into Done and added next reference-bundle work.
 
+## Degnonguidi Preflight V1 Failure And V2 Retry
+
+Final status check after the deep-audit commit showed:
+
+```text
+joezzzzz/rogii-degnonguidi-7159-preflight-codex version 1: ERROR
+official submissions 54174876, 54174151, 54162612: still PENDING
+```
+
+Downloaded v1 output/log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v1/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+Log diagnosis:
+
+```text
+PapermillExecutionError at In [10]
+KeyError at X_test_A = test_df_A[features_A]
+missing train artifact feature columns in test_df_A:
+beam_vcons_d, beam_vloose_d, beam_stiff_d, and td*/tda*/tdbc*/tdsc*/tdpf* columns
+```
+
+Decision:
+
+- Do not submit anything.
+- Do not switch to Baidalin, because Baidalin source audit is still failed.
+- Patch the ignored Degnonguidi working notebook with a conservative feature-schema guard and rerun a no-submit preflight.
+
+Patch logic:
+
+```text
+Before selecting X_test_A, find Pipeline A features missing from test_df_A.
+For each missing feature, fill test_df_A[col] with the median from train_df_A[col].
+If the train median is non-finite, use 0.0.
+```
+
+Validation:
+
+```text
+notebook source audit after patch: PASS
+```
+
+Pushed retry:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 2
+status: RUNNING
+official submission: none
+```
+
+Records updated:
+
+- `experiments/kernel_run_ledger.csv`
+  - Marked v1 as `ERROR`.
+  - Added v2 as `RUNNING`.
+- `experiments/question_backlog.csv`
+  - Updated Q20260629-B07 to `kernel_running`.
+- `experiments/question_decision_log.csv`
+  - Added Q20260629-10.
+- `reports/reference_notebook_preflight_2026-06-29.md`
+  - Added v1 failure details and v2 patch branch rules.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. Poll official submission `54174876`.
-4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex`.
-5. If Degnonguidi completes, download output and run deep pre-submit/distance audit before any official submission decision.
+4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 2.
+5. If Degnonguidi v2 completes, download output and run deep pre-submit/distance audit before any official submission decision.
 6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.

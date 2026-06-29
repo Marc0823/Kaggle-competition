@@ -70,11 +70,72 @@ Fork Degnonguidi 7.159 into the active account and run it as a no-submit Kaggle 
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 1
-status: RUNNING
+status: ERROR
 official submission: none
 ```
 
 This does not consume an official competition submission slot. The purpose is to test dependency/runtime/output sanity before deciding whether any official submission is justified.
+
+## Version 1 Result
+
+Version 1 failed before producing `submission.csv`.
+
+Downloaded log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v1/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+Failure:
+
+```text
+KeyError at X_test_A = test_df_A[features_A]
+missing columns:
+  beam_vcons_d, beam_vloose_d, beam_stiff_d,
+  tda-80 ... tda80,
+  tdbc-40 ... tdbc40,
+  tdsc-30 ... tdsc30,
+  tdpf-30 ... tdpf30
+```
+
+Interpretation:
+
+- The notebook found the data and artifact mount.
+- The replacement `CVTrainer` loaded successfully.
+- The failure is a Pipeline A train/test feature-schema mismatch.
+- This is a runtime fix issue, not a source-audit failure or an official submission failure.
+
+## Version 2 Patch
+
+Patched the ignored working copy before `X_test_A = test_df_A[features_A]`:
+
+```python
+missing_test_features_A = [c for c in features_A if c not in test_df_A.columns]
+if missing_test_features_A:
+    print("Pipeline A: filling missing test feature columns from train medians:", missing_test_features_A)
+    for _col in missing_test_features_A:
+        _fill = pd.to_numeric(train_df_A[_col], errors="coerce").median() if _col in train_df_A.columns else 0.0
+        if not np.isfinite(_fill):
+            _fill = 0.0
+        test_df_A[_col] = float(_fill)
+```
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 2
+status: RUNNING
+official submission: none
+```
 
 ## Metadata Notes
 
@@ -102,13 +163,13 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 | result | next action |
 | --- | --- |
-| kernel COMPLETE and output audit PASS | download output, run pre-submit audit, compare distance to `7.235`, decide whether it is a future submission candidate |
+| kernel COMPLETE and output audit PASS | download output, run deep pre-submit audit, compare distance to `7.235`, decide whether it is a future submission candidate |
 | kernel COMPLETE but audit FAIL | block official submission and add the failure to audit rules |
-| kernel FAILED due dependency | record missing source and choose between dependency fix or inference-core port |
+| kernel FAILED due dependency/schema | record missing source; choose between another minimal patch, inference-core port, or blocking this reference |
 | output is near-duplicate of current best | hold as low-upside reference |
 | output differs materially with low shape risk | consider one official slot after baseline score resolves |
 | official scores appear while kernel runs | update ledger first, then re-rank next batch using new public scores |
 
 ## Decision
 
-Proceed with Degnonguidi no-submit preflight and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v2 and hold Baidalin until its source audit failures are fixed.
