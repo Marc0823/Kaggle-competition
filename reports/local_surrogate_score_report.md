@@ -5,7 +5,7 @@ It cannot replace Kaggle Public LB, but it helps reject implausible candidates b
 
 ## Inputs
 - Data dir: `data/sample`
-- Valid submission files scored: `9`
+- Valid submission files scored: `10`
 - Known public-score calibration rows: `0`
 
 ## Important Limitation
@@ -28,6 +28,7 @@ No known public-score rows were matched.
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_pre_gold.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_public_self_verified.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/gr_typewell_light_alpha010_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.349534 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/gr_typewell_light_alpha020_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.699067 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/fleongg_pretrained_submission.csv | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.68124 |  |  | 0.125039 | 0 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/sp45_projection_submission.csv | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 |  |  | 2.65079 | 0 |
 

@@ -1,0 +1,30 @@
+# Candidate Decision Report
+
+This report converts local surrogate rows into a lightweight pre-submission decision table.
+
+Decision meanings:
+
+- `BLOCK`: do not submit without a specific override reason.
+- `HOLD_DUPLICATE`: too close to the active baseline to spend a slot.
+- `HOLD_LOW_UPSIDE`: likely safe but low information value.
+- `SUBMIT_CANDIDATE`: eligible for official submission if source and format audits pass.
+- `HOLD_NEEDS_REVIEW`: inspect manually before any official submission.
+
+## Focus Candidates
+
+| path | decision | risk_grade | estimated_public_band | rmse_to_current_best_7p235 | anchor_first_abs_p90 | jump_rate_abs_slope_gt3 | typewell_range_violation_frac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_aggressive.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_balanced.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_conservative.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_pre_gold.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_public_self_verified.csv | HOLD_DUPLICATE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/gr_typewell_light_alpha010_v1/submission.csv | HOLD_LOW_UPSIDE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.349534 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/gr_typewell_light_alpha020_v1/submission.csv | HOLD_LOW_UPSIDE | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.699067 | 0.0360878 | 7.06814e-05 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/fleongg_pretrained_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | plausible_7p2_to_7p8_band | 3.68124 | 0.125039 | 0 | 0 |
+| artifacts/lucifer_baseline_repro_joezzzzz_v1/sp45_projection_submission.csv | SUBMIT_CANDIDATE | plausible_submit_candidate | unknown_possible_but_risky | 5.79449 | 2.65079 | 0 | 0 |
+
+## Recommendation
+
+2 focused candidate(s) are eligible for official submission after audit review.

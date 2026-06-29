@@ -843,6 +843,8 @@ Done:
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.
 - Generate and audit `gr_typewell_light_alpha010_v1`.
+- Generate and audit `gr_typewell_light_alpha020_v1`.
+- Create `scripts/candidate_decision_report.py`.
 
 Next:
 

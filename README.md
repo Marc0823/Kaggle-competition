@@ -144,6 +144,12 @@ Build the first local GR/typewell structural probe from an audited baseline:
 python scripts\build_gr_typewell_light_candidate.py --baseline artifacts\lucifer_baseline_repro_joezzzzz_v1\submission.csv --data-dir data\sample --output-dir artifacts\gr_typewell_light_alpha010_v1 --alpha 0.10 --max-move 8.0
 ```
 
+Generate a compact candidate decision table from local surrogate scores:
+
+```powershell
+python scripts\candidate_decision_report.py
+```
+
 ## Submission Ledger
 
 Official submission outcomes should be recorded in:

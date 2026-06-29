@@ -118,11 +118,22 @@ This consumes the fourth official submission slot for 2026-06-29 UTC and answers
   - Added the first local builder for gated light GR/typewell correction.
   - Generated `artifacts/gr_typewell_light_alpha010_v1/submission.csv` locally; format audit passed.
   - Surrogate classified it as `near_duplicate_low_upside` with RMSE delta `0.3495` vs the active-account baseline.
+- `artifacts/gr_typewell_light_alpha020_v1/` local-only
+  - Generated alpha `0.20` GR/typewell probe; format audit passed.
+  - Surrogate classified it as `near_duplicate_low_upside` with RMSE delta `0.6991` vs the active-account baseline.
+- `reports/candidate_decision_report.md`
+  - Added a compact pre-submission decision table.
+  - Marked GR alpha probes as `HOLD_LOW_UPSIDE`.
+  - Marked standalone `fleongg_pretrained_submission.csv` as `SUBMIT_CANDIDATE`.
+- `joezzzzz/rogii-fleongg-branch-calibration-codex`
+  - Directly submitting `fleongg_pretrained_submission.csv` from the baseline kernel failed with Kaggle API `400`.
+  - Created and pushed a dedicated branch kernel whose final `submission.csv` is the fleongg pretrained branch.
+  - Kernel version `1` is currently `RUNNING`.
 
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-4. Wait for `54174151` before deciding whether to run alpha `0.20`, port the GR builder into a Kaggle notebook, or hold the GR branch.
-5. Use both audit scripts before the next official batch.
+4. Poll `joezzzzz/rogii-fleongg-branch-calibration-codex`; when complete, download and audit output.
+5. If fleongg branch audit passes, submit it as the fifth official slot for learned-signal calibration.
