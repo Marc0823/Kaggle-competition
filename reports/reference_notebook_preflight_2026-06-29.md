@@ -188,6 +188,60 @@ Pushed:
 ```text
 kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
 version: 3
+status: ERROR
+official submission: none
+```
+
+## Version 3 Result
+
+Version 3 reached the same artifact trainer loading stage, then failed on a more specific pickle module path:
+
+```text
+ModuleNotFoundError: No module named 'koolbox.trainer'; 'koolbox' is not a package
+```
+
+Interpretation:
+
+- The package-level `koolbox.Trainer` compatibility stub was recognized only for `koolbox`.
+- The pickle references `koolbox.trainer`, so Python needs `koolbox` to behave like a package and the submodule to exist in `sys.modules`.
+- This remains a narrow no-submit runtime fix, not a reason to spend an official submission or switch to an unsafe notebook.
+
+Downloaded log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v3/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+## Version 4 Patch
+
+Patched the ignored working notebook after the visible `CVTrainer` replacement is defined:
+
+```python
+import types as _codex_types
+_koolbox_stub = _codex_types.ModuleType("koolbox")
+_koolbox_stub.__path__ = []
+_koolbox_stub.Trainer = CVTrainer
+_koolbox_trainer_stub = _codex_types.ModuleType("koolbox.trainer")
+_koolbox_trainer_stub.Trainer = CVTrainer
+_koolbox_trainer_stub.CVTrainer = CVTrainer
+_koolbox_stub.trainer = _koolbox_trainer_stub
+sys.modules.setdefault("koolbox", _koolbox_stub)
+sys.modules.setdefault("koolbox.trainer", _koolbox_trainer_stub)
+```
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Pushed:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 4
 status: RUNNING
 official submission: none
 ```
@@ -225,6 +279,6 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 | output differs materially with low shape risk | consider one official slot after baseline score resolves |
 | official scores appear while kernel runs | update ledger first, then re-rank next batch using new public scores |
 
-## Decision
+## Current Decision
 
-Proceed with Degnonguidi no-submit preflight v3 and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v4 and hold Baidalin until its source audit failures are fixed.

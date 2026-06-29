@@ -820,7 +820,7 @@ Polling cadence:
 
 While waiting:
 
-1. Update `experiments/submission_ledger.csv` with pending rows.
+1. Update `experiments/submission_ledger.csv` with pending rows using `scripts/update_submission_ledger.py`.
 2. Run or queue the next Kaggle kernels.
 3. Download and audit completed kernel outputs.
 4. Run pseudo-test CV for methods that can be evaluated locally.
@@ -836,7 +836,7 @@ Pending submissions should block only experiments that directly depend on that p
 
 1. Pull latest GitHub changes.
 2. Check current Kaggle submissions and pending runs.
-3. Update `experiments/submission_ledger.csv`.
+3. Update `experiments/submission_ledger.csv` with `scripts/update_submission_ledger.py --append-missing`.
 4. Choose enough hypotheses to support 4-5 informative submissions.
 5. Generate/run candidates.
 6. Download outputs.
@@ -972,6 +972,7 @@ Done:
 - Verify it on `lucifer_baseline_repro_joezzzzz_v1` against `data/sample/sample_submission.csv`.
 - Extend `scripts/pre_submit_audit.py` with optional anchor-continuity, jump/curvature, typewell-range, and reference-distance checks.
 - Add `experiments/reference_submission_registry.csv` and `--reference-registry` support for repeatable known-output distance checks.
+- Create `scripts/update_submission_ledger.py` to sync Kaggle CLI submission status, scores, and missing historical rows into `experiments/submission_ledger.csv`.
 - Create `scripts/notebook_source_audit.py`.
 - Verify it on `lucifer_baseline_repro_joezzzzz`.
 - Create `scripts/build_gr_typewell_light_candidate.py`.
@@ -985,8 +986,7 @@ Next:
 2. Create `scripts/pseudo_test_cv.py`.
 3. Add a standard candidate output folder convention under ignored `artifacts/`.
 4. Add per-candidate audit reports under ignored `artifacts/<candidate>/audit.json`.
-5. Add an update command that appends Kaggle submission results to `experiments/submission_ledger.csv`.
-6. Add a report generator that ranks candidates by:
+5. Add a report generator that ranks candidates by:
    - audit status;
    - CV delta;
    - distance to known submissions;

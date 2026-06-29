@@ -2,6 +2,7 @@ date_utc,submission_id,candidate_id,kernel_slug,kernel_version,file_name,public_
 2026-06-26,54070198,wellbore_wizard_physics_pf_stack,leemarc223/wellbore-wizard-physics-pf-stack-fork,,submission.csv,7.235,complete,current_best,passed_known_good,,Current confirmed project baseline.
 2026-06-26,54070940,david_v12_budget_guarded_clean_gpu,leemarc223/rogii-v12-budget-guarded-clean-gpu-fork,,submission.csv,7.263,complete,backup_reference,passed_known_good,,Near-duplicate backup reference.
 2026-06-27,54098152,david_bimodal_fastcpu_no_sameid,,,submission.csv,7.703,complete,calibration_reference,passed,,Weaker but useful calibration point.
+2026-06-27,54099186,unknown_54099186,,,submission.csv,,complete,needs_review,unknown,,Aevion LB52 fixed test-only v4 nonzero
 2026-06-27,54099603,nickson_v5_artifact_inference,,,submission.csv,20.579,complete,reject_known_bad,passed_format_bad_score,,Artifact mismatch or poor transfer.
 2026-06-27,54105734,direct_train_tvt_overlap_lookup,,,submission.csv,11551.955,complete,reject_known_bad,high_shape_risk,,Naive train-target lookup failed catastrophically.
 2026-06-27,54105066,rogii_7159_ourmatch_gr_contact_matching,,,submission.csv,15357.198,complete,reject_known_bad,passed_format_bad_score,,Public 7.159-style attempt failed in current implementation.

@@ -411,12 +411,101 @@ Records updated:
 - `reports/reference_notebook_preflight_2026-06-29.md`
   - Added v2 failure details and v3 patch branch rules.
 
+## Submission Ledger Sync Utility
+
+Added:
+
+```text
+scripts/update_submission_ledger.py
+```
+
+Purpose:
+
+- read Kaggle official submission rows through `kaggle competitions submissions --csv`;
+- normalize statuses such as `SubmissionStatus.PENDING` to `pending`;
+- update known `submission_id` rows with status, public score, and file name;
+- optionally append missing Kaggle rows as `needs_review`.
+
+Validation:
+
+```text
+python3 -m py_compile scripts/update_submission_ledger.py
+python3 scripts/update_submission_ledger.py --kaggle-bin /home/ubuntu/workstation/JoeProject/kaggle-api-workbench/.venv/bin/kaggle --page-size 12 --dry-run
+python3 scripts/update_submission_ledger.py --kaggle-bin /home/ubuntu/workstation/JoeProject/kaggle-api-workbench/.venv/bin/kaggle --page-size 12 --append-missing
+```
+
+Dry-run result:
+
+```text
+kaggle_rows: 12
+updated: []
+missing_not_appended: 54099186
+unchanged_known: 11
+```
+
+Non-dry result:
+
+```text
+appended: 54099186
+```
+
+The appended row is the older `Aevion LB52 fixed test-only v4 nonzero` official submission, now tracked as `needs_review`, `complete`, blank public score.
+
+Also normalized `experiments/question_decision_log.csv` as standard machine-readable CSV. Several older rows contained unquoted commas in prose fields; after normalization all experiment CSV files parse cleanly with `csv.DictReader`.
+
+## Degnonguidi v3 Failure And v4 Retry
+
+Version 3 status:
+
+```text
+status: ERROR
+official submission: none
+```
+
+Downloaded log:
+
+```text
+artifacts/degnonguidi_7159_preflight_joezzzzz_v3/rogii-degnonguidi-7159-preflight-codex.log
+```
+
+Failure:
+
+```text
+ModuleNotFoundError: No module named 'koolbox.trainer'; 'koolbox' is not a package
+```
+
+Interpretation:
+
+- The v3 `koolbox.Trainer` stub was too shallow.
+- Artifact pickles reference the submodule path `koolbox.trainer`.
+- This is still a no-submit runtime compatibility issue, not an official submission failure.
+
+Decision:
+
+- Patch the ignored working notebook to register both `koolbox` and `koolbox.trainer`.
+- Keep source audit as the gate before pushing.
+
+Validation:
+
+```text
+notebook source audit after v4 patch: PASS
+```
+
+Pushed retry:
+
+```text
+kernel: joezzzzz/rogii-degnonguidi-7159-preflight-codex
+version: 4
+status: RUNNING
+official submission: none
+```
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
 2. Poll pending Henry submission `54162612`.
 3. Poll official submission `54174876`.
-4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 3.
-5. If Degnonguidi v3 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
+4. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 4.
+5. If Degnonguidi v4 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
 6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
 7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.

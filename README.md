@@ -184,6 +184,14 @@ experiments/submission_ledger.csv
 
 This file tracks the candidate ID, kernel slug/version, public score, audit status, decision, and notes. Keep it lightweight and avoid adding generated outputs or private artifacts.
 
+Sync the ledger from Kaggle's official submission list:
+
+```powershell
+python scripts\update_submission_ledger.py --page-size 50 --append-missing
+```
+
+Use `--dry-run` first when checking a new environment or when you only want to inspect pending score changes.
+
 Batch-level questions and option choices should be recorded in:
 
 ```text
@@ -225,9 +233,9 @@ Rejected or risky:
 
 ## Current High-Priority Directions
 
-1. Run and audit `Degnonguidi 7.159` fork when Kaggle GPU slots are available.
-2. Run and audit `Baidalin 7.201` fork after that.
-3. Monitor Henry TabICL / Sunny blend and Romantamrazov GPU runs.
+1. Poll and audit `Degnonguidi 7.159` preflight v4 under `joezzzzz`.
+2. Run and audit `Baidalin 7.201` only after its source-audit failures are fixed.
+3. Monitor pending Henry TabICL, active-account baseline, and fleongg branch official submissions.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.
 
 ## Why This Repo Is Lean
@@ -263,6 +271,12 @@ Check Kaggle submissions:
 
 ```powershell
 kaggle competitions submissions -c rogii-wellbore-geology-prediction --csv
+```
+
+Sync Kaggle submissions into the local ledger:
+
+```powershell
+python scripts\update_submission_ledger.py --page-size 50 --append-missing
 ```
 
 Check a kernel:
