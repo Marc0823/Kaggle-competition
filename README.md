@@ -27,6 +27,7 @@ The problem is not a simple row-wise tabular regression problem. Strong solution
 ├── scripts/                         # Utility scripts and local surrogate scoring
 ├── reports/                         # Progress notes and decision reports
 ├── experiments/                     # Lightweight experiment trackers
+├── goals/                           # Operating goals and submission strategy
 ├── kaggle_kernel_lucifer_wellbore_wizard_pf_stack/      # current 7.235 reference
 ├── kaggle_kernel_degnonguidi_7159_submit/                # 7.159 reproduction target
 ├── kaggle_kernel_baidalin7201_v2/                        # 7.201 reproduction target
@@ -44,6 +45,25 @@ Not included in Git:
 - model files such as `.pkl`, `.ckpt`, `.pth`
 - Kaggle credentials
 - generated submission files
+
+## Operating Goal
+
+The current optimization workflow is documented in:
+
+```text
+goals/rogii_iterative_submission_optimization.md
+```
+
+Use this as the working contract for iterative submission improvement:
+
+1. Generate candidates with a clear hypothesis.
+2. Run notebooks and download outputs without spending official submissions.
+3. Audit format, hidden-test compatibility, shape, and known-submission distance.
+4. Run train pseudo-test CV when the method supports it.
+5. Submit only candidates that pass the gate and answer a specific experiment question.
+6. Record every official result in `experiments/submission_ledger.csv`.
+
+Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day and should be treated as planned experiments.
 
 ## Data Setup
 
@@ -97,6 +117,16 @@ reports/local_surrogate_score_report.md
 ```
 
 Important: this does **not** know hidden labels and cannot exactly predict Public LB. It is mainly used to reject obviously bad or duplicated candidates before spending submissions.
+
+## Submission Ledger
+
+Official submission outcomes should be recorded in:
+
+```text
+experiments/submission_ledger.csv
+```
+
+This file tracks the candidate ID, kernel slug/version, public score, audit status, decision, and notes. Keep it lightweight and avoid adding generated outputs or private artifacts.
 
 ## Current Public LB Notes
 
