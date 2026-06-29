@@ -45,6 +45,20 @@ The routine polling command also refreshes this report:
 python3 scripts/poll_and_refresh_state.py
 ```
 
+Inspect final package readiness:
+
+```bash
+python3 scripts/final_submission_package.py
+```
+
+After release gates clear and the selected slot passes final review, prepare the local package:
+
+```bash
+python3 scripts/final_submission_package.py --prepare --planned-slot 1
+```
+
+This copies the exact selected source output into the ignored candidate artifact folder and reruns the deep pre-submit audit. It does not submit to Kaggle.
+
 ## Required Release Evidence
 
 Before an official Kaggle submission:
@@ -60,8 +74,9 @@ python3 scripts/pre_submit_audit.py artifacts/<candidate_id>/submission.csv --da
 4. `python3 scripts/poll_and_refresh_state.py` has been rerun after the latest Kaggle status check.
 5. `reports/candidate_artifact_manifest_report.md` has no `FAIL_*` manifest gate for the selected slot.
 6. `reports/submission_release_gate_report.md` has no `BLOCKED_*` or `REVIEW_LEDGER_UPDATES` result for the selected slot.
-7. `reports/planning_state_validation_report.md` reports zero error failures.
-8. `experiments/submission_ledger.csv` is updated after the official submission.
+7. `reports/final_submission_package_report.md` shows the selected slot can be packaged, or has been prepared after final review.
+8. `reports/planning_state_validation_report.md` reports zero error failures.
+9. `experiments/submission_ledger.csv` is updated after the official submission.
 
 ## Current Decision
 

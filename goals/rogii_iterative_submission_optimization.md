@@ -863,6 +863,7 @@ Tracked:
 - `reports/result_branch_matrix.md`: branch rules for pending public scores and reference-kernel outcomes.
 - `reports/candidate_artifact_convention.md`: standard local-only folder convention for candidate submission outputs and audit evidence.
 - `reports/candidate_artifact_manifest_report.md`: planned-slot manifest evidence tying ignored local artifacts to audit/release checks.
+- `reports/final_submission_package_report.md`: final local package gate before copying exact outputs into ignored candidate folders.
 - `reports/pseudo_test_cv_report.md`: latest train-well pseudo-test CV summary for method-family validation.
 - `reports/plateau_quantile_sweep_report.md`: parameter-stability report for plateau recent-quantile candidates.
 - `experiments/local_surrogate_scores.csv`: candidate metrics.
@@ -875,6 +876,7 @@ Tracked:
 - `experiments/result_branch_matrix.csv`: machine-readable result-to-action branch matrix.
 - `experiments/candidate_artifact_convention.csv`: machine-readable list of expected local candidate artifact files.
 - `experiments/candidate_artifact_manifest_summary.csv`: machine-readable manifest gate for current planned submission slots.
+- `experiments/final_submission_package_summary.csv`: machine-readable final-package gate for planned slots.
 - `experiments/pseudo_test_cv_scores.csv`: repeated train-well pseudo-test rows by method, well, and hidden-suffix split.
 - `experiments/pseudo_test_cv_summary.csv`: method-level pseudo-test CV summary and delta versus the chosen local baseline.
 - `experiments/plateau_quantile_sweep.csv`: plateau parameter sweep summary by combo.
@@ -1019,15 +1021,17 @@ Done:
 - Create `scripts/result_branch_matrix.py` and wire it into the polling wrapper so pending score/kernel outcomes map to explicit next actions.
 - Create `scripts/init_candidate_artifact.py` plus the candidate artifact convention report/CSV so every future promoted candidate has a standard ignored output folder and release-evidence checklist.
 - Create `scripts/candidate_artifact_manifest_summary.py` and wire it into the polling wrapper/planning validation so planned slots must have local manifests pointing to exact selected outputs with audit evidence.
+- Create `scripts/final_submission_package.py` and wire it into the polling wrapper/planning validation so final local packaging remains blocked until release gates clear; when explicitly prepared, it copies the exact selected output into the ignored candidate folder and reruns deep audit without submitting to Kaggle.
 
 Next:
 
 1. Run deep pre-submit audit with `experiments/reference_submission_registry.csv` on every future completed kernel output before official submission.
 2. Continue writing per-candidate audit reports under ignored `artifacts/<candidate>/deep_pre_submit_audit.json`.
 3. Use `scripts/init_candidate_artifact.py` before promoting any newly generated local candidate into the official-submission queue.
-4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `artifact_manifest_gate_counts` has no `FAIL_*` rows.
+4. Use `scripts/poll_and_refresh_state.py` for routine polling; when public scores arrive, apply reviewed ledger updates and rerun it before choosing official submission slots. Confirm `artifact_manifest_gate_counts` has no `FAIL_*` rows and `final_package_gate_counts` is compatible with the release decision.
 5. Do not submit planned slots unless `reports/submission_release_gate_report.md` no longer reports `BLOCKED_*` or `REVIEW_LEDGER_UPDATES`, and `reports/planning_state_validation_report.md` reports zero error failures.
-6. When a pending result resolves, follow `reports/result_branch_matrix.md` to promote, downweight, insert, block, or defer candidates before releasing slots.
+6. Before any official submission, run `scripts/final_submission_package.py --prepare --planned-slot N` only after release gates clear and final review is complete.
+7. When a pending result resolves, follow `reports/result_branch_matrix.md` to promote, downweight, insert, block, or defer candidates before releasing slots.
 
 ## Stop / Escalation Rules
 

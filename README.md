@@ -269,6 +269,14 @@ Check planned-slot manifests before release:
 python scripts\candidate_artifact_manifest_summary.py
 ```
 
+Inspect final local package readiness before any official submission:
+
+```powershell
+python scripts\final_submission_package.py
+```
+
+This command does not submit to Kaggle. When release gates clear, use `--prepare --planned-slot N` only after final review to copy the exact selected output into the ignored candidate artifact folder and rerun the deep audit.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

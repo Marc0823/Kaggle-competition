@@ -17,6 +17,7 @@ DEFAULT_AUDIT = Path("experiments/candidate_audit_summary.csv")
 DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
+DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
 DEFAULT_OUTPUT_CSV = Path("experiments/planning_state_validation.csv")
 DEFAULT_REPORT = Path("reports/planning_state_validation_report.md")
 
@@ -79,6 +80,7 @@ def validate(
     plan: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
+    final_package: pd.DataFrame,
 ) -> pd.DataFrame:
     checks: list[dict[str, Any]] = []
 
@@ -100,12 +102,20 @@ def validate(
         status_from_condition(not manifest.empty),
         "candidate artifact manifest summary CSV is readable",
     )
+    add(
+        checks,
+        "input_final_submission_package_summary_exists",
+        "ERROR",
+        status_from_condition(not final_package.empty),
+        "final submission package summary CSV is readable",
+    )
 
     plan_paths = set(plan.get("path", pd.Series(dtype=str)).astype(str))
     release_paths = set(release.get("path", pd.Series(dtype=str)).astype(str))
     audit_paths = set(audit.get("path", pd.Series(dtype=str)).astype(str))
     readiness_paths = set(readiness.get("path", pd.Series(dtype=str)).astype(str))
     manifest_paths = set(manifest.get("path", pd.Series(dtype=str)).astype(str))
+    package_paths = set(final_package.get("path", pd.Series(dtype=str)).astype(str))
 
     add(
         checks,
@@ -141,6 +151,13 @@ def validate(
         "ERROR",
         status_from_condition(plan_paths.issubset(manifest_paths)),
         f"missing manifest rows={sorted(plan_paths - manifest_paths)[:5]}",
+    )
+    add(
+        checks,
+        "planned_slots_have_final_package_rows",
+        "ERROR",
+        status_from_condition(plan_paths.issubset(package_paths)),
+        f"missing package rows={sorted(plan_paths - package_paths)[:5]}",
     )
     add(
         checks,
@@ -227,6 +244,26 @@ def validate(
             f"nonpassing planned manifest rows={len(bad_manifest)}; manifest rows={len(planned_manifest)}",
         )
 
+    if "package_gate" in final_package.columns:
+        planned_package = final_package[final_package["path"].astype(str).isin(plan_paths)].copy()
+        bad_package = planned_package[planned_package["package_gate"].astype(str).str.startswith("FAIL")]
+        add(
+            checks,
+            "planned_slots_have_no_final_package_failures",
+            "ERROR",
+            status_from_condition(bad_package.empty and len(planned_package) == len(plan_paths)),
+            f"failing planned package rows={len(bad_package)}; package rows={len(planned_package)}",
+        )
+        if pending or running or batch_status == "WAIT_EXTERNAL_CONTEXT":
+            package_gates = set(planned_package.get("package_gate", pd.Series(dtype=str)).astype(str))
+            add(
+                checks,
+                "blocked_release_blocks_final_packaging",
+                "ERROR",
+                status_from_condition(package_gates <= {"BLOCKED_RELEASE_GATE"}),
+                f"package gates while external context pending={sorted(package_gates)}",
+            )
+
     if "release_gate" in release.columns:
         ready_rows = release[release["release_gate"].astype(str) == "READY"]
         if not ready_rows.empty:
@@ -285,6 +322,7 @@ def main() -> int:
     parser.add_argument("--plan", type=Path, default=DEFAULT_PLAN)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
     parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args()
@@ -296,6 +334,7 @@ def main() -> int:
         plan=safe_read_csv(args.plan),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
+        final_package=safe_read_csv(args.final_package),
     )
     args.output_csv.parent.mkdir(parents=True, exist_ok=True)
     checks.to_csv(args.output_csv, index=False)

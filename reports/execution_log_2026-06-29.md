@@ -1160,6 +1160,30 @@ Decision:
 - `scripts/validate_planning_state.py` now requires every planned slot to have a manifest row and a non-failing manifest gate.
 - Current planned slots all point to exact selected local outputs and have existing audit JSON evidence; they remain blocked only by external Kaggle context.
 
+## Final Submission Package Gate
+
+Added:
+
+```text
+scripts/final_submission_package.py
+experiments/final_submission_package_summary.csv
+reports/final_submission_package_report.md
+```
+
+Current validation:
+
+```text
+final_package_gate_counts: BLOCKED_RELEASE_GATE=5
+planning validation: PASS=24, error_failures=0
+```
+
+Decision:
+
+- The final package check is now part of `scripts/poll_and_refresh_state.py`.
+- `scripts/validate_planning_state.py` now requires every planned slot to have a final-package row and no package failures.
+- While external context is pending, all final packages must remain `BLOCKED_RELEASE_GATE`.
+- After release gates clear, `scripts/final_submission_package.py --prepare --planned-slot N` can copy the exact selected local output into the ignored candidate folder and rerun deep audit, without submitting to Kaggle.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1172,3 +1196,4 @@ Decision:
 8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.
 9. Use `scripts/init_candidate_artifact.py` before promoting any new locally generated output into the official-submission queue.
 10. Require `reports/candidate_artifact_manifest_report.md` to show no `FAIL_*` gates before releasing any official slot.
+11. Require `reports/final_submission_package_report.md` to show the selected slot can be packaged, then prepare it locally before any official Kaggle submission.
