@@ -47,12 +47,10 @@ Baidalin 7.201:
 
 ```text
 notebook: kaggle_kernel_baidalin7201_v2/rogii-lb-7-201.ipynb
-status: FAIL
-failures:
-  - hardcoded_visible_test_well
-  - unsafe_train_test_tvtinput_row_copy
-warnings:
-  - fixed_width_id_slice
+original status: FAIL
+patched status: PASS
+failures: 0
+warnings: 0
 ```
 
 The Baidalin row copy finding is especially important:
@@ -62,6 +60,24 @@ hw_te['TVT_input'] = hw_tr['TVT_input'].values
 ```
 
 This is not safe for hidden rerun assumptions unless the code path is removed or proven unreachable.
+
+Patch applied:
+
+```text
+removed hardcoded visible demo well
+replaced fixed-width id slicing with rsplit('_', 1)
+replaced train/test TVT_input row copy with MD-aligned interpolation
+aligned physical-model predictions by MD and falls back to selector if unavailable
+```
+
+Baidalin active-account preflight:
+
+```text
+kernel: joezzzzz/rogii-baidalin-7-201-preflight-codex
+version: 1
+status: RUNNING
+official submission: none
+```
 
 ## Selected Action
 
@@ -401,4 +417,4 @@ The original `leemarc223/rogii-degnonguidi-7159-submit` kernel is private/inacce
 
 ## Current Decision
 
-Proceed with Degnonguidi no-submit preflight v6 and hold Baidalin until its source audit failures are fixed.
+Proceed with Degnonguidi no-submit preflight v6 and Baidalin no-submit preflight v1. Do not make an official submission from either reference unless its completed output passes deep pre-submit and reference-distance audit.

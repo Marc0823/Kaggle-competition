@@ -256,7 +256,7 @@ Rejected or risky:
 ## Current High-Priority Directions
 
 1. Poll and audit `Degnonguidi 7.159` preflight v6 under `joezzzzz`.
-2. Run and audit `Baidalin 7.201` only after its source-audit failures are fixed.
+2. Poll and audit `Baidalin 7.201` preflight v1 under `joezzzzz`; source audit is now PASS after removing hardcoded demo wells, fixed-width ID parsing, and unsafe train/test `TVT_input` row copy.
 3. Monitor active-account baseline and fleongg branch official submissions; treat Henry TabICL score `13.453` as negative artifact-stack calibration.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.
 

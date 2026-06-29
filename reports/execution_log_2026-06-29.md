@@ -216,9 +216,42 @@ Records updated:
   - Added kernel run records for baseline, fleongg branch, and Degnonguidi preflight.
 - `experiments/question_backlog.csv`
   - Moved Q20260629-B07 to `kernel_running`.
-  - Moved Q20260629-B08 to `hold_fix_required`.
+  - Initially moved Q20260629-B08 to `hold_fix_required`; later patched Baidalin and moved it to `kernel_running`.
 - `experiments/question_decision_log.csv`
   - Added Q20260629-08 for this preflight decision.
+
+### Baidalin Source Patch
+
+Patched:
+
+```text
+kaggle_kernel_baidalin7201_v2/rogii-lb-7-201.ipynb
+kaggle_kernel_baidalin7201_v2/kernel-metadata.json
+```
+
+Source audit after patch:
+
+```text
+status: PASS
+failures: 0
+warnings: 0
+```
+
+Patch details:
+
+- removed hardcoded visible demo well selection;
+- replaced fixed-width `id` slicing with `rsplit('_', 1)`;
+- replaced unsafe train/test `TVT_input` row copy with MD-aligned interpolation;
+- aligned physical-model predictions onto test rows by MD and falls back to selector output if unavailable.
+
+Pushed active-account no-submit preflight:
+
+```text
+kernel: joezzzzz/rogii-baidalin-7-201-preflight-codex
+version: 1
+status: RUNNING
+official submission: none
+```
 
 ## Deep Pre-Submit Audit
 
@@ -714,7 +747,8 @@ Records updated:
 1. Poll official submission `54174151`.
 2. Poll official submission `54174876`.
 3. Poll `joezzzzz/rogii-degnonguidi-7159-preflight-codex` version 6.
-4. If Degnonguidi v6 completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
-5. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
-6. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
-7. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.
+4. Poll `joezzzzz/rogii-baidalin-7-201-preflight-codex` version 1.
+5. If a reference kernel completes, download output and run deep pre-submit/distance audit with `experiments/reference_submission_registry.csv` before any official submission decision.
+6. If `54174151` reproduces the expected baseline region, close Q20260629-B01 and use the output as the active-account anchor.
+7. Compare `54174876` vs `54174151` once both scores appear to decide whether standalone learned signal deserves future ensemble weight.
+8. Hold `plateau_recent_quantile_v1` until pending scores resolve or fuller train validation supports using it as a sparse information slot.
