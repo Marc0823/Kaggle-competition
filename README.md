@@ -62,6 +62,7 @@ Use this as the working contract for iterative submission improvement:
 4. Run train pseudo-test CV when the method supports it.
 5. Submit only candidates that pass the gate and answer a specific experiment question.
 6. Record every official result in `experiments/submission_ledger.csv`.
+7. Record batch questions and option choices in `experiments/question_decision_log.csv`.
 
 Kaggle kernel runs are cheap compared with official submissions. Official submissions are capped at five per team per UTC day; the operating target is to use 4-5 slots when enough audited, informative candidates exist, with every submission treated as a planned experiment.
 
@@ -127,6 +128,14 @@ experiments/submission_ledger.csv
 ```
 
 This file tracks the candidate ID, kernel slug/version, public score, audit status, decision, and notes. Keep it lightweight and avoid adding generated outputs or private artifacts.
+
+Batch-level questions and option choices should be recorded in:
+
+```text
+experiments/question_decision_log.csv
+```
+
+Use it to capture the concrete question, candidate options, selected option, evidence needed, result, and next question for each experiment batch.
 
 ## Current Public LB Notes
 

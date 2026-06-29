@@ -59,6 +59,41 @@ Do not submit candidates only because they are new. Do submit enough qualified, 
 
 ## Operating Loop
 
+This project should run as a question-driven research loop, not as a stream of disconnected notebook edits.
+
+For every batch, start with specific questions. For each question, list multiple feasible options, select the best options to test, execute them, then review the whole plan and generate the next set of questions.
+
+### Batch-Level Question Loop
+
+Each batch must include:
+
+1. A question.
+   - What uncertainty are we trying to reduce?
+   - What decision will change after we get the answer?
+   - Which evidence will count as a useful answer?
+
+2. Candidate solutions.
+   - List at least 2 feasible options when possible.
+   - Include one conservative option and one higher-upside option when available.
+   - Mark whether each option is a structural idea, a calibration point, or an implementation fix.
+
+3. Selection.
+   - Choose the option or small option set with the best expected information value.
+   - Explain why discarded options are less useful right now.
+   - Avoid spending multiple submissions on options that answer the same question.
+
+4. Execution.
+   - Build/run the selected candidates.
+   - Audit outputs.
+   - Submit 4-5 informative official candidates when the batch supports it.
+
+5. Review.
+   - Record what the batch taught us.
+   - Update the ledger, reports, surrogate thresholds, and candidate queue.
+   - Produce the next set of project questions.
+
+### Candidate-Level Loop
+
 For every candidate:
 
 1. Define the hypothesis.
@@ -98,6 +133,155 @@ For every candidate:
    - Add public score to `experiments/submission_ledger.csv`.
    - Re-run surrogate calibration against known scored submissions.
    - Update thresholds and next candidate plan.
+
+## Question Backlog And Decision Records
+
+Maintain a running backlog of project questions. A question is better than a task because it forces each experiment to produce reusable knowledge.
+
+Good question examples:
+
+- Does GR/typewell alignment add independent signal beyond the `7.235` physics/PF baseline?
+- Which blend weight range between baseline and artifact stack is most promising?
+- Does per-well gating beat a global blend?
+- Which wells are consistently worst under pseudo-test CV, and what failure mode do they share?
+- Does missing-GR robustness explain public-score failures?
+- Is a high-upside artifact branch hidden-compatible, or only visible-test compatible?
+
+Each question should be recorded with this structure:
+
+| field | meaning |
+| --- | --- |
+| `question_id` | stable ID, for example `Q20260630-01` |
+| `question` | concrete uncertainty to resolve |
+| `why_now` | why this matters before other work |
+| `candidate_options` | 2+ feasible approaches |
+| `selected_option` | chosen option or option set |
+| `selection_reason` | why this is the best test now |
+| `evidence_needed` | CV, audit, public score, logs, or output comparison |
+| `result` | what happened |
+| `next_question` | what to ask next |
+
+Decision records should be short and factual. They should explain why an option was chosen, blocked, or deferred, not just list a score.
+
+## Strategy Question Types
+
+Use these recurring question types to avoid falling into pure parameter overfitting.
+
+### 1. Signal Discovery Questions
+
+Purpose: find genuinely new information beyond the current baseline.
+
+Examples:
+
+- Can GR/typewell alignment produce a valid independent path?
+- Can train pseudo-test worst wells identify a new routing rule?
+- Does a learned model improve only specific well classes?
+
+Expected outputs:
+
+- new method branch;
+- pseudo-CV comparison;
+- per-well failure analysis;
+- at most 1-2 official submissions unless audit and CV are strong.
+
+### 2. Calibration Questions
+
+Purpose: use public score to tune low-dimensional choices.
+
+Examples:
+
+- Which blend weight is best among `0.10`, `0.20`, `0.30`?
+- Which smoothing strength preserves anchor continuity without flattening useful signal?
+- Which fallback threshold is best for per-well gating?
+
+Expected outputs:
+
+- 2-3 submissions in one planned sweep;
+- simple curve or ranking;
+- one follow-up exploitation question if the sweep is promising.
+
+### 3. Robustness Questions
+
+Purpose: test whether a candidate will survive hidden rerun and private leaderboard.
+
+Examples:
+
+- Does the notebook dynamically handle different test wells?
+- Does the method degrade gracefully when GR is missing?
+- Does it avoid train-only columns and static visible-test assumptions?
+
+Expected outputs:
+
+- audit result;
+- blocked/fixed notebook;
+- no official submission until fixed.
+
+### 4. Ensemble And Gating Questions
+
+Purpose: combine vetted signals without letting bad methods drag the trajectory.
+
+Examples:
+
+- Is global blend better than per-well gate?
+- Can uncertainty select between baseline and GR alignment?
+- Does weighted median beat mean blending when one branch is unstable?
+
+Expected outputs:
+
+- candidate pool;
+- per-well disagreement report;
+- 1-2 official submissions after audit.
+
+### 5. Operational Questions
+
+Purpose: keep the loop moving.
+
+Examples:
+
+- Which kernels are pending, failed, or ready for output download?
+- Which candidate outputs need audit?
+- Are we blocked by GPU slots or submission allowance?
+
+Expected outputs:
+
+- updated ledger;
+- next batch plan;
+- no model changes unless needed.
+
+## Option Selection Rubric
+
+When several options are available, select the next tests by expected information value, not only by expected score.
+
+Score each option informally on:
+
+| criterion | high score means |
+| --- | --- |
+| expected upside | could plausibly beat `7.235` |
+| information value | result will change future choices |
+| independence | adds signal not already captured by baseline |
+| audit readiness | likely to pass format and hidden-compatibility checks |
+| CV support | pseudo-test evidence is favorable or worth measuring |
+| submission efficiency | one submission answers a clear question |
+| overfit risk | lower is better |
+
+Prioritize options with high information value and acceptable risk. Defer options that are only small parameter tweaks unless they are part of a planned sweep.
+
+## Batch Review Cadence
+
+Run a review after every completed submission batch, or at least once per UTC day.
+
+The review must answer:
+
+1. What did we learn?
+2. Which hypotheses were supported, weakened, or rejected?
+3. Which candidates should enter the ensemble pool?
+4. Which candidates should be blocked permanently?
+5. Did public score disagree with pseudo-CV or audit?
+6. Are our validation thresholds too strict or too loose?
+7. What are the next 3-5 concrete questions?
+8. Which 4-5 submissions should be planned for the next available day?
+
+The next batch should not start from a blank slate. It should start from the review's next questions.
 
 ## Submission Budget Policy
 
