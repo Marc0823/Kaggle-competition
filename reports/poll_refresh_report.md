@@ -25,12 +25,15 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | diversity_flag_counts | REDUNDANT_REVIEW=3; OK=2 |
 | slot_review_counts | HOLD_EXTERNAL_CONTEXT=5 |
 | slot_evidence_review_counts | KEEP_ONLY_IF_CALIBRATION_SWEEP=3; KEEP_FOR_FINAL_REVIEW=1; SPARSE_INFO_SLOT_REVIEW=1 |
+| slot_contingency_action_counts | WAIT_NO_SUBMIT=1; FINAL_REVIEW_BLEND_SWEEP=1; PARTIAL_RELEASE_NEEDS_REPLACEMENTS=1; BLOCK_ALL_DEPENDENT_SLOTS=1; INSERT_DEGNONGUIDI_AND_RERANK=1; FOLLOW_SCORE_BRANCH_WITHOUT_DEGNONGUIDI=1; KEEP_ONE_BLEND_FIND_REPLACEMENTS=1 |
+| slot_contingency_new_candidate_needed_counts | 0=4; 2=2; 4=1 |
+| replacement_pool_role_counts | do_not_use_duplicate=6; already_planned=5; pending_equivalent_not_replacement=4; backup_projection_review=3; alternate_blend_weight_only=2; conservative_low_upside_backup=2 |
 | artifact_manifest_gate_counts | PASS_SOURCE_POINTER=5 |
 | release_gate_counts | BLOCKED_EXTERNAL_CONTEXT=5 |
 | final_package_gate_counts | BLOCKED_RELEASE_GATE=5 |
 | result_branch_rules | 7 |
 | result_application_status_counts | WAIT=4; PASS=1 |
-| planning_validation_status_counts | PASS=35 |
+| planning_validation_status_counts | PASS=41 |
 | planning_validation_error_failures | 0 |
 
 ## Interpretation
@@ -47,6 +50,7 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 - `reports/planned_candidate_well_impact_report.md`
 - `reports/planned_candidate_diversity_report.md`
 - `reports/planned_slot_review.md`
+- `reports/planned_slot_contingency.md`
 - `reports/candidate_artifact_manifest_report.md`
 - `reports/submission_release_gate_report.md`
 - `reports/final_submission_package_report.md`

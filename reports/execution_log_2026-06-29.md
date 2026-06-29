@@ -1285,6 +1285,35 @@ Decision:
 - Latent evidence review keeps slot 1 for final review, keeps slots 2-4 only if we deliberately spend slots on blend-curve calibration, and treats slot 5 as a sparse information slot.
 - `scripts/validate_planning_state.py` now requires every planned slot to have slot-review and evidence-review rows.
 
+## Planned Slot Contingency
+
+Added:
+
+```text
+scripts/planned_slot_contingency.py
+experiments/planned_slot_contingency.csv
+experiments/planned_slot_replacement_pool.csv
+reports/planned_slot_contingency.md
+```
+
+Current validation:
+
+```text
+slot_contingency_action_counts: WAIT_NO_SUBMIT=1; FINAL_REVIEW_BLEND_SWEEP=1; PARTIAL_RELEASE_NEEDS_REPLACEMENTS=1; BLOCK_ALL_DEPENDENT_SLOTS=1; INSERT_DEGNONGUIDI_AND_RERANK=1; FOLLOW_SCORE_BRANCH_WITHOUT_DEGNONGUIDI=1; KEEP_ONE_BLEND_FIND_REPLACEMENTS=1
+slot_contingency_new_candidate_needed_counts: 0=4; 2=2; 4=1
+replacement_pool_role_counts: do_not_use_duplicate=6; already_planned=5; pending_equivalent_not_replacement=4; backup_projection_review=3; alternate_blend_weight_only=2; conservative_low_upside_backup=2
+planning validation: PASS=41, error_failures=0
+```
+
+Decision:
+
+- The contingency report is now part of `scripts/poll_and_refresh_state.py`.
+- It prewrites keep/replace/drop rules for no-change, baseline-valid/Fleongg-competitive, baseline-valid/Fleongg-weak, baseline-failed, Degnonguidi-clean, Degnonguidi-deferred, and gates-clear-but-redundancy-unresolved scenarios.
+- If Fleongg is competitive, the three blend slots can be kept only as an explicit calibration sweep.
+- If Fleongg is weak or no calibration question remains, keep at most one blend and create or promote two replacements before trying to use 4-5 official slots.
+- If Degnonguidi completes cleanly and passes audit, insert it ahead of the sparse plateau slot and at least one redundant blend.
+- `scripts/validate_planning_state.py` now requires the contingency scenarios to exist and to include a `WAIT_NO_SUBMIT` path while external context is pending.
+
 ## Next Actions
 
 1. Poll official submission `54174151`.
@@ -1302,3 +1331,4 @@ Decision:
 13. Use `reports/planned_candidate_well_impact_report.md` during final review to decide whether a candidate is broad enough for promotion or only useful as a sparse information slot.
 14. Use `reports/planned_candidate_diversity_report.md` during final review to avoid spending multiple slots on redundant outputs unless they answer a deliberate calibration-sweep question.
 15. Use `reports/planned_slot_review.md` as the combined per-slot release/evidence review before final packaging or any official submission.
+16. Use `reports/planned_slot_contingency.md` after scores/kernel outcomes resolve to decide whether to keep the blend sweep, replace redundant slots, block dependent slots, or insert a clean Degnonguidi output.

@@ -309,6 +309,14 @@ python scripts\planned_slot_review.py
 
 This joins release gates, final-package state, per-well impact, and pairwise diversity into one slot-level review. Use it as the final planning view before packaging or submitting any slot.
 
+Build contingency rules for planned slots after pending scores or kernels resolve:
+
+```powershell
+python scripts\planned_slot_contingency.py
+```
+
+This records which slots to keep, replace, or drop if the baseline anchor fails, Fleongg is weak/competitive, Degnonguidi completes cleanly, or the blend sweep is no longer an explicit experiment.
+
 Audit the notebook source for common hidden-test risks:
 
 ```powershell

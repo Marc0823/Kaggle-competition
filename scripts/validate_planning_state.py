@@ -18,6 +18,8 @@ DEFAULT_PLAN = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_WELL_IMPACT = Path("experiments/planned_candidate_well_impact_summary.csv")
 DEFAULT_DIVERSITY = Path("experiments/planned_candidate_diversity_summary.csv")
 DEFAULT_SLOT_REVIEW = Path("experiments/planned_slot_review.csv")
+DEFAULT_SLOT_CONTINGENCY = Path("experiments/planned_slot_contingency.csv")
+DEFAULT_REPLACEMENT_POOL = Path("experiments/planned_slot_replacement_pool.csv")
 DEFAULT_RELEASE = Path("experiments/submission_release_gate.csv")
 DEFAULT_MANIFEST = Path("experiments/candidate_artifact_manifest_summary.csv")
 DEFAULT_FINAL_PACKAGE = Path("experiments/final_submission_package_summary.csv")
@@ -85,6 +87,8 @@ def validate(
     well_impact: pd.DataFrame,
     diversity: pd.DataFrame,
     slot_review: pd.DataFrame,
+    slot_contingency: pd.DataFrame,
+    replacement_pool: pd.DataFrame,
     release: pd.DataFrame,
     manifest: pd.DataFrame,
     final_package: pd.DataFrame,
@@ -122,6 +126,20 @@ def validate(
         "ERROR",
         status_from_condition(not slot_review.empty),
         "planned slot review CSV is readable",
+    )
+    add(
+        checks,
+        "input_planned_slot_contingency_exists",
+        "ERROR",
+        status_from_condition(not slot_contingency.empty),
+        "planned slot contingency CSV is readable",
+    )
+    add(
+        checks,
+        "input_planned_slot_replacement_pool_exists",
+        "ERROR",
+        status_from_condition(not replacement_pool.empty),
+        "planned slot replacement pool CSV is readable",
     )
     add(checks, "input_release_gate_exists", "ERROR", status_from_condition(not release.empty), "submission release gate CSV is readable")
     add(
@@ -327,6 +345,52 @@ def validate(
             f"slot-review rows={len(planned_reviews)}; reviews={sorted(set(planned_reviews.get('slot_review', pd.Series(dtype=str)).astype(str)))}",
         )
 
+    if {"scenario_id", "release_action", "new_candidate_needed"}.issubset(slot_contingency.columns):
+        required_scenarios = {
+            "S01_no_external_change",
+            "S02_baseline_valid_fleongg_competitive",
+            "S03_baseline_valid_fleongg_weak",
+            "S04_baseline_anchor_failed",
+            "S05_degnonguidi_complete_clean",
+            "S06_degnonguidi_error_or_deferred",
+            "S07_gates_clear_but_redundancy_unresolved",
+        }
+        scenarios = set(slot_contingency["scenario_id"].astype(str))
+        add(
+            checks,
+            "required_slot_contingency_scenarios_exist",
+            "ERROR",
+            status_from_condition(required_scenarios.issubset(scenarios)),
+            f"missing scenarios={sorted(required_scenarios - scenarios)}",
+        )
+        needs = pd.to_numeric(slot_contingency["new_candidate_needed"], errors="coerce")
+        add(
+            checks,
+            "slot_contingency_new_candidate_needs_are_numeric",
+            "ERROR",
+            status_from_condition(needs.notna().all() and (needs >= 0).all()),
+            f"new_candidate_needed values={slot_contingency['new_candidate_needed'].astype(str).tolist()}",
+        )
+        if pending or running or batch_status == "WAIT_EXTERNAL_CONTEXT":
+            actions = set(slot_contingency["release_action"].astype(str))
+            add(
+                checks,
+                "pending_context_has_wait_no_submit_contingency",
+                "ERROR",
+                status_from_condition("WAIT_NO_SUBMIT" in actions),
+                f"contingency actions={sorted(actions)}",
+            )
+
+    if "replacement_role" in replacement_pool.columns:
+        roles = set(replacement_pool["replacement_role"].astype(str))
+        add(
+            checks,
+            "replacement_pool_roles_available",
+            "INFO",
+            status_from_condition(bool(roles)),
+            f"replacement roles={sorted(roles)}",
+        )
+
     if "manifest_gate" in manifest.columns:
         planned_manifest = manifest[manifest["path"].astype(str).isin(plan_paths)].copy()
         bad_manifest = planned_manifest[~planned_manifest["manifest_gate"].astype(str).str.startswith("PASS")]
@@ -437,6 +501,8 @@ def main() -> int:
     parser.add_argument("--well-impact", type=Path, default=DEFAULT_WELL_IMPACT)
     parser.add_argument("--diversity", type=Path, default=DEFAULT_DIVERSITY)
     parser.add_argument("--slot-review", type=Path, default=DEFAULT_SLOT_REVIEW)
+    parser.add_argument("--slot-contingency", type=Path, default=DEFAULT_SLOT_CONTINGENCY)
+    parser.add_argument("--replacement-pool", type=Path, default=DEFAULT_REPLACEMENT_POOL)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--manifest-summary", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--final-package", type=Path, default=DEFAULT_FINAL_PACKAGE)
@@ -453,6 +519,8 @@ def main() -> int:
         well_impact=safe_read_csv(args.well_impact),
         diversity=safe_read_csv(args.diversity),
         slot_review=safe_read_csv(args.slot_review),
+        slot_contingency=safe_read_csv(args.slot_contingency),
+        replacement_pool=safe_read_csv(args.replacement_pool),
         release=safe_read_csv(args.release),
         manifest=safe_read_csv(args.manifest_summary),
         final_package=safe_read_csv(args.final_package),

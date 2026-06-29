@@ -12,8 +12,8 @@ This report validates consistency between polling, readiness, audit summary, bat
 
 | severity | status | count |
 | --- | --- | --- |
-| ERROR | PASS | 33 |
-| INFO | PASS | 2 |
+| ERROR | PASS | 38 |
+| INFO | PASS | 3 |
 
 ## Checks
 
@@ -26,6 +26,8 @@ This report validates consistency between polling, readiness, audit summary, bat
 | input_well_impact_summary_exists | ERROR | PASS | planned candidate well-impact summary CSV is readable |
 | input_candidate_diversity_summary_exists | ERROR | PASS | planned candidate diversity summary CSV is readable |
 | input_planned_slot_review_exists | ERROR | PASS | planned slot review CSV is readable |
+| input_planned_slot_contingency_exists | ERROR | PASS | planned slot contingency CSV is readable |
+| input_planned_slot_replacement_pool_exists | ERROR | PASS | planned slot replacement pool CSV is readable |
 | input_release_gate_exists | ERROR | PASS | submission release gate CSV is readable |
 | input_artifact_manifest_summary_exists | ERROR | PASS | candidate artifact manifest summary CSV is readable |
 | input_final_submission_package_summary_exists | ERROR | PASS | final submission package summary CSV is readable |
@@ -49,6 +51,10 @@ This report validates consistency between polling, readiness, audit summary, bat
 | planned_slots_have_impact_buckets | ERROR | PASS | well-impact rows=5; buckets=['BROAD', 'SINGLE_WELL_DOMINATED'] |
 | planned_slots_have_diversity_flags | ERROR | PASS | diversity rows=5; flags=['OK', 'REDUNDANT_REVIEW'] |
 | planned_slots_have_slot_reviews | ERROR | PASS | slot-review rows=5; reviews=['HOLD_EXTERNAL_CONTEXT'] |
+| required_slot_contingency_scenarios_exist | ERROR | PASS | missing scenarios=[] |
+| slot_contingency_new_candidate_needs_are_numeric | ERROR | PASS | new_candidate_needed values=['0', '0', '2', '4', '0', '0', '2'] |
+| pending_context_has_wait_no_submit_contingency | ERROR | PASS | contingency actions=['BLOCK_ALL_DEPENDENT_SLOTS', 'FINAL_REVIEW_BLEND_SWEEP', 'FOLLOW_SCORE_BRANCH_WITHOUT_DEGNONGUIDI', 'INSERT_DEGNONGUIDI_AND_RERANK', 'KEEP_ONE_BLEND_FIND_REPLACEMENTS', 'PARTIAL_RELEASE_NEEDS_REPLACEMENTS', 'WAIT_NO_SUBMIT'] |
+| replacement_pool_roles_available | INFO | PASS | replacement roles=['already_planned', 'alternate_blend_weight_only', 'backup_projection_review', 'conservative_low_upside_backup', 'do_not_use_duplicate', 'pending_equivalent_not_replacement'] |
 | planned_slots_have_valid_artifact_manifests | ERROR | PASS | nonpassing planned manifest rows=0; manifest rows=5 |
 | planned_slots_have_no_final_package_failures | ERROR | PASS | failing planned package rows=0; package rows=5 |
 | blocked_release_blocks_final_packaging | ERROR | PASS | package gates while external context pending=['BLOCKED_RELEASE_GATE'] |

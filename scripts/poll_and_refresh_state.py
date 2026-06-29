@@ -105,6 +105,7 @@ def write_outputs(summary: dict[str, Any], output_csv: Path, report: Path) -> No
             "- `reports/planned_candidate_well_impact_report.md`",
             "- `reports/planned_candidate_diversity_report.md`",
             "- `reports/planned_slot_review.md`",
+            "- `reports/planned_slot_contingency.md`",
             "- `reports/candidate_artifact_manifest_report.md`",
             "- `reports/submission_release_gate_report.md`",
             "- `reports/final_submission_package_report.md`",
@@ -160,6 +161,7 @@ def main() -> int:
     run_checked([sys.executable, "scripts/planned_candidate_well_impact.py"])
     run_checked([sys.executable, "scripts/planned_candidate_diversity.py"])
     run_checked([sys.executable, "scripts/planned_slot_review.py"])
+    run_checked([sys.executable, "scripts/planned_slot_contingency.py"])
     run_checked([sys.executable, "scripts/candidate_artifact_manifest_summary.py"])
     run_checked([sys.executable, "scripts/submission_release_gate.py"])
     run_checked([sys.executable, "scripts/final_submission_package.py"])
@@ -173,6 +175,8 @@ def main() -> int:
     well_impact = safe_read_csv(Path("experiments/planned_candidate_well_impact_summary.csv"))
     diversity = safe_read_csv(Path("experiments/planned_candidate_diversity_summary.csv"))
     slot_review = safe_read_csv(Path("experiments/planned_slot_review.csv"))
+    slot_contingency = safe_read_csv(Path("experiments/planned_slot_contingency.csv"))
+    replacement_pool = safe_read_csv(Path("experiments/planned_slot_replacement_pool.csv"))
     manifest_summary = safe_read_csv(Path("experiments/candidate_artifact_manifest_summary.csv"))
     release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
     final_package = safe_read_csv(Path("experiments/final_submission_package_summary.csv"))
@@ -198,6 +202,9 @@ def main() -> int:
         "diversity_flag_counts": count_values(diversity, "diversity_flag"),
         "slot_review_counts": count_values(slot_review, "slot_review"),
         "slot_evidence_review_counts": count_values(slot_review, "evidence_review"),
+        "slot_contingency_action_counts": count_values(slot_contingency, "release_action"),
+        "slot_contingency_new_candidate_needed_counts": count_values(slot_contingency, "new_candidate_needed"),
+        "replacement_pool_role_counts": count_values(replacement_pool, "replacement_role"),
         "artifact_manifest_gate_counts": count_values(manifest_summary, "manifest_gate"),
         "release_gate_counts": count_values(release_gate, "release_gate"),
         "final_package_gate_counts": count_values(final_package, "package_gate"),
