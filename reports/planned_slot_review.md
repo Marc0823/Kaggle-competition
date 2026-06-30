@@ -12,11 +12,11 @@ This report combines release gates, audit readiness, final-package state, per-we
 
 | planned_slot | slot_role | family | slot_review | slot_action | evidence_review | evidence_action | release_gate | impact_bucket | diversity_flag | min_pair_rmse | top_well | slot_review_reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | structural_candidate | projection_branch | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_FOR_FINAL_REVIEW | KEEP | BLOCKED_EXTERNAL_CONTEXT | BROAD | OK | 1.3733 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 2 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 3 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 4 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 5 | flexible_information_slot | plateau_signal | HOLD_EXTERNAL_CONTEXT | WAIT | SPARSE_INFO_SLOT_REVIEW | REVIEW | BLOCKED_EXTERNAL_CONTEXT | SINGLE_WELL_DOMINATED | OK | 4.01758 | 00e12e8b | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 1 | structural_candidate | projection_branch | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_FOR_FINAL_REVIEW | KEEP | REVIEW_LEDGER_UPDATES | BROAD | OK | 1.3733 | 00bbac68 | Release gate is REVIEW_LEDGER_UPDATES; do not submit or package yet. |
+| 2 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | REVIEW_LEDGER_UPDATES | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is REVIEW_LEDGER_UPDATES; do not submit or package yet. |
+| 3 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | REVIEW_LEDGER_UPDATES | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is REVIEW_LEDGER_UPDATES; do not submit or package yet. |
+| 4 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | REVIEW_LEDGER_UPDATES | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | Release gate is REVIEW_LEDGER_UPDATES; do not submit or package yet. |
+| 5 | flexible_information_slot | plateau_signal | HOLD_EXTERNAL_CONTEXT | WAIT | SPARSE_INFO_SLOT_REVIEW | REVIEW | REVIEW_LEDGER_UPDATES | SINGLE_WELL_DOMINATED | OK | 4.01758 | 00e12e8b | Release gate is REVIEW_LEDGER_UPDATES; do not submit or package yet. |
 
 ## Release Interpretation
 

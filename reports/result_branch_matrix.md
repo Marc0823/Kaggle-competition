@@ -6,11 +6,11 @@ This report maps pending public scores and reference-kernel outcomes to concrete
 
 | planned_slot | slot_role | family | current_action | release_condition | path |
 | --- | --- | --- | --- | --- | --- |
-| 1 | structural_candidate | projection_branch | do_not_submit_yet | Release after 54174151 scores and Degnonguidi v6 either completes/audits or is explicitly deferred. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/sp45_projection_submission.csv |
-| 2 | calibration_sweep | projection_learned_blend | do_not_submit_yet | Release only after 54174151 and 54174876 score; prioritize if Fleongg is competitive or useful for ensemble diversity. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.50.csv |
-| 3 | calibration_sweep | projection_learned_blend | do_not_submit_yet | Release only after 54174151 and 54174876 score; prioritize if Fleongg is competitive or useful for ensemble diversity. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.55.csv |
-| 4 | calibration_sweep | projection_learned_blend | do_not_submit_yet | Release only after 54174151 and 54174876 score; prioritize if Fleongg is competitive or useful for ensemble diversity. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.60.csv |
-| 5 | flexible_information_slot | plateau_signal | do_not_submit_yet | Release as the flexible 5th slot only after anchors resolve and no stronger audited candidate is available. | artifacts/plateau_recent_quantile_v1/submission.csv |
+| 1 | structural_candidate | projection_branch | final_review_before_submit | External blockers are clear; run final manual review immediately before any official submission. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/sp45_projection_submission.csv |
+| 2 | calibration_sweep | projection_learned_blend | final_review_before_submit | External blockers are clear; run final manual review immediately before any official submission. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.50.csv |
+| 3 | calibration_sweep | projection_learned_blend | final_review_before_submit | External blockers are clear; run final manual review immediately before any official submission. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.55.csv |
+| 4 | calibration_sweep | projection_learned_blend | final_review_before_submit | External blockers are clear; run final manual review immediately before any official submission. | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_sp45_fleongg_w0.60.csv |
+| 5 | flexible_information_slot | plateau_signal | final_review_before_submit | External blockers are clear; run final manual review immediately before any official submission. | artifacts/plateau_recent_quantile_v1/submission.csv |
 
 ## Branch Rules
 
