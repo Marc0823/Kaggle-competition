@@ -5,7 +5,7 @@ It cannot replace Kaggle Public LB, but it helps reject implausible candidates b
 
 ## Inputs
 - Data dir: `data/sample`
-- Valid submission files scored: `41`
+- Valid submission files scored: `69`
 - Known public-score calibration rows: `0`
 
 ## Important Limitation
@@ -21,6 +21,12 @@ No known public-score rows were matched.
 
 | path | risk_grade | estimated_public_band | rmse_to_current_best_7p235 | nearest_known_public_score | rmse_to_nearest_known | anchor_first_abs_p90 | jump_rate_abs_slope_gt3 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| artifacts/baidalin_preflight_redownload_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/baidalin_preflight_redownload_v1/submission_gold_prefix_aggressive.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/baidalin_preflight_redownload_v1/submission_gold_prefix_balanced.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/baidalin_preflight_redownload_v1/submission_gold_prefix_conservative.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/baidalin_preflight_redownload_v1/submission_public_self_verified.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
+| artifacts/baidalin_preflight_redownload_v1/submission_version2_refactor_copy.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/submission_gold_prefix_aggressive.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/fleongg_branch_calibration_joezzzzz_v1/submission_gold_prefix_balanced.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
@@ -40,12 +46,6 @@ No known public-score rows were matched.
 | artifacts/kernel_outputs/rogii-baidalin-7-201-preflight-codex_v1/submission_version2_refactor_copy.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
 | artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_aggressive.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_balanced.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_gold_prefix_conservative.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_pre_gold.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/lucifer_baseline_repro_joezzzzz_v1/submission_public_self_verified.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/gr_typewell_light_alpha010_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.349534 |  |  | 0.0360878 | 7.06814e-05 |
-| artifacts/gr_typewell_light_alpha020_v1/submission.csv | near_duplicate_low_upside | likely_around_7p235_low_upside | 0.699067 |  |  | 0.0360878 | 7.06814e-05 |
 
 ## Recommended Use
 

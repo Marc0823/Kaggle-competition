@@ -14,8 +14,8 @@ This report checks local ignored `candidate_manifest.json` files for the planned
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_1_conditional_batch |
 | 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_2_conditional_batch |
-| 3 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_55 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_3_conditional_batch |
-| 4 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_60 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_4_conditional_batch |
+| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | dynamic slot1 SP45 plus Fleongg w0.55 candidate; hold pending 54198676 public score |
+| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | dynamic slot1 SP45 plus Fleongg w0.60 candidate; hold pending 54198676 public score |
 | 5 | plateau_recent_quantile_v1_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_5_conditional_batch |
 
 ## Gate Meaning

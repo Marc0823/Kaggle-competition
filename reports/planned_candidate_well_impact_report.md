@@ -6,7 +6,8 @@ This report analyzes planned submission candidates per well against the active-a
 
 | impact_bucket | count |
 | --- | --- |
-| BROAD | 4 |
+| BROAD | 2 |
+| CONCENTRATED | 2 |
 | SINGLE_WELL_DOMINATED | 1 |
 
 ## Candidate Summary
@@ -15,8 +16,8 @@ This report analyzes planned submission candidates per well against the active-a
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | projection_branch | BROAD | 3 | 1 | 1.45864 | 00bbac68 | 0.338564 | 1.3019 |
 | 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | projection_learned_blend | BROAD | 3 | 1 | 2.42452 | 00bbac68 | 0.437617 | 2.46029 |
-| 3 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_55 | projection_learned_blend | BROAD | 3 | 1 | 2.28867 | 00bbac68 | 0.435065 | 2.31565 |
-| 4 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_60 | projection_learned_blend | BROAD | 3 | 1 | 2.15794 | 00bbac68 | 0.431508 | 2.17443 |
+| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | projection_learned_blend | CONCENTRATED | 3 | 1 | 2.73598 | 00bbac68 | 0.618246 | 3.29994 |
+| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | projection_learned_blend | CONCENTRATED | 3 | 1 | 2.65427 | 00bbac68 | 0.638478 | 3.25334 |
 | 5 | plateau_recent_quantile_v1_submission | plateau_signal | SINGLE_WELL_DOMINATED | 1 | 0.303936 | 4.72239 | 00e12e8b | 1 | 8.56585 |
 
 ## Top Impacted Wells
@@ -29,12 +30,12 @@ This report analyzes planned submission candidates per well against the active-a
 | 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | 00bbac68 | 0.437617 | 2.46029 | 1 | 5.53273 | 6.07445 | 0.897835 |
 | 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | 00e12e8b | 0.407818 | 2.80846 | 1 | 5.34942 | 6.68331 | 0.382931 |
 | 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | 000d7d20 | 0.154564 | 1.83078 | 1 | 3.88664 | 5.25057 | 1.14909 |
-| 3 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_55 | 00bbac68 | 0.435065 | 2.31565 | 1 | 5.18138 | 5.92092 | 0.840363 |
-| 3 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_55 | 00e12e8b | 0.401345 | 2.62998 | 1 | 5.01029 | 6.25972 | 0.293861 |
-| 3 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_55 | 000d7d20 | 0.16359 | 1.77794 | 1 | 3.98198 | 5.08105 | 1.09467 |
-| 4 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_60 | 00bbac68 | 0.431508 | 2.17443 | 1 | 4.8084 | 5.76738 | 0.782892 |
-| 4 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_60 | 00e12e8b | 0.394041 | 2.45707 | 1 | 4.67181 | 5.83684 | 0.20479 |
-| 4 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_60 | 000d7d20 | 0.174451 | 1.73113 | 1 | 3.97251 | 4.91184 | 1.04025 |
+| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | 00bbac68 | 0.618246 | 3.29994 | 1 | 7.39983 | 7.8274 | 1.61113 |
+| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | 00e12e8b | 0.267512 | 2.56681 | 1 | 4.87013 | 5.99194 | 0.185078 |
+| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | 000d7d20 | 0.114242 | 1.77615 | 1 | 4.03108 | 5.09783 | 1.04881 |
+| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | 00bbac68 | 0.638478 | 3.25334 | 1 | 7.18134 | 7.5869 | 1.63895 |
+| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | 00e12e8b | 0.24678 | 2.39171 | 1 | 4.48168 | 5.54404 | 0.0862435 |
+| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | 000d7d20 | 0.114742 | 1.72687 | 1 | 4.00924 | 4.93067 | 0.980958 |
 | 5 | plateau_recent_quantile_v1_submission | 00e12e8b | 1 | 8.56585 | 1 | 15.5186 | 15.9286 | -3.33841 |
 | 5 | plateau_recent_quantile_v1_submission | 000d7d20 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 5 | plateau_recent_quantile_v1_submission | 00bbac68 | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -6,19 +6,17 @@ This report combines release gates, audit readiness, final-package state, per-we
 
 | slot_review | count |
 | --- | --- |
-| KEEP_ONLY_IF_CALIBRATION_SWEEP | 3 |
-| KEEP_FOR_FINAL_REVIEW | 1 |
-| SPARSE_INFO_SLOT_REVIEW | 1 |
+| HOLD_EXTERNAL_CONTEXT | 5 |
 
 ## Slot Review
 
 | planned_slot | slot_role | family | slot_review | slot_action | evidence_review | evidence_action | release_gate | impact_bucket | diversity_flag | min_pair_rmse | top_well | slot_review_reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | structural_candidate | projection_branch | KEEP_FOR_FINAL_REVIEW | KEEP | KEEP_FOR_FINAL_REVIEW | KEEP | MANUAL_REVIEW_REQUIRED | BROAD | OK | 1.3733 | 00bbac68 | Candidate has non-redundant planned evidence; keep for final release review after external blockers clear. |
-| 2 | calibration_sweep | projection_learned_blend | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | MANUAL_REVIEW_REQUIRED | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | This slot is redundant with nearby blend weights; keep only if the batch explicitly spends slots to map the blend curve. |
-| 3 | calibration_sweep | projection_learned_blend | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | MANUAL_REVIEW_REQUIRED | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | This slot is redundant with nearby blend weights; keep only if the batch explicitly spends slots to map the blend curve. |
-| 4 | calibration_sweep | projection_learned_blend | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | MANUAL_REVIEW_REQUIRED | BROAD | REDUNDANT_REVIEW | 0.171662 | 00bbac68 | This slot is redundant with nearby blend weights; keep only if the batch explicitly spends slots to map the blend curve. |
-| 5 | flexible_information_slot | plateau_signal | SPARSE_INFO_SLOT_REVIEW | REVIEW | SPARSE_INFO_SLOT_REVIEW | REVIEW | MANUAL_REVIEW_REQUIRED | SINGLE_WELL_DOMINATED | OK | 4.01758 | 00e12e8b | Candidate is single-well dominated; use only as a sparse information slot. |
+| 1 | structural_candidate | projection_branch | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_FOR_FINAL_REVIEW | KEEP | BLOCKED_EXTERNAL_CONTEXT | BROAD | OK | 1.71662 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 2 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | BROAD | REDUNDANT_REVIEW | 0.702226 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 3 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | CONCENTRATED | REDUNDANT_REVIEW | 0.159696 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 4 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | CONCENTRATED | REDUNDANT_REVIEW | 0.159696 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 5 | flexible_information_slot | plateau_signal | HOLD_EXTERNAL_CONTEXT | WAIT | SPARSE_INFO_SLOT_REVIEW | REVIEW | BLOCKED_EXTERNAL_CONTEXT | SINGLE_WELL_DOMINATED | OK | 4.02266 | 00e12e8b | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
 
 ## Release Interpretation
 

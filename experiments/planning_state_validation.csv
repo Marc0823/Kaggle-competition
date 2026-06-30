@@ -29,9 +29,9 @@ external_context_blocks_release,ERROR,PASS,pending=1; running=0; batch_status=WA
 blocked_plan_does_not_submit,ERROR,PASS,current actions=['do_not_submit_yet']
 no_unapplied_poll_updates,INFO,PASS,poll refresh detected no unapplied kernel/submission updates
 planned_slots_have_passing_audit_gate,ERROR,PASS,nonpassing planned audit rows=0
-planned_slots_have_impact_buckets,ERROR,PASS,"well-impact rows=5; buckets=['BROAD', 'SINGLE_WELL_DOMINATED']"
+planned_slots_have_impact_buckets,ERROR,PASS,"well-impact rows=5; buckets=['BROAD', 'CONCENTRATED', 'SINGLE_WELL_DOMINATED']"
 planned_slots_have_diversity_flags,ERROR,PASS,"diversity rows=5; flags=['OK', 'REDUNDANT_REVIEW']"
-planned_slots_have_slot_reviews,ERROR,PASS,"slot-review rows=5; reviews=['KEEP_FOR_FINAL_REVIEW', 'KEEP_ONLY_IF_CALIBRATION_SWEEP', 'SPARSE_INFO_SLOT_REVIEW']"
+planned_slots_have_slot_reviews,ERROR,PASS,slot-review rows=5; reviews=['HOLD_EXTERNAL_CONTEXT']
 required_slot_contingency_scenarios_exist,ERROR,PASS,missing scenarios=[]
 slot_contingency_new_candidate_needs_are_numeric,ERROR,PASS,"new_candidate_needed values=['0', '0', '2', '4', '0', '0', '2']"
 pending_context_has_wait_no_submit_contingency,ERROR,PASS,"contingency actions=['BLOCK_ALL_DEPENDENT_SLOTS', 'FINAL_REVIEW_BLEND_SWEEP', 'FOLLOW_SCORE_BRANCH_WITHOUT_DEGNONGUIDI', 'INSERT_DEGNONGUIDI_AND_RERANK', 'KEEP_ONE_BLEND_FIND_REPLACEMENTS', 'PARTIAL_RELEASE_NEEDS_REPLACEMENTS', 'WAIT_NO_SUBMIT']"
