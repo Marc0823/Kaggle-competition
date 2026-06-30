@@ -13,11 +13,11 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | submission_appended_detected | 0 |
 | submission_missing_not_appended | 0 |
 | submission_dry_run | True |
-| pending_official_submissions | 2 |
+| pending_official_submissions | 0 |
 | running_kernels | 1 |
-| readiness_status_counts | HOLD_PENDING_CONTEXT=10; HOLD_DUPLICATE=6; WAIT_OFFICIAL_SCORE=4; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1 |
+| readiness_status_counts | HOLD_PENDING_CONTEXT=10; HOLD_DUPLICATE=6; HOLD_PENDING_ANCHOR=4; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1 |
 | audit_gate_counts | AUDIT_PASS_WARN_REVIEW=20; AUDIT_PASS=3 |
-| submission_gate_counts | AUDITED_WAIT_CONTEXT=14; HOLD_DUPLICATE=6; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1 |
+| submission_gate_counts | AUDITED_WAIT_CONTEXT=10; HOLD_DUPLICATE=6; HOLD_PENDING_ANCHOR=4; HOLD_LOW_UPSIDE=2; HOLD_INFORMATION_SLOT=1 |
 | batch_status | WAIT_EXTERNAL_CONTEXT |
 | planned_slots | 5 |
 | current_action_counts | do_not_submit_yet=5 |
@@ -34,7 +34,7 @@ This report summarizes the latest safe polling pass. It does not submit to Kaggl
 | release_gate_counts | BLOCKED_EXTERNAL_CONTEXT=5 |
 | final_package_gate_counts | BLOCKED_RELEASE_GATE=5 |
 | result_branch_rules | 7 |
-| result_application_status_counts | WAIT=4; PASS=1 |
+| result_application_status_counts | ACTION_READY=2; WAIT=2; PASS=1 |
 | planning_validation_status_counts | PASS=45 |
 | planning_validation_error_failures | 0 |
 

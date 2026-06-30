@@ -5,11 +5,11 @@ This is a conditional 4-5 slot plan built from audited candidates. It does not s
 ## Current Status
 
 - Batch status: `WAIT_EXTERNAL_CONTEXT`
-- Pending official submissions: `2`
+- Pending official submissions: `0`
 - Running kernels: `1`
-- Eligible audited candidates: `13`
+- Eligible audited candidates: `9`
 - Planned slots: `5`
-- Pending IDs: `54174151, 54174876`
+- Pending IDs: ``
 - Running kernels: `joezzzzz/rogii-degnonguidi-7159-preflight-codex`
 
 ## Planned Slots
