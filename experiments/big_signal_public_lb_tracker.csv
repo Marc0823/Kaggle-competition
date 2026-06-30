@@ -22,3 +22,7 @@ timestamp,candidate,type,state,public_score,action,next_step
 2026-06-29 16:00,romantamrazov_sub9_gpu_v3,tuned_gbdt_ncc_pf,kernel_running,,monitor,download_audit_submit_if_complete
 2026-06-29 16:00,baidalin7201v2,public_7201_lineage,prepared_push_blocked_gpu_cap,,ready,launch_when_gpu_slot_frees
 2026-06-29 16:08,degnonguidi_7159_submit,public_7159_lineage,prepared_push_blocked_gpu_cap,,ready,launch_first_when_gpu_slot_frees
+2026-06-30 00:05,henry_tabicl_v10_hidden_compatible,tabicl_artifact_stack,complete,13.453,rejected,artifact_stack_did_not_transfer
+2026-06-30 00:05,active_account_7235_baseline_reproduction,physics_pf_stack,complete,7.182,new_best,beats_previous_7p235
+2026-06-30 00:05,fleongg_pretrained_branch_calibration_v2,pretrained_branch_calibration,complete,7.787,rejected,worse_than_best
+2026-06-30 00:10,romantamrazov_sub9_gpu_v3,tuned_gbdt_ncc_pf,kernel_complete_output_audited,,hold,submission_csv_valid_surrogate_unknown_risky

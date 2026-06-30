@@ -1,15 +1,18 @@
 # ROGII Big-Signal Public LB Push
 
-Last updated: 2026-06-29 16:08 Asia/Shanghai
+Last updated: 2026-06-30 Asia/Shanghai
 
-Current best confirmed public score: 7.235 from `Wellbore wizard physics PF stack fork`.
+Current best confirmed public score: 7.182 from `Codex active-account 7.235 baseline reproduction audit pass`.
 
 ## Confirmed Results
 
 | Candidate | Type | Status | Public score | Decision |
 |---|---|---:|---:|---|
-| Wellbore wizard physics PF stack | physics/PF stack | complete | 7.235 | current best |
+| Active-account 7.235 baseline reproduction | physics/PF stack | complete | 7.182 | current best |
+| Wellbore wizard physics PF stack | physics/PF stack | complete | 7.235 | previous best |
 | David v12 budget guarded clean GPU | model/guarded stack | complete | 7.263 | not better than best |
+| Fleongg pretrained branch calibration v2 | pretrained branch calibration | complete | 7.787 | not useful |
+| Henry TabICL v10 hidden-compatible retry | TabICL/artifact stack | complete | 13.453 | reject; artifact stack did not transfer |
 | David bimodal fastcpu no-sameid | model-package/bimodal stack | complete | 7.703 | not useful |
 | Nickson v5 artifact inference | artifact inference | complete | 20.579 | reject; artifact mismatch or poor transfer |
 | Wellbore direct overlap lookup | train target lookup | complete | 11551.955 | reject; mapping/format does not match leaderboard target |
@@ -20,9 +23,8 @@ Current best confirmed public score: 7.235 from `Wellbore wizard physics PF stac
 
 | Candidate | Type | Current state | Why it matters | Risk |
 |---|---|---|---|---|
-| Henry TabICL artifact stack | TabICL/artifact stack | notebook submission pending | Closest to leaderboard-style artifact stack route; now submitted in hidden-compatible form | artifact dependency; unknown score |
-| Henry v10 + Sunny80 blend | hidden-compatible physical/artifact blend | kernel running | Correct implementation of Kojimar-style `0.80 * Sunny + 0.20 * v10`, unlike invalid static replay notebooks | long runtime; waits for completion before submit |
-| Romantamrazov sub9 GPU fork v3 | tuned LGB/CB + NCC/PF features | kernel running after CatBoost bootstrap and single-GPU device fixes | Independent strong model branch; less public-mechanism dependent | long GPU runtime; may not beat 7.235 |
+| Henry v10 + Sunny80 blend | hidden-compatible physical/artifact blend | kernel complete; output download attempted but hung | Correct implementation of Kojimar-style `0.80 * Sunny + 0.20 * v10`, but Henry v10 alone scored poorly | low priority after Henry 13.453 |
+| Romantamrazov sub9 GPU fork v3 | tuned LGB/CB + NCC/PF features | kernel complete; output downloaded and sanity-audited | Independent model branch; valid `submission.csv`; surrogate is plausible but risky | may not beat 7.182 |
 | Degnonguidi 7.159 fork | dual pipeline + gold prefix calibration + TabICL/package source | clean fork prepared, push blocked by GPU session cap | Published public score is better than current best; now highest-priority next GPU launch | needs GPU slot; may not reproduce exactly |
 | Baidalin 7.201 fork | public 7.201 lineage | clean v2 fork prepared, push blocked by GPU session cap | Published LB is slightly better than current 7.235; next launch when a GPU slot frees | needs GPU slot; may not reproduce exactly |
 | Wellbore direct overlap lookup | direct train-TVT MD lookup | complete, scored 11551.955 | Disproved naive overlap lookup; do not reuse as a candidate | high-risk train-target lookup; rejected |
@@ -49,9 +51,12 @@ Current best confirmed public score: 7.235 from `Wellbore wizard physics PF stac
 - 2026-06-29: Romantamrazov v2 failed at CatBoost because `devices="0:1"` was invalid on a single-GPU worker. v3 patches `bootstrap_type="Bernoulli"` and `devices="0"` and is running.
 - 2026-06-29: Baidalin 7.201 fork is prepared locally as `kaggle_kernel_baidalin7201_v2`. The clean metadata push reaches Kaggle and is now blocked only by `Maximum batch GPU session count of 2 reached`. Launch it as soon as Henry/Sunny or Romantamrazov finishes.
 - 2026-06-29: Degnonguidi 7.159 fork is prepared locally as `kaggle_kernel_degnonguidi_7159_submit`. All referenced datasets/kernel source are visible to the current account, and push is blocked only by the two active GPU sessions. It should launch before Baidalin when a GPU slot frees.
+- 2026-06-29 UTC / 2026-06-29 Beijing night: Two additional submissions completed after the previous status check. `Codex active-account 7.235 baseline reproduction audit pass` scored 7.182 and is now the best confirmed score. `Codex fleongg pretrained branch calibration v2 audit pass` scored 7.787 and is rejected.
+- 2026-06-29 UTC: `Henry TabICL v10 artifact hidden-compatible retry` completed with public score 13.453. This rejects the standalone Henry/v10 route for now.
+- 2026-06-30: `Romantamrazov sub9 GPU v3` completed. Its downloaded `submission.csv` passed sanity checks: 14,151 rows, id order matches sample submission, no duplicate ids, no NaN/Inf, range 11588.44 to 12238.67. Local surrogate marks it `plausible_submit_candidate` but `unknown_possible_but_risky`, with RMSE 6.06 from the current 7.235 reference.
 
 ## Current Interpretation
 
-The most plausible large-improvement route remains public-mechanism-aware matching or TabICL/artifact stacking. Pure artifact inference without the right competition-specific alignment can fail badly, as seen in the Nickson result, and naive direct train-TVt lookup is now disproven by public score.
+The most plausible large-improvement route remains public-mechanism-aware reconstruction and high-score public stack replication. Pure artifact inference without the right competition-specific alignment can fail badly, as seen in the Nickson and Henry results, and naive direct train-TVt lookup is now disproven by public score.
 
-Current active blockers are Kaggle runtime/GPU queues, not local code. The next high-priority actions are: monitor Henry retry score; when `rogii-henry-v10-sunny80-blend` completes, download/audit and submit it; when one GPU slot frees, push and run Degnonguidi 7.159 first, then Baidalin 7.201.
+Current next high-priority actions: prioritize reproducing Degnonguidi 7.159 and Baidalin 7.201 from the lean GitHub repo; treat Romantamrazov v3 as a secondary risky candidate; do not spend more submissions on standalone Henry/v10.
