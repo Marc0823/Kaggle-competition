@@ -4,16 +4,15 @@ This report turns current external-result state into concrete next actions. It d
 
 ## Overall
 
-- Status: `REVIEW_REQUIRED`
-- Reason: At least one branch requires review before release.
+- Status: `ACTION_READY`
+- Reason: Branch actions can proceed according to the plan.
 
 ## Status Counts
 
 | status | count |
 | --- | --- |
-| ACTION_READY | 3 |
+| ACTION_READY | 4 |
 | PASS | 1 |
-| REVIEW_REQUIRED | 1 |
 
 ## Action Plan
 
@@ -23,7 +22,7 @@ This report turns current external-result state into concrete next actions. It d
 | baseline_anchor | B01_baseline_anchor_valid | ACTION_READY | False | Promote the active-account baseline anchor and allow dependent candidate review. | status=complete; public_score=7.182 | python3 scripts/poll_and_refresh_state.py --apply-submission-updates |
 | fleongg_calibration | B03_fleongg_competitive | ACTION_READY | False | Prioritize the SP45+Fleongg blend sweep after final release checks. | baseline=7.182; fleongg=7.787 | python3 scripts/poll_and_refresh_state.py --apply-submission-updates |
 | degnonguidi_reference | B06_degnonguidi_error_or_defer | ACTION_READY | False | Record Degnonguidi terminal status or deferral, then rerun plan without waiting on it. | status=ERROR; version=6 | update kernel ledger, record deferral reason, rerun poll_and_refresh_state.py |
-| release_sequence | FINAL_REVIEW_REQUIRED | REVIEW_REQUIRED | True | Release blockers appear clear; perform final human/strategy review before packaging. | release_gates=['REVIEW_LEDGER_UPDATES']; package_gates=['BLOCKED_RELEASE_GATE'] | python3 scripts/final_submission_package.py |
+| release_sequence | PACKAGE_READY | ACTION_READY | False | Prepare the selected local package only after final review. | package_gates=['REVIEW_READY_TO_PACKAGE'] | python3 scripts/final_submission_package.py --prepare --planned-slot N |
 
 ## Outputs
 

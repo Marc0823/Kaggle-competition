@@ -49,7 +49,7 @@ This report validates consistency between polling, readiness, audit summary, bat
 | planned_slots_have_passing_audit_gate | ERROR | PASS | nonpassing planned audit rows=0 |
 | planned_slots_have_impact_buckets | ERROR | PASS | well-impact rows=5; buckets=['BROAD', 'SINGLE_WELL_DOMINATED'] |
 | planned_slots_have_diversity_flags | ERROR | PASS | diversity rows=5; flags=['OK', 'REDUNDANT_REVIEW'] |
-| planned_slots_have_slot_reviews | ERROR | PASS | slot-review rows=5; reviews=['HOLD_EXTERNAL_CONTEXT'] |
+| planned_slots_have_slot_reviews | ERROR | PASS | slot-review rows=5; reviews=['KEEP_FOR_FINAL_REVIEW', 'KEEP_ONLY_IF_CALIBRATION_SWEEP', 'SPARSE_INFO_SLOT_REVIEW'] |
 | required_slot_contingency_scenarios_exist | ERROR | PASS | missing scenarios=[] |
 | slot_contingency_new_candidate_needs_are_numeric | ERROR | PASS | new_candidate_needed values=['0', '0', '2', '4', '0', '0', '2'] |
 | replacement_pool_roles_available | INFO | PASS | replacement roles=['already_planned', 'conservative_low_upside_backup', 'do_not_use_duplicate', 'manual_review', 'pending_equivalent_not_replacement'] |

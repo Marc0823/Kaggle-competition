@@ -217,6 +217,15 @@ def main() -> int:
     }
 
     write_outputs(summary, args.summary_csv, args.report)
+    if not summary["kernel_updates_detected"] and not summary["submission_updates_detected"]:
+        run_checked([sys.executable, "scripts/submission_release_gate.py"])
+        run_checked([sys.executable, "scripts/final_submission_package.py"])
+        release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
+        final_package = safe_read_csv(Path("experiments/final_submission_package_summary.csv"))
+        summary["release_gate_counts"] = count_values(release_gate, "release_gate")
+        summary["final_package_gate_counts"] = count_values(final_package, "package_gate")
+        write_outputs(summary, args.summary_csv, args.report)
+
     run_checked([sys.executable, "scripts/result_application_plan.py"])
     result_application = safe_read_csv(Path("experiments/result_application_plan.csv"))
     summary["result_application_status_counts"] = count_values(result_application, "status")
