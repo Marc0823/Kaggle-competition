@@ -5,7 +5,7 @@ It cannot replace Kaggle Public LB, but it helps reject implausible candidates b
 
 ## Inputs
 - Data dir: `D:\Codex\kaggle\rogii-wellbore\data`
-- Valid submission files scored: `84`
+- Valid submission files scored: `85`
 - Known public-score calibration rows: `10`
 
 ## Important Limitation
