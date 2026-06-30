@@ -193,6 +193,16 @@ Each selected option must have prewritten follow-up branches:
 | pending | What independent kernels, audits, or CV jobs can proceed while waiting? |
 | audit fails | Is the failure fixable, or should the method family be blocked? |
 
+### Polling Cadence
+
+Polling Kaggle submission status is a lightweight API read. It does not consume official submission slots and does not rerun a notebook. To avoid noisy records while still preserving the daily 4-5 informative-slot target:
+
+- During the first hour after an official submission, poll every 10-15 minutes while there are actionable follow-up candidates.
+- If the submission remains pending beyond one hour, slow down to every 30-60 minutes unless the day is close to ending or another decision is blocked only by that score.
+- A lightweight poll should read only submission/kernel status and local git state. Do not regenerate all reports unless a status, score, kernel state, or tracked artifact changed.
+- While a score is pending, spend work time on source audits, output audits, candidate packaging, replacement queues, and validation scripts that do not consume official submissions.
+- When a score appears, immediately update the submission ledger, daily plan, question log, and current readiness reports before spending another official slot.
+
 ### Human Escalation Boundary
 
 Codex should make routine technical choices directly, including:
