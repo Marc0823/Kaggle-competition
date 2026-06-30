@@ -72,6 +72,18 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def json_default(value: Any) -> Any:
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        return float(value)
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if pd.isna(value):
+        return None
+    raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
+
+
 def run_cmd(cmd: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, text=True, capture_output=True, check=False)
 
@@ -308,7 +320,7 @@ def main() -> int:
     print(f"wrote {args.report}")
     print(f"package_failures={failures}")
     if prepared is not None:
-        print(json.dumps(prepared, indent=2, sort_keys=True))
+        print(json.dumps(prepared, default=json_default, indent=2, sort_keys=True))
     return 0
 
 

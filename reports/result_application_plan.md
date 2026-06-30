@@ -4,15 +4,16 @@ This report turns current external-result state into concrete next actions. It d
 
 ## Overall
 
-- Status: `ACTION_READY`
-- Reason: Branch actions can proceed according to the plan.
+- Status: `WAIT_EXTERNAL_CONTEXT`
+- Reason: Official scores or reference kernels are still pending.
 
 ## Status Counts
 
 | status | count |
 | --- | --- |
-| ACTION_READY | 4 |
+| ACTION_READY | 3 |
 | PASS | 1 |
+| WAIT | 1 |
 
 ## Action Plan
 
@@ -22,7 +23,7 @@ This report turns current external-result state into concrete next actions. It d
 | baseline_anchor | B01_baseline_anchor_valid | ACTION_READY | False | Promote the active-account baseline anchor and allow dependent candidate review. | status=complete; public_score=7.182 | python3 scripts/poll_and_refresh_state.py --apply-submission-updates |
 | fleongg_calibration | B03_fleongg_competitive | ACTION_READY | False | Prioritize the SP45+Fleongg blend sweep after final release checks. | baseline=7.182; fleongg=7.787 | python3 scripts/poll_and_refresh_state.py --apply-submission-updates |
 | degnonguidi_reference | B06_degnonguidi_error_or_defer | ACTION_READY | False | Record Degnonguidi terminal status or deferral, then rerun plan without waiting on it. | status=ERROR; version=6 | update kernel ledger, record deferral reason, rerun poll_and_refresh_state.py |
-| release_sequence | PACKAGE_READY | ACTION_READY | False | Prepare the selected local package only after final review. | package_gates=['REVIEW_READY_TO_PACKAGE'] | python3 scripts/final_submission_package.py --prepare --planned-slot N |
+| release_sequence | RELEASE_BLOCKED | WAIT | True | Do not prepare or submit official slots until external blockers and validation errors clear. | pending=1; running=0; release_gates=['BLOCKED_EXTERNAL_CONTEXT']; validation_errors=0 | python3 scripts/poll_and_refresh_state.py |
 
 ## Outputs
 
