@@ -1168,3 +1168,52 @@ Concrete next build target:
 3. Train a LightGBM/CatBoost router on pseudo-hidden suffix splits to select candidate family or segment family.
 4. Add a low-dimensional residual corrector only after path choice.
 5. Keep official submissions blocked until this full-data router beats the conservative baseline without worst-split regression and passes hidden-compatibility audit.
+
+## 2026-07-01 Full-Data Router Matrix Addendum
+
+Full competition data is now available locally under ignored `data/rogii`:
+
+- train horizontal wells: `773`
+- visible test wells: `3`
+- local data footprint: about `2.0G`
+
+Created the first full-train candidate-path matrix workflow:
+
+- `scripts/full_data_router_matrix.py`
+- `reports/full_data_router_matrix_report.md`
+- `experiments/full_data_router_candidate_matrix.csv`
+- `experiments/full_data_router_method_summary.csv`
+- `experiments/full_data_router_choices.csv`
+- `experiments/full_data_router_summary.csv`
+- `experiments/full_data_router_method_priors.csv`
+
+First full-data run:
+
+- splits: native prefix plus `0.50`
+- well folds: `5`
+- pseudo-hidden splits: `1546`
+- eval rows scored: `6,330,100`
+
+Key full-data result:
+
+| method/router | weighted RMSE | decision |
+| --- | ---: | --- |
+| `last_value` | `14.6844` | full-data conservative baseline |
+| `fault_step_recent_level` | `14.6074` | weak average signal but low win rate; keep diagnostic, not release-eligible |
+| `gr_shift__fault_step_recent_level` | `14.5985` | best weighted diagnostic but direct GR-shift family remains too risky for release |
+| `self_corr_prefix_shape` | `14.8315` | sparse signal only; not enough to promote globally |
+| `damped_tail_linear_Z` | `15.8175` | broad negative on full data; keep blocked |
+| `learned_prior_router` | `14.6844` | safely falls back to `last_value` for all splits |
+
+Interpretation:
+
+- The full-data matrix validates the previous caution: many candidates win on a meaningful minority of splits but lose on weighted RMSE or introduce catastrophic tail risk.
+- Current conservative release-eligible candidate set does not beat `last_value` on full data.
+- The next architecture step should not be an official submission. It should be a stronger router that learns **when** hidden-compatible diagnostic families such as fault-step, piecewise, GR-shift, NCC, and self-correlation are safe.
+- Train-only formation columns are now explicitly labeled separately from release eligibility, so future routers can distinguish hidden compatibility from submission safety.
+
+Next required build:
+
+1. Add richer router features from the full matrix: holdout delta, GR coverage, prefix fraction, path movement, jump/range pressure, and candidate family flags.
+2. Implement an actual learned router once dependencies are available, preferably LightGBM/CatBoost in Kaggle or a local managed environment.
+3. Before any Kaggle submission, require the learned router to beat `last_value` on full-data weighted RMSE and keep catastrophic-rate near zero.
