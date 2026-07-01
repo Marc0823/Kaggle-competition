@@ -34,6 +34,7 @@ ROUTER_ELIGIBLE_METHODS = {
     "damped_tail_linear_Z",
     "recent_plateau_quantile",
     "self_corr_prefix_shape",
+    "typewell_particle_filter",
 }
 TRAIN_ONLY_TOKENS = ("ANCC", "ASTNU", "ASTNL", "EGFDU", "EGFDL", "BUDA")
 
@@ -479,6 +480,21 @@ def main() -> int:
     parser.add_argument("--min-ncc-gain", type=float, default=0.05)
     parser.add_argument("--max-prefix-shift-abs", type=float, default=10.0)
     parser.add_argument("--min-eval-improvement", type=float, default=0.03)
+    # typewell particle-filter candidate (tuned on real train-well prototype)
+    parser.add_argument("--pf-particles", type=int, default=300)
+    parser.add_argument("--pf-kappa", type=float, default=0.02)
+    parser.add_argument("--pf-q-tvt", type=float, default=0.25)
+    parser.add_argument("--pf-q-dip", type=float, default=0.002)
+    parser.add_argument("--pf-dip-persist", type=float, default=0.97)
+    parser.add_argument("--pf-dip-cap", type=float, default=0.15)
+    parser.add_argument("--pf-dip-shrink", type=float, default=0.2)
+    parser.add_argument("--pf-fault-p", type=float, default=0.02)
+    parser.add_argument("--pf-fault-scale", type=float, default=8.0)
+    parser.add_argument("--pf-ess-frac", type=float, default=0.5)
+    parser.add_argument("--pf-sigma-floor", type=float, default=6.0)
+    parser.add_argument("--pf-dip-tail", type=int, default=250)
+    parser.add_argument("--pf-init-tvt", type=float, default=1.0)
+    parser.add_argument("--pf-seed", type=int, default=20260701)
     args = parser.parse_args()
 
     train_dir = args.data_dir / "train"

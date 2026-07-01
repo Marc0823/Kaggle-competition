@@ -332,6 +332,130 @@ def prefix_holdout_cut(prefix_idx: np.ndarray, args: argparse.Namespace) -> int 
     return cut
 
 
+# --- Minimal 1-D particle filter over typewell GR likelihood ------------------
+# State (tvt, dip). Motion: dip random-walks (bounded) + rare fault jumps and an
+# Ornstein-Uhlenbeck pull toward the anchor (kappa) that makes the estimate
+# revert to last_value when GR is uninformative. Observation: typewell GR
+# likelihood at each particle's tvt (GR-missing rows carry no update). sigma_gr
+# and dip0 are calibrated from the KNOWN prefix only, so the candidate stays
+# hidden-test compatible. Validated on real train wells: strong low-catastrophic
+# rescue on high-drift wells, benefit concentrated so it is a routed candidate.
+
+def _systematic_resample(weights: np.ndarray, u: float) -> np.ndarray:
+    n = len(weights)
+    positions = (u + np.arange(n)) / n
+    return np.searchsorted(np.cumsum(weights), positions).clip(0, n - 1)
+
+
+def _robust_std(values: np.ndarray, floor: float) -> float:
+    values = values[np.isfinite(values)]
+    if len(values) < 10:
+        return floor
+    mad = float(np.median(np.abs(values - np.median(values))))
+    return max(floor, 1.4826 * mad)
+
+
+def typewell_particle_filter_candidate(
+    hw: pd.DataFrame,
+    tw: pd.DataFrame,
+    train_valid: np.ndarray,
+    eval_idx: np.ndarray,
+    true_tvt: np.ndarray,
+    fallback: float,
+    args: argparse.Namespace,
+) -> PathCandidate | None:
+    if "GR" not in hw.columns or not {"TVT", "GR"}.issubset(tw.columns):
+        return None
+    twf = tw[["TVT", "GR"]].apply(pd.to_numeric, errors="coerce").dropna().sort_values("TVT")
+    if len(twf) < 30:
+        return None
+    tw_tvt = twf["TVT"].to_numpy(float)
+    tw_gr = twf["GR"].to_numpy(float)
+    md = pd.to_numeric(hw["MD"], errors="coerce").to_numpy(float)
+    gr = pd.to_numeric(hw["GR"], errors="coerce").to_numpy(float)
+
+    n_particles = int(getattr(args, "pf_particles", 300))
+    kappa = float(getattr(args, "pf_kappa", 0.02))
+    q_tvt = float(getattr(args, "pf_q_tvt", 0.25))
+    q_dip = float(getattr(args, "pf_q_dip", 0.002))
+    dip_persist = float(getattr(args, "pf_dip_persist", 0.97))
+    dip_cap = float(getattr(args, "pf_dip_cap", 0.15))
+    dip_shrink = float(getattr(args, "pf_dip_shrink", 0.2))
+    fault_p = float(getattr(args, "pf_fault_p", 0.02))
+    fault_scale = float(getattr(args, "pf_fault_scale", 8.0))
+    ess_frac = float(getattr(args, "pf_ess_frac", 0.5))
+    sigma_floor = float(getattr(args, "pf_sigma_floor", 6.0))
+    tail = int(getattr(args, "pf_dip_tail", 250))
+    init_tvt = float(getattr(args, "pf_init_tvt", 1.0))
+    seed = int(getattr(args, "pf_seed", 20260701))
+
+    # calibrate sigma_gr and dip0 from the known prefix only
+    md_p = md[train_valid]
+    gr_p = gr[train_valid]
+    tvt_p = true_tvt[train_valid]
+    resid = gr_p - np.interp(tvt_p, tw_tvt, tw_gr, left=np.nan, right=np.nan)
+    sigma_gr = _robust_std(resid, sigma_floor)
+    dip0 = 0.0
+    mask_p = np.isfinite(tvt_p) & np.isfinite(md_p)
+    if int(mask_p.sum()) >= 30:
+        k = min(tail, int(mask_p.sum()))
+        xi = md_p[mask_p][-k:]
+        yi = tvt_p[mask_p][-k:]
+        if xi[-1] - xi[0] > 1e-6:
+            dip0 = float(np.polyfit(xi, yi, 1)[0])
+    dip0 = float(np.clip(dip0 * dip_shrink, -dip_cap, dip_cap))
+
+    md_e = md[eval_idx]
+    gr_e = gr[eval_idx]
+    m = len(md_e)
+    if m == 0 or not np.isfinite(md_e).any():
+        return None
+    rng = np.random.default_rng(seed)
+    lo, hi = float(tw_tvt.min()), float(tw_tvt.max())
+    step = float(np.median(np.diff(md_e))) if m > 1 else 1.0
+    dmd = np.diff(md_e, prepend=md_e[0] - (step if step else 1.0))
+    tvt = fallback + rng.normal(0, init_tvt, n_particles)
+    dip = np.clip(dip0 + rng.normal(0, max(q_dip, 1e-6), n_particles), -dip_cap, dip_cap)
+    w = np.full(n_particles, 1.0 / n_particles)
+    pred = np.full(m, fallback, dtype=float)
+    spread = np.zeros(m)
+    for i in range(m):
+        dip = np.clip(dip * dip_persist + rng.normal(0, q_dip, n_particles), -dip_cap, dip_cap)
+        noise = rng.normal(0, q_tvt, n_particles)
+        jump = rng.random(n_particles) < fault_p
+        if jump.any():
+            noise[jump] += rng.normal(0, fault_scale, int(jump.sum()))
+        tvt = np.clip(tvt + dip * dmd[i] + kappa * (fallback - tvt) + noise, lo, hi)
+        g = gr_e[i]
+        if np.isfinite(g):
+            gt = np.interp(tvt, tw_tvt, tw_gr)
+            ll = -0.5 * ((g - gt) / sigma_gr) ** 2
+            w = w * np.exp(ll - np.nanmax(ll))
+            s = float(w.sum())
+            w = np.full(n_particles, 1.0 / n_particles) if (not np.isfinite(s) or s <= 0) else w / s
+        mean = float(np.sum(w * tvt))
+        pred[i] = mean
+        spread[i] = float(np.sqrt(max(0.0, np.sum(w * (tvt - mean) ** 2))))
+        if 1.0 / float(np.sum(w ** 2)) < ess_frac * n_particles:
+            idx = _systematic_resample(w, float(rng.random()))
+            tvt = tvt[idx]
+            dip = dip[idx]
+            w = np.full(n_particles, 1.0 / n_particles)
+    gr_cov = float(np.isfinite(gr_e).mean())
+    return PathCandidate(
+        "typewell_particle_filter",
+        pred,
+        detail=f"sigma_gr={sigma_gr:.2f};dip0={dip0:.4f};kappa={kappa:.3f};gr_cov={gr_cov:.2f}",
+        diagnostics={
+            "pf_sigma_gr": sigma_gr,
+            "pf_dip0": dip0,
+            "pf_post_std": float(np.mean(spread)),
+            "pf_mean_abs_dev": float(np.mean(np.abs(pred - fallback))),
+            "pf_gr_coverage": gr_cov,
+        },
+    )
+
+
 def candidate_paths(
     hw: pd.DataFrame,
     tw: pd.DataFrame,
@@ -421,6 +545,10 @@ def candidate_paths(
     self_corr = self_corr_prefix_shape_candidate(hw, train_valid, eval_idx, true_tvt, fallback, args)
     if self_corr is not None:
         candidates.append(self_corr)
+
+    pf = typewell_particle_filter_candidate(hw, tw, train_valid, eval_idx, true_tvt, fallback, args)
+    if pf is not None:
+        candidates.append(pf)
 
     if "GR" in hw.columns:
         gr_full = pd.to_numeric(hw["GR"], errors="coerce").interpolate(limit_direction="both").to_numpy(float)
