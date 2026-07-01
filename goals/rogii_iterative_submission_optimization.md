@@ -1126,3 +1126,45 @@ Current required work before any new official submission:
    - emphasize catastrophic-tail prevention, not just mean RMSE.
 3. Convert a validated router candidate into a hidden-compatible Kaggle notebook only after pseudo-hidden CV improves without large worst-split regressions.
 4. Keep official submissions blocked while the only available candidates are low-upside GR/plateau backups or SP45/Fleongg-derived outputs.
+
+## 2026-07-01 First-Place Architecture Research Update
+
+Latest leaderboard snapshot:
+
+- current team: `lee Marc223`
+- current score/rank: `7.182`, rank `148`
+- first place: `5.285`
+- gap to first: `1.897` RMSE, about `45.85%` MSE reduction
+- top-10 cutoff: `6.321`, requiring about `22.54%` MSE reduction from current score
+
+New research report:
+
+- `reports/first_place_architecture_research_2026-07-01.md`
+
+Current architecture judgment:
+
+- Current public-fork/baseline/blend/light-correction architecture is not credible for first place by tuning alone.
+- Official SP45 and Fleongg calibration both worsened versus the `7.182` anchor.
+- Local router CV shows a small guarded improvement (`14.507` vs `14.764`), but this is not a first-place-scale jump.
+- Added piecewise/dynamic-dip/fault-style diagnostic candidates. They show local signal (`piecewise_tail_slope_md` weighted RMSE `14.683`) but are not stable or hidden-compatible enough to promote as primary submission logic.
+- Guarded router must exclude train-only formation columns from submission-time decisions.
+
+Required architecture now:
+
+```text
+full train data
+  -> candidate-path matrix per well
+  -> diagnostics per candidate
+  -> learned candidate router
+  -> segment residual corrector
+  -> hidden-compatible Kaggle notebook
+  -> audited structural submission
+```
+
+Concrete next build target:
+
+1. Use full train data locally or run equivalent full-data jobs on Kaggle.
+2. Build a candidate-path matrix with PF/baseline, last-value, multi-scale NCC, constrained DTW/beam, self-correlation, Z/trajectory projection, and offset-neighbor prior paths.
+3. Train a LightGBM/CatBoost router on pseudo-hidden suffix splits to select candidate family or segment family.
+4. Add a low-dimensional residual corrector only after path choice.
+5. Keep official submissions blocked until this full-data router beats the conservative baseline without worst-split regression and passes hidden-compatibility audit.

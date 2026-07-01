@@ -109,6 +109,13 @@ def damp_toward(fallback: float, raw: np.ndarray, damp: float, max_move: float) 
     return float(fallback) + move
 
 
+def saturating_move(move: np.ndarray, max_move: float) -> np.ndarray:
+    move = np.asarray(move, dtype=float)
+    if max_move <= 0:
+        return np.zeros_like(move, dtype=float)
+    return max_move * np.tanh(move / max_move)
+
+
 def interp_typewell_gr(tw: pd.DataFrame, tvt: np.ndarray) -> np.ndarray:
     if not {"TVT", "GR"}.issubset(tw.columns):
         return np.full(len(tvt), np.nan, dtype=float)
@@ -225,6 +232,70 @@ def self_corr_prefix_shape_candidate(
     )
 
 
+def piecewise_tail_slope_candidate(
+    method: str,
+    x: np.ndarray,
+    train_valid: np.ndarray,
+    eval_idx: np.ndarray,
+    true_tvt: np.ndarray,
+    fallback: float,
+    damp: float,
+    max_move: float,
+    min_feature_span: float,
+) -> PathCandidate | None:
+    tail_idx = train_valid[-min(len(train_valid), 256) :]
+    if len(tail_idx) < 20:
+        return None
+    fit = finite_line_fit(x[tail_idx], true_tvt[tail_idx])
+    span = float(np.nanmax(x[tail_idx]) - np.nanmin(x[tail_idx])) if len(tail_idx) else 0.0
+    if fit is None or not np.isfinite(span) or abs(span) < min_feature_span:
+        return PathCandidate(method, np.full(len(eval_idx), fallback, dtype=float), status="fallback", detail="insufficient_tail_span")
+    slope, _ = fit
+    raw_move = slope * (np.asarray(x[eval_idx], dtype=float) - float(x[train_valid[-1]]))
+    move = np.clip(damp * saturating_move(raw_move, max_move), -max_move, max_move)
+    pred = fallback + move
+    pred[~np.isfinite(pred)] = fallback
+    return PathCandidate(
+        method,
+        pred,
+        detail=f"slope={slope:.6g};span={span:.3f};damp={damp:.3f}",
+        diagnostics={"piecewise_slope": slope, "piecewise_span": span},
+    )
+
+
+def fault_step_recent_level_candidate(
+    train_valid: np.ndarray,
+    eval_idx: np.ndarray,
+    true_tvt: np.ndarray,
+    fallback: float,
+    args: argparse.Namespace,
+) -> PathCandidate | None:
+    window = int(args.fault_window)
+    if len(train_valid) < 2 * window:
+        return None
+    prev = true_tvt[train_valid[-2 * window : -window]]
+    recent = true_tvt[train_valid[-window:]]
+    prev_med = float(np.nanmedian(prev))
+    recent_med = float(np.nanmedian(recent))
+    step = recent_med - prev_med
+    if not np.isfinite(step) or abs(step) < args.fault_min_step:
+        return PathCandidate(
+            "fault_step_recent_level",
+            np.full(len(eval_idx), fallback, dtype=float),
+            status="fallback",
+            detail=f"step_below_gate;step={step:.4f}",
+            diagnostics={"fault_step": step},
+        )
+    ramp = 1.0 - np.exp(-np.arange(len(eval_idx), dtype=float) / max(20.0, 0.08 * len(eval_idx)))
+    move = np.clip(args.fault_damp * step * ramp, -args.max_move, args.max_move)
+    return PathCandidate(
+        "fault_step_recent_level",
+        fallback + move,
+        detail=f"step={step:.4f};window={window};damp={args.fault_damp:.3f}",
+        diagnostics={"fault_step": step},
+    )
+
+
 def native_cut_index(hw: pd.DataFrame) -> int | None:
     if "TVT_input" not in hw.columns:
         return None
@@ -300,6 +371,40 @@ def candidate_paths(
                 detail=f"damp={args.strat_damp:.3f};max_move={args.max_move:.3f}",
             )
         )
+
+    piecewise_md = piecewise_tail_slope_candidate(
+        "piecewise_tail_slope_md",
+        md,
+        train_valid,
+        eval_idx,
+        true_tvt,
+        fallback,
+        args.piecewise_damp,
+        args.max_move,
+        args.piecewise_min_feature_span,
+    )
+    if piecewise_md is not None:
+        candidates.append(piecewise_md)
+
+    if "Z" in hw.columns:
+        z = pd.to_numeric(hw["Z"], errors="coerce").to_numpy(float)
+        piecewise_z = piecewise_tail_slope_candidate(
+            "piecewise_tail_slope_Z",
+            z,
+            train_valid,
+            eval_idx,
+            true_tvt,
+            fallback,
+            args.piecewise_damp,
+            args.max_move,
+            args.piecewise_min_feature_span,
+        )
+        if piecewise_z is not None:
+            candidates.append(piecewise_z)
+
+    fault_step = fault_step_recent_level_candidate(train_valid, eval_idx, true_tvt, fallback, args)
+    if fault_step is not None:
+        candidates.append(fault_step)
 
     if len(train_valid) >= args.plateau_window:
         tail = true_tvt[train_valid[-min(args.plateau_window, len(train_valid)) :]]
@@ -438,11 +543,11 @@ def is_guarded_candidate(method: str, allow_gr_shift: bool) -> bool:
         return True
     if method.startswith("gr_shift__") and not allow_gr_shift:
         return False
-    if method in {"damped_tail_linear_md", "gr_shift__damped_tail_linear_md"}:
+    if method in {"damped_tail_linear_md", "gr_shift__damped_tail_linear_md", "piecewise_tail_slope_md"}:
         return False
     if method.startswith("ncc_shift__"):
         return False
-    if method.startswith("damped_tail_linear_") or method in {"recent_plateau_quantile", "self_corr_prefix_shape"}:
+    if method == "damped_tail_linear_Z" or method in {"recent_plateau_quantile", "self_corr_prefix_shape"}:
         return True
     return False
 
@@ -508,24 +613,37 @@ def select_router_method(
         guarded_status = "ok"
         guarded_detail = "holdout_selected_last_value"
     else:
-        improvement_frac = improvement / (abs(baseline_rmse) + 1e-6) if np.isfinite(improvement) else float("nan")
-        passes_improvement = (
-            np.isfinite(improvement)
-            and np.isfinite(improvement_frac)
-            and improvement >= args.router_min_improvement_rmse
-            and improvement_frac >= args.router_min_improvement_frac
-        )
-        passes_margin = np.isfinite(margin) and margin >= args.router_min_margin_rmse
-        passes_family = is_guarded_candidate(str(best["method"]), args.router_allow_gr_shift)
-        if passes_improvement and passes_margin and passes_family:
-            guarded_method = str(best["method"])
-            guarded_status = "ok"
-            guarded_detail = "passed_guarded_holdout_gate"
-        else:
-            guarded_detail = (
-                f"blocked_guard;improvement={improvement:.4f};"
-                f"margin={margin:.4f};family_ok={passes_family}"
+        blocked_reasons = []
+        for candidate in valid:
+            candidate_method = str(candidate["method"])
+            if candidate_method == "last_value":
+                continue
+            candidate_rmse = float(candidate["rmse"])
+            candidate_improvement = baseline_rmse - candidate_rmse if np.isfinite(baseline_rmse) else float("nan")
+            candidate_improvement_frac = (
+                candidate_improvement / (abs(baseline_rmse) + 1e-6) if np.isfinite(candidate_improvement) else float("nan")
             )
+            passes_improvement = (
+                np.isfinite(candidate_improvement)
+                and np.isfinite(candidate_improvement_frac)
+                and candidate_improvement >= args.router_min_improvement_rmse
+                and candidate_improvement_frac >= args.router_min_improvement_frac
+            )
+            passes_margin = np.isfinite(candidate_improvement) and candidate_improvement >= args.router_min_margin_rmse
+            passes_family = is_guarded_candidate(candidate_method, args.router_allow_gr_shift)
+            if passes_improvement and passes_margin and passes_family:
+                guarded_method = candidate_method
+                guarded_status = "ok"
+                guarded_detail = (
+                    f"passed_guarded_holdout_gate;ranked_candidate={candidate_method};"
+                    f"improvement={candidate_improvement:.4f}"
+                )
+                break
+            blocked_reasons.append(
+                f"{candidate_method}:improvement={candidate_improvement:.4f},family_ok={passes_family}"
+            )
+        if guarded_method == "last_value":
+            guarded_detail = "blocked_guard;" + ";".join(blocked_reasons[:3])
     return {
         "router_method": str(best["method"]),
         "router_status": "ok",
@@ -729,6 +847,7 @@ def write_report(scores: pd.DataFrame, summary: pd.DataFrame, decisions: pd.Data
         "- `router_prefix_holdout_best` chooses a candidate family using only a holdout from the known prefix.",
         "- `router_guarded_prefix_holdout` falls back to `last_value` unless holdout improvement, margin, and family safety gates pass.",
         "- `router_confidence_guarded` starts from the guarded router, then allows high-confidence self-correlation evidence visible in the evaluation GR.",
+        "- Piecewise slope and recent fault-step candidates are lightweight dynamic-dip probes; they are diagnostic unless the guarded router selects them without worsening worst-split risk.",
         "- A useful router should improve weighted RMSE or at least reduce worst-split risk versus `last_value`.",
         "- If the router underperforms, inspect `experiments/multi_hypothesis_router_cv_decisions.csv` to see which candidate families the prefix holdout over-selected.",
         "",
@@ -768,6 +887,11 @@ def main() -> int:
     parser.add_argument("--plateau-window", type=int, default=256)
     parser.add_argument("--plateau-quantile", type=float, default=0.50)
     parser.add_argument("--plateau-blend", type=float, default=1.0)
+    parser.add_argument("--piecewise-damp", type=float, default=0.30)
+    parser.add_argument("--piecewise-min-feature-span", type=float, default=1e-6)
+    parser.add_argument("--fault-window", type=int, default=128)
+    parser.add_argument("--fault-min-step", type=float, default=3.0)
+    parser.add_argument("--fault-damp", type=float, default=0.35)
     parser.add_argument("--self-corr-window", type=int, default=256)
     parser.add_argument("--self-corr-stride", type=int, default=16)
     parser.add_argument("--self-corr-min-eval-rows", type=int, default=80)
