@@ -6,35 +6,35 @@ This report measures pairwise output diversity among planned submission slots. I
 
 | redundancy_bucket | count |
 | --- | --- |
-| DIRECTIONALLY_DIVERSE | 4 |
-| MODERATE_INCREMENT | 3 |
-| RELATED_LOW_INCREMENT | 2 |
-| NEAR_DUPLICATE | 1 |
+| DIVERSE | 6 |
+| DIRECTIONALLY_DIVERSE | 2 |
+| HIGHLY_REDUNDANT | 1 |
+| MODERATE_INCREMENT | 1 |
 
 ## Candidate Summary
 
 | planned_slot | candidate_id | family | min_pair_rmse | max_diff_corr | redundant_pair_count | most_similar_slot | diversity_flag |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | projection_branch | 1.71662 | 0.729134 | 0 | 2 | OK |
-| 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | projection_learned_blend | 0.702226 | 0.966929 | 2 | 3 | REDUNDANT_REVIEW |
-| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | projection_learned_blend | 0.159696 | 0.998497 | 2 | 4 | REDUNDANT_REVIEW |
-| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | projection_learned_blend | 0.159696 | 0.998497 | 2 | 3 | REDUNDANT_REVIEW |
-| 5 | plateau_recent_quantile_v1_submission | plateau_signal | 4.02266 | 0.64703 | 0 | 2 | OK |
+| 1 | plateau_recent_quantile_v1_submission | plateau_signal | 4.29244 | 0.612734 | 0 | 4 | OK |
+| 2 | gr_typewell_light_alpha030_relaxed_v1_submission | gr_typewell_light | 0.349534 | 1 | 1 | 3 | REDUNDANT_REVIEW |
+| 3 | gr_typewell_light_alpha040_v1_submission | gr_typewell_light | 0.349534 | 1 | 1 | 2 | REDUNDANT_REVIEW |
+| 4 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | projection_branch | 1.80381 | 0.501296 | 0 | 2 | OK |
+| 5 | sp45_projection_slot1_codex_v1_fleongg_pretrained_submission | projection_branch | 3.46813 | 0.612734 | 0 | 4 | OK |
 
 ## Pairwise Distances
 
 | left_slot | right_slot | left_family | right_family | pair_rmse | diff_corr_vs_baseline | same_direction_frac | redundancy_bucket |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 | 5 | projection_learned_blend | plateau_signal | 4.02266 | 0.64703 | 0.258074 | DIRECTIONALLY_DIVERSE |
-| 1 | 5 | projection_branch | plateau_signal | 4.29244 | 0.470765 | 0.263939 | DIRECTIONALLY_DIVERSE |
-| 3 | 5 | projection_learned_blend | plateau_signal | 4.3003 | 0.571608 | 0.276023 | DIRECTIONALLY_DIVERSE |
-| 4 | 5 | projection_learned_blend | plateau_signal | 4.31982 | 0.558568 | 0.280334 | DIRECTIONALLY_DIVERSE |
-| 1 | 2 | projection_branch | projection_learned_blend | 1.71662 | 0.726826 | 0.759522 | MODERATE_INCREMENT |
-| 1 | 4 | projection_branch | projection_learned_blend | 1.91553 | 0.729134 | 0.766801 | MODERATE_INCREMENT |
-| 1 | 3 | projection_branch | projection_learned_blend | 2.02121 | 0.709909 | 0.756272 | MODERATE_INCREMENT |
-| 3 | 4 | projection_learned_blend | projection_learned_blend | 0.159696 | 0.998497 | 0.987916 | NEAR_DUPLICATE |
-| 2 | 3 | projection_learned_blend | projection_learned_blend | 0.702226 | 0.966929 | 0.950958 | RELATED_LOW_INCREMENT |
-| 2 | 4 | projection_learned_blend | projection_learned_blend | 0.748133 | 0.955951 | 0.93958 | RELATED_LOW_INCREMENT |
+| 1 | 4 | plateau_signal | projection_branch | 4.29244 | 0.470765 | 0.263939 | DIRECTIONALLY_DIVERSE |
+| 1 | 5 | plateau_signal | projection_branch | 4.47304 | 0.612734 | 0.226768 | DIRECTIONALLY_DIVERSE |
+| 2 | 4 | gr_typewell_light | projection_branch | 1.80381 | -0.124459 | 0.259416 | DIVERSE |
+| 3 | 4 | gr_typewell_light | projection_branch | 2.02924 | -0.124459 | 0.259416 | DIVERSE |
+| 3 | 5 | gr_typewell_light | projection_branch | 3.71008 | 0.134067 | 0.414882 | DIVERSE |
+| 2 | 5 | gr_typewell_light | projection_branch | 3.72576 | 0.134067 | 0.414882 | DIVERSE |
+| 1 | 2 | plateau_signal | gr_typewell_light | 5.0428 | -0.0698413 | 0.184612 | DIVERSE |
+| 1 | 3 | plateau_signal | gr_typewell_light | 5.19244 | -0.0698413 | 0.184612 | DIVERSE |
+| 2 | 3 | gr_typewell_light | gr_typewell_light | 0.349534 | 1 | 1 | HIGHLY_REDUNDANT |
+| 4 | 5 | projection_branch | projection_branch | 3.46813 | 0.501296 | 0.659105 | MODERATE_INCREMENT |
 
 ## Interpretation
 

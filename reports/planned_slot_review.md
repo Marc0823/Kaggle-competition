@@ -6,21 +6,22 @@ This report combines release gates, audit readiness, final-package state, per-we
 
 | slot_review | count |
 | --- | --- |
-| HOLD_EXTERNAL_CONTEXT | 5 |
+| BUILD_NEW_ARCHITECTURE_FIRST | 5 |
 
 ## Slot Review
 
 | planned_slot | slot_role | family | slot_review | slot_action | evidence_review | evidence_action | release_gate | impact_bucket | diversity_flag | min_pair_rmse | top_well | slot_review_reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | structural_candidate | projection_branch | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_FOR_FINAL_REVIEW | KEEP | BLOCKED_EXTERNAL_CONTEXT | BROAD | OK | 1.71662 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 2 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | BROAD | REDUNDANT_REVIEW | 0.702226 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 3 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | CONCENTRATED | REDUNDANT_REVIEW | 0.159696 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 4 | calibration_sweep | projection_learned_blend | HOLD_EXTERNAL_CONTEXT | WAIT | KEEP_ONLY_IF_CALIBRATION_SWEEP | REVIEW | BLOCKED_EXTERNAL_CONTEXT | CONCENTRATED | REDUNDANT_REVIEW | 0.159696 | 00bbac68 | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
-| 5 | flexible_information_slot | plateau_signal | HOLD_EXTERNAL_CONTEXT | WAIT | SPARSE_INFO_SLOT_REVIEW | REVIEW | BLOCKED_EXTERNAL_CONTEXT | SINGLE_WELL_DOMINATED | OK | 4.02266 | 00e12e8b | Release gate is BLOCKED_EXTERNAL_CONTEXT; do not submit or package yet. |
+| 1 | flexible_information_slot | plateau_signal | BUILD_NEW_ARCHITECTURE_FIRST | BLOCK | SPARSE_INFO_SLOT_REVIEW | REVIEW | BLOCKED_STRATEGY_PIVOT | SINGLE_WELL_DOMINATED | OK | 4.29244 | 00e12e8b | Official calibration rejected the planned branch family; build new structural candidates before submitting. |
+| 2 | low_upside_backup | gr_typewell_light | BUILD_NEW_ARCHITECTURE_FIRST | BLOCK | REVIEW_REDUNDANT | REVIEW | BLOCKED_STRATEGY_PIVOT | SPARSE_INFORMATION | REDUNDANT_REVIEW | 0.349534 | 00e12e8b | Official calibration rejected the planned branch family; build new structural candidates before submitting. |
+| 3 | low_upside_backup | gr_typewell_light | BUILD_NEW_ARCHITECTURE_FIRST | BLOCK | REVIEW_REDUNDANT | REVIEW | BLOCKED_STRATEGY_PIVOT | SPARSE_INFORMATION | REDUNDANT_REVIEW | 0.349534 | 00e12e8b | Official calibration rejected the planned branch family; build new structural candidates before submitting. |
+| 4 | structural_candidate | projection_branch | BUILD_NEW_ARCHITECTURE_FIRST | BLOCK | KEEP_FOR_FINAL_REVIEW | KEEP | BLOCKED_STRATEGY_PIVOT | BROAD | OK | 1.80381 | 00bbac68 | Official calibration rejected the planned branch family; build new structural candidates before submitting. |
+| 5 | backup_structural_comparison | projection_branch | BUILD_NEW_ARCHITECTURE_FIRST | BLOCK | KEEP_FOR_FINAL_REVIEW | KEEP | BLOCKED_STRATEGY_PIVOT | BROAD | OK | 3.46813 | 00bbac68 | Official calibration rejected the planned branch family; build new structural candidates before submitting. |
 
 ## Release Interpretation
 
 - `HOLD_EXTERNAL_CONTEXT`: keep blocked until scores/kernel outcomes resolve.
+- `BUILD_NEW_ARCHITECTURE_FIRST`: do not spend official slots on the current planned family; create new structural candidates first.
 - `evidence_review` shows the latent quality/diversity decision even while the release gate is blocked.
 - `KEEP_ONLY_IF_CALIBRATION_SWEEP`: the slot is redundant, but may be kept if the explicit experiment is to map a blend curve.
 - `SPARSE_INFO_SLOT_REVIEW`: use only as an information slot, not as broad model promotion.

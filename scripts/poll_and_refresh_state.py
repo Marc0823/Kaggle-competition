@@ -220,10 +220,18 @@ def main() -> int:
     if not summary["kernel_updates_detected"] and not summary["submission_updates_detected"]:
         run_checked([sys.executable, "scripts/submission_release_gate.py"])
         run_checked([sys.executable, "scripts/final_submission_package.py"])
+        run_checked([sys.executable, "scripts/planned_slot_review.py"])
+        run_checked([sys.executable, "scripts/planned_slot_contingency.py"])
         release_gate = safe_read_csv(Path("experiments/submission_release_gate.csv"))
         final_package = safe_read_csv(Path("experiments/final_submission_package_summary.csv"))
+        slot_review = safe_read_csv(Path("experiments/planned_slot_review.csv"))
+        slot_contingency = safe_read_csv(Path("experiments/planned_slot_contingency.csv"))
         summary["release_gate_counts"] = count_values(release_gate, "release_gate")
         summary["final_package_gate_counts"] = count_values(final_package, "package_gate")
+        summary["slot_review_counts"] = count_values(slot_review, "slot_review")
+        summary["slot_evidence_review_counts"] = count_values(slot_review, "evidence_review")
+        summary["slot_contingency_action_counts"] = count_values(slot_contingency, "release_action")
+        summary["slot_contingency_new_candidate_needed_counts"] = count_values(slot_contingency, "new_candidate_needed")
         write_outputs(summary, args.summary_csv, args.report)
 
     run_checked([sys.executable, "scripts/result_application_plan.py"])

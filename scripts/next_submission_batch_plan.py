@@ -18,6 +18,12 @@ DEFAULT_KERNELS = Path("experiments/kernel_run_ledger.csv")
 DEFAULT_OUTPUT_CSV = Path("experiments/next_submission_batch_plan.csv")
 DEFAULT_REPORT = Path("reports/next_submission_batch_plan.md")
 
+BASELINE_CANDIDATE = "lucifer_baseline_repro_joezzzzz"
+FLEONGG_CANDIDATE = "fleongg_pretrained_branch_calibration"
+SP45_CANDIDATE = "sp45_projection_slot1_dynamic_rerun"
+FLEONGG_COMPETITIVE_MARGIN = 0.10
+SP45_COMPETITIVE_MARGIN = 0.20
+
 
 def fmt(value: Any) -> str:
     if isinstance(value, float):
@@ -56,6 +62,29 @@ def running_kernel_rows(kernels: pd.DataFrame) -> pd.DataFrame:
     if kernels.empty or "status" not in kernels.columns:
         return pd.DataFrame()
     return kernels[kernels["status"].astype(str).str.upper().isin(["RUNNING", "PENDING", "QUEUED"])].copy()
+
+
+def latest_score(submissions: pd.DataFrame, candidate_id_value: str) -> float:
+    if submissions.empty or "candidate_id" not in submissions.columns:
+        return np.nan
+    rows = submissions[submissions["candidate_id"].astype(str) == candidate_id_value]
+    if rows.empty:
+        return np.nan
+    return pd.to_numeric(rows.iloc[-1].get("public_score", np.nan), errors="coerce")
+
+
+def calibration_flags(submissions: pd.DataFrame) -> dict[str, Any]:
+    baseline = latest_score(submissions, BASELINE_CANDIDATE)
+    fleongg = latest_score(submissions, FLEONGG_CANDIDATE)
+    sp45 = latest_score(submissions, SP45_CANDIDATE)
+    baseline_valid = np.isfinite(baseline) and baseline <= 8.5
+    return {
+        "baseline_score": baseline,
+        "fleongg_score": fleongg,
+        "sp45_score": sp45,
+        "fleongg_weak": bool(baseline_valid and np.isfinite(fleongg) and fleongg > baseline + FLEONGG_COMPETITIVE_MARGIN),
+        "sp45_weak": bool(baseline_valid and np.isfinite(sp45) and sp45 > baseline + SP45_COMPETITIVE_MARGIN),
+    }
 
 
 def candidate_id(path: str) -> str:
@@ -109,6 +138,8 @@ def information_question(row: pd.Series) -> str:
 
 def release_condition(row: pd.Series, batch_status: str) -> str:
     family = str(row.get("family", ""))
+    if batch_status == "NEEDS_NEW_ARCHITECTURE_CANDIDATES":
+        return "Do not release this batch; official SP45/Fleongg calibration was weak, so build a new structural architecture first."
     if batch_status == "READY_FOR_RELEASE_REVIEW":
         return "External blockers are clear; run final manual review immediately before any official submission."
     if family == "projection_learned_blend":
@@ -122,7 +153,7 @@ def release_condition(row: pd.Series, batch_status: str) -> str:
     return "Hold until blockers clear and the candidate remains non-duplicate in the latest audit summary."
 
 
-def score_candidate(row: pd.Series) -> float:
+def score_candidate(row: pd.Series, flags: dict[str, Any]) -> float:
     score = 0.0
     gate = str(row.get("submission_gate", ""))
     family = str(row.get("family", ""))
@@ -174,6 +205,10 @@ def score_candidate(row: pd.Series) -> float:
 
     if "kernel_outputs/rogii-baidalin" in path:
         score += 4
+    if flags.get("sp45_weak") and family in {"projection_branch", "projection_learned_blend"}:
+        score -= 45
+    if flags.get("fleongg_weak") and family in {"projection_learned_blend", "learned_signal"}:
+        score -= 35
     return score
 
 
@@ -207,13 +242,19 @@ def choose_blend_sweep(blends: pd.DataFrame, max_count: int = 3) -> pd.DataFrame
 def build_plan(candidates: pd.DataFrame, submissions: pd.DataFrame, kernels: pd.DataFrame, max_slots: int) -> tuple[pd.DataFrame, dict[str, Any]]:
     pending = pending_official_rows(submissions)
     running = running_kernel_rows(kernels)
-    batch_status = "WAIT_EXTERNAL_CONTEXT" if len(pending) or len(running) else "READY_FOR_RELEASE_REVIEW"
+    flags = calibration_flags(submissions)
+    if len(pending) or len(running):
+        batch_status = "WAIT_EXTERNAL_CONTEXT"
+    elif flags["sp45_weak"] and flags["fleongg_weak"]:
+        batch_status = "NEEDS_NEW_ARCHITECTURE_CANDIDATES"
+    else:
+        batch_status = "READY_FOR_RELEASE_REVIEW"
 
     work = candidates.copy()
     work["candidate_id"] = work["path"].map(candidate_id)
     work["slot_role"] = work.apply(slot_role, axis=1)
     work["information_question"] = work.apply(information_question, axis=1)
-    work["priority_score"] = work.apply(score_candidate, axis=1)
+    work["priority_score"] = work.apply(lambda row: score_candidate(row, flags), axis=1)
     work = drop_sha_duplicates(work)
 
     eligible = work[
@@ -222,20 +263,23 @@ def build_plan(candidates: pd.DataFrame, submissions: pd.DataFrame, kernels: pd.
     ].copy()
 
     selected_parts = []
-    baidalin_projection = eligible[
-        (eligible["family"] == "projection_branch")
-        & eligible["path"].astype(str).str.contains("kernel_outputs/rogii-baidalin", regex=False, na=False)
-    ].sort_values("priority_score", ascending=False)
-    if not baidalin_projection.empty:
-        selected_parts.append(baidalin_projection.head(1))
+    if not flags["sp45_weak"]:
+        baidalin_projection = eligible[
+            (eligible["family"] == "projection_branch")
+            & eligible["path"].astype(str).str.contains("kernel_outputs/rogii-baidalin", regex=False, na=False)
+        ].sort_values("priority_score", ascending=False)
+        if not baidalin_projection.empty:
+            selected_parts.append(baidalin_projection.head(1))
 
-    blends = choose_blend_sweep(eligible[eligible["family"] == "projection_learned_blend"], max_count=3)
-    if not blends.empty:
-        selected_parts.append(blends.head(3))
+    if not flags["fleongg_weak"] and not flags["sp45_weak"]:
+        blends = choose_blend_sweep(eligible[eligible["family"] == "projection_learned_blend"], max_count=3)
+        if not blends.empty:
+            selected_parts.append(blends.head(3))
 
-    plateau = eligible[eligible["family"] == "plateau_signal"].sort_values("priority_score", ascending=False)
-    if not plateau.empty:
-        selected_parts.append(plateau.head(1))
+    replacement_families = ["gr_typewell_light", "plateau_signal"] if flags["sp45_weak"] else ["plateau_signal"]
+    replacements = eligible[eligible["family"].isin(replacement_families)].sort_values("priority_score", ascending=False)
+    if not replacements.empty:
+        selected_parts.append(replacements.head(max_slots))
 
     selected = pd.concat(selected_parts, ignore_index=True) if selected_parts else pd.DataFrame(columns=eligible.columns)
     selected = selected.drop_duplicates("path").head(max_slots).copy()
@@ -251,7 +295,7 @@ def build_plan(candidates: pd.DataFrame, submissions: pd.DataFrame, kernels: pd.
     selected["current_action"] = np.where(
         batch_status == "WAIT_EXTERNAL_CONTEXT",
         "do_not_submit_yet",
-        "final_review_before_submit",
+        np.where(batch_status == "NEEDS_NEW_ARCHITECTURE_CANDIDATES", "build_new_architecture_first", "final_review_before_submit"),
     )
     selected["release_condition"] = selected.apply(lambda row: release_condition(row, batch_status), axis=1)
 
@@ -286,6 +330,11 @@ def build_plan(candidates: pd.DataFrame, submissions: pd.DataFrame, kernels: pd.
         "running_kernels": ", ".join(running.get("kernel_slug", pd.Series(dtype=str)).astype(str).tolist()),
         "eligible_count": len(eligible),
         "selected_count": len(selected),
+        "baseline_score": fmt(flags["baseline_score"]),
+        "fleongg_score": fmt(flags["fleongg_score"]),
+        "sp45_score": fmt(flags["sp45_score"]),
+        "fleongg_weak": flags["fleongg_weak"],
+        "sp45_weak": flags["sp45_weak"],
     }
     return selected[cols], meta
 
@@ -343,6 +392,8 @@ def write_report(plan: pd.DataFrame, meta: dict[str, Any], output: Path, csv_pat
         f"- Planned slots: `{meta['selected_count']}`",
         f"- Pending IDs: `{meta['pending_ids']}`",
         f"- Running kernels: `{meta['running_kernels']}`",
+        f"- Baseline/Fleongg/SP45 official scores: `{meta['baseline_score']}` / `{meta['fleongg_score']}` / `{meta['sp45_score']}`",
+        f"- Weak-branch flags: Fleongg `{meta['fleongg_weak']}`, SP45 `{meta['sp45_weak']}`",
         "",
         "## Planned Slots",
         "",

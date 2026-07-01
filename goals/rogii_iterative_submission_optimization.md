@@ -1081,3 +1081,47 @@ Escalate for human review if:
 - a candidate looks physically implausible but scores well;
 - a notebook depends on external datasets or public kernels with unclear availability;
 - a method may violate competition rules or reproducibility requirements.
+
+## 2026-07-01 Strategy Pivot Addendum
+
+Official calibration now shows that the old SP45/Fleongg batch should not be released:
+
+| candidate | public score | decision |
+| --- | ---: | --- |
+| active-account baseline | `7.182` | trusted current anchor |
+| Fleongg branch | `7.787` | weak calibration |
+| SP45 projection | `7.753` | weak calibration |
+
+Current generated planning state:
+
+- `batch_status`: `NEEDS_NEW_ARCHITECTURE_CANDIDATES`
+- `release_gate`: `BLOCKED_STRATEGY_PIVOT`
+- next official submissions: blocked until a new structural candidate is built, validated, audited, and packaged.
+
+The active architecture direction is now:
+
+```text
+multi_hypothesis_geosteering_router
+```
+
+First local validation result:
+
+| method | pseudo-hidden weighted RMSE | interpretation |
+| --- | ---: | --- |
+| `last_value` | `14.764` | baseline comparator |
+| `router_prefix_holdout_best` | `16.268` | negative control; naive prefix-holdout routing over-selects risky candidates |
+| `router_guarded_prefix_holdout` | `14.552` | first useful router; conservative gates avoid high-risk GR/MD extrapolation |
+
+Current required work before any new official submission:
+
+1. Expand candidate path generators:
+   - safer GR/NCC confidence features;
+   - DTW/NCC typewell alignment;
+   - self-correlation against known lateral prefix;
+   - piecewise-affine/dynamic-dip/fault-style correction candidates.
+2. Improve router diagnostics:
+   - record why a non-baseline method is allowed or blocked;
+   - compare naive, guarded, and future learned router variants;
+   - emphasize catastrophic-tail prevention, not just mean RMSE.
+3. Convert a validated router candidate into a hidden-compatible Kaggle notebook only after pseudo-hidden CV improves without large worst-split regressions.
+4. Keep official submissions blocked while the only available candidates are low-upside GR/plateau backups or SP45/Fleongg-derived outputs.

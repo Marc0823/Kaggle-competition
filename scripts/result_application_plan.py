@@ -23,6 +23,7 @@ DEFAULT_REPORT = Path("reports/result_application_plan.md")
 BASELINE_CANDIDATE = "lucifer_baseline_repro_joezzzzz"
 FLEONGG_CANDIDATE = "fleongg_pretrained_branch_calibration"
 DEGNONGUIDI_KERNEL = "joezzzzz/rogii-degnonguidi-7159-preflight-codex"
+FLEONGG_COMPETITIVE_MARGIN = 0.10
 
 
 def fmt(value: Any) -> str:
@@ -230,14 +231,14 @@ def build_plan(
             "python3 scripts/poll_and_refresh_state.py",
             True,
         )
-    elif np.isfinite(fleongg_score) and fleongg_score <= baseline_score + 0.75:
+    elif np.isfinite(fleongg_score) and fleongg_score <= baseline_score + FLEONGG_COMPETITIVE_MARGIN:
         add_row(
             rows,
             "fleongg_calibration",
             "B03_fleongg_competitive",
             "ACTION_READY",
             "Prioritize the SP45+Fleongg blend sweep after final release checks.",
-            f"baseline={baseline_score:.6g}; fleongg={fleongg_score:.6g}",
+            f"baseline={baseline_score:.6g}; fleongg={fleongg_score:.6g}; margin={FLEONGG_COMPETITIVE_MARGIN:.2f}",
             branch_command(branches, "B03_fleongg_competitive"),
             False,
         )
@@ -248,7 +249,7 @@ def build_plan(
             "B04_fleongg_weak",
             "ACTION_READY",
             "Downweight Fleongg blend slots and rerank toward SP45/plateau alternatives.",
-            f"baseline={baseline_score:.6g}; fleongg={fmt(fleongg_score)}",
+            f"baseline={baseline_score:.6g}; fleongg={fmt(fleongg_score)}; margin={FLEONGG_COMPETITIVE_MARGIN:.2f}",
             branch_command(branches, "B04_fleongg_weak"),
             False,
         )

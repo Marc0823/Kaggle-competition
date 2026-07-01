@@ -71,6 +71,8 @@ def overall_gate(plan: pd.DataFrame, poll: pd.DataFrame) -> tuple[str, str]:
         return "REVIEW_LEDGER_UPDATES", "External updates were detected in dry-run; apply reviewed ledger changes and rerun."
     if pending or running or batch_status == "WAIT_EXTERNAL_CONTEXT":
         return "BLOCKED_EXTERNAL_CONTEXT", "Pending official scores or running kernels still affect candidate interpretation."
+    if batch_status == "NEEDS_NEW_ARCHITECTURE_CANDIDATES":
+        return "BLOCKED_STRATEGY_PIVOT", "Official calibration rejected the planned branch family; build new structural candidates before submitting."
     if plan.empty:
         return "BLOCKED_NO_PLAN", "No planned submission slots are available."
     if set(plan.get("current_action", pd.Series(dtype=str)).astype(str)) != {"final_review_before_submit"}:

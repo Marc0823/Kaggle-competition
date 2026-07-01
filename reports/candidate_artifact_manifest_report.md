@@ -12,11 +12,11 @@ This report checks local ignored `candidate_manifest.json` files for the planned
 
 | planned_slot | candidate_id | manifest_gate | manifest_found_by | source_path_exists | audit_json_exists | audit_gate | notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_1_conditional_batch |
-| 2 | rogii_baidalin_7_201_preflight_codex_v1_submission_sp45_fleongg_w0_50 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_2_conditional_batch |
-| 3 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_55 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | dynamic slot1 SP45 plus Fleongg w0.55 candidate; hold pending 54198676 public score |
-| 4 | sp45_projection_slot1_codex_v1_submission_sp45_fleongg_w0_60 | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | dynamic slot1 SP45 plus Fleongg w0.60 candidate; hold pending 54198676 public score |
-| 5 | plateau_recent_quantile_v1_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_5_conditional_batch |
+| 1 | plateau_recent_quantile_v1_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_5_conditional_batch |
+| 2 | gr_typewell_light_alpha030_relaxed_v1_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | replacement placeholder after weak SP45/Fleongg calibration; low-upside backup only |
+| 3 | gr_typewell_light_alpha040_v1_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | replacement placeholder after weak SP45/Fleongg calibration; low-upside backup only |
+| 4 | rogii_baidalin_7_201_preflight_codex_v1_sp45_projection_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | planned_slot_1_conditional_batch |
+| 5 | sp45_projection_slot1_codex_v1_fleongg_pretrained_submission | PASS_SOURCE_POINTER | candidate_id | True | True | AUDIT_PASS_WARN_REVIEW | tracked only for comparison after weak official calibration; not a preferred release candidate |
 
 ## Gate Meaning
 

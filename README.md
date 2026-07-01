@@ -237,6 +237,23 @@ python scripts\pseudo_test_cv.py --data-dir data\sample --output-dir experiments
 
 This evaluates method families, not completed `submission.csv` files. Use it to decide whether a structural idea can beat a simple visible-prefix baseline before turning that idea into a Kaggle notebook candidate.
 
+Run the multi-hypothesis router CV harness after the 2026-07-01 architecture pivot:
+
+```powershell
+python scripts\multi_hypothesis_router_cv.py --data-dir data\sample
+```
+
+Outputs:
+
+```text
+experiments/multi_hypothesis_router_cv_scores.csv
+experiments/multi_hypothesis_router_cv_summary.csv
+experiments/multi_hypothesis_router_cv_decisions.csv
+reports/multi_hypothesis_router_cv_report.md
+```
+
+This compares candidate TVT paths and records both a naive prefix-holdout router and a guarded router. The guarded router is the current validation entry point for future geosteering-router candidates; official submissions stay blocked until this class of candidate improves pseudo-hidden validation and passes the normal audits.
+
 Sweep nearby plateau recent-quantile parameters on the same pseudo-test splits:
 
 ```powershell

@@ -65,6 +65,8 @@ def review_row(row: pd.Series) -> tuple[str, str, str]:
     slot_role = str(row.get("slot_role", "") or "")
     family = str(row.get("family", "") or "")
 
+    if release_gate == "BLOCKED_STRATEGY_PIVOT":
+        return "BUILD_NEW_ARCHITECTURE_FIRST", "BLOCK", "Official calibration rejected the planned branch family; build new structural candidates before submitting."
     if release_gate.startswith("BLOCKED") or release_gate == "REVIEW_LEDGER_UPDATES":
         return "HOLD_EXTERNAL_CONTEXT", "WAIT", f"Release gate is {release_gate}; do not submit or package yet."
     if audit_gate not in {"AUDIT_PASS", "AUDIT_PASS_WARN_REVIEW"}:
@@ -189,6 +191,7 @@ def write_report(review: pd.DataFrame, output: Path, csv_path: Path) -> None:
         "## Release Interpretation",
         "",
         "- `HOLD_EXTERNAL_CONTEXT`: keep blocked until scores/kernel outcomes resolve.",
+        "- `BUILD_NEW_ARCHITECTURE_FIRST`: do not spend official slots on the current planned family; create new structural candidates first.",
         "- `evidence_review` shows the latent quality/diversity decision even while the release gate is blocked.",
         "- `KEEP_ONLY_IF_CALIBRATION_SWEEP`: the slot is redundant, but may be kept if the explicit experiment is to map a blend curve.",
         "- `SPARSE_INFO_SLOT_REVIEW`: use only as an information slot, not as broad model promotion.",
