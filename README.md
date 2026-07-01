@@ -252,7 +252,7 @@ experiments/multi_hypothesis_router_cv_decisions.csv
 reports/multi_hypothesis_router_cv_report.md
 ```
 
-This compares candidate TVT paths and records both a naive prefix-holdout router and a guarded router. The guarded router is the current validation entry point for future geosteering-router candidates; official submissions stay blocked until this class of candidate improves pseudo-hidden validation and passes the normal audits.
+This compares candidate TVT paths and records a naive prefix-holdout router, a guarded router, and a confidence-guarded router that can use high-confidence self-correlation evidence visible in evaluation GR. The confidence-guarded router is the current validation entry point for future geosteering-router candidates; official submissions stay blocked until this class of candidate improves pseudo-hidden validation and passes the normal audits.
 
 Sweep nearby plateau recent-quantile parameters on the same pseudo-test splits:
 

@@ -1111,6 +1111,7 @@ First local validation result:
 | `last_value` | `14.764` | baseline comparator |
 | `router_prefix_holdout_best` | `16.268` | negative control; naive prefix-holdout routing over-selects risky candidates |
 | `router_guarded_prefix_holdout` | `14.552` | first useful router; conservative gates avoid high-risk GR/MD extrapolation |
+| `router_confidence_guarded` | `14.507` | current best local router; adds high-confidence self-correlation gate on visible evaluation GR |
 
 Current required work before any new official submission:
 

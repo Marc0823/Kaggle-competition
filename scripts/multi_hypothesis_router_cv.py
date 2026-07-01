@@ -128,6 +128,20 @@ def robust_mae(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.nanmedian(np.abs(a[mask] - b[mask])))
 
 
+def normalized_corr(a: np.ndarray, b: np.ndarray, min_pairs: int = 20) -> float:
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
+    mask = np.isfinite(a) & np.isfinite(b)
+    if int(mask.sum()) < min_pairs:
+        return float("nan")
+    aa = a[mask] - float(np.nanmean(a[mask]))
+    bb = b[mask] - float(np.nanmean(b[mask]))
+    denom = float(np.sqrt(np.sum(aa * aa) * np.sum(bb * bb)))
+    if denom <= 1e-12:
+        return float("nan")
+    return float(np.sum(aa * bb) / denom)
+
+
 def best_gr_shift(gr: np.ndarray, tw: pd.DataFrame, tvt_path: np.ndarray, shifts: np.ndarray) -> tuple[float, float, float, float]:
     scores = np.asarray([robust_mae(gr, interp_typewell_gr(tw, tvt_path + shift)) for shift in shifts], dtype=float)
     if not np.isfinite(scores).any():
@@ -140,6 +154,75 @@ def best_gr_shift(gr: np.ndarray, tw: pd.DataFrame, tvt_path: np.ndarray, shifts
     if np.isfinite(zero_score):
         improvement = float((zero_score - best_score) / (abs(zero_score) + 1e-6))
     return float(shifts[best_idx]), zero_score, best_score, improvement
+
+
+def best_ncc_shift(gr: np.ndarray, tw: pd.DataFrame, tvt_path: np.ndarray, shifts: np.ndarray) -> tuple[float, float, float, float]:
+    scores = np.asarray([normalized_corr(gr, interp_typewell_gr(tw, tvt_path + shift)) for shift in shifts], dtype=float)
+    if not np.isfinite(scores).any():
+        return 0.0, float("nan"), float("nan"), 0.0
+    zero_idx = int(np.argmin(np.abs(shifts)))
+    zero_score = float(scores[zero_idx])
+    best_idx = int(np.nanargmax(scores))
+    best_score = float(scores[best_idx])
+    gain = 0.0
+    if np.isfinite(zero_score):
+        gain = float(best_score - zero_score)
+    return float(shifts[best_idx]), zero_score, best_score, gain
+
+
+def self_corr_prefix_shape_candidate(
+    hw: pd.DataFrame,
+    train_valid: np.ndarray,
+    eval_idx: np.ndarray,
+    true_tvt: np.ndarray,
+    fallback: float,
+    args: argparse.Namespace,
+) -> PathCandidate | None:
+    if "GR" not in hw.columns or len(train_valid) < args.self_corr_window * 2 or len(eval_idx) < args.self_corr_min_eval_rows:
+        return None
+    gr_full = pd.to_numeric(hw["GR"], errors="coerce").interpolate(limit_direction="both").to_numpy(float)
+    window = int(min(args.self_corr_window, len(eval_idx), max(args.self_corr_min_eval_rows, len(train_valid) // 2)))
+    if window < args.self_corr_min_eval_rows:
+        return None
+    eval_gr = gr_full[eval_idx[:window]]
+    start_min = int(train_valid[0])
+    start_max = int(train_valid[-1] - window + 1)
+    if start_max <= start_min:
+        return None
+
+    best_corr = float("nan")
+    best_start = -1
+    for start in range(start_min, start_max + 1, max(1, args.self_corr_stride)):
+        idx = np.arange(start, start + window, dtype=int)
+        if not np.isfinite(true_tvt[idx]).all():
+            continue
+        corr = normalized_corr(eval_gr, gr_full[idx], min_pairs=args.self_corr_min_pairs)
+        if np.isfinite(corr) and (not np.isfinite(best_corr) or corr > best_corr):
+            best_corr = corr
+            best_start = start
+
+    if best_start < 0 or not np.isfinite(best_corr):
+        return None
+    if best_corr < args.self_corr_min_corr:
+        return PathCandidate(
+            "self_corr_prefix_shape",
+            np.full(len(eval_idx), fallback, dtype=float),
+            status="fallback",
+            detail=f"corr_below_gate;corr={best_corr:.4f}",
+            diagnostics={"self_corr": best_corr, "self_corr_start": float(best_start)},
+        )
+
+    match_idx = np.arange(best_start, best_start + window, dtype=int)
+    delta = true_tvt[match_idx] - float(true_tvt[match_idx[0]])
+    delta = np.clip(delta, -args.max_move, args.max_move)
+    pred = np.full(len(eval_idx), fallback + float(delta[-1]), dtype=float)
+    pred[:window] = fallback + delta
+    return PathCandidate(
+        "self_corr_prefix_shape",
+        pred,
+        detail=f"corr={best_corr:.4f};start={best_start};window={window}",
+        diagnostics={"self_corr": best_corr, "self_corr_start": float(best_start)},
+    )
 
 
 def native_cut_index(hw: pd.DataFrame) -> int | None:
@@ -230,6 +313,10 @@ def candidate_paths(
             )
         )
 
+    self_corr = self_corr_prefix_shape_candidate(hw, train_valid, eval_idx, true_tvt, fallback, args)
+    if self_corr is not None:
+        candidates.append(self_corr)
+
     if "GR" in hw.columns:
         gr_full = pd.to_numeric(hw["GR"], errors="coerce").interpolate(limit_direction="both").to_numpy(float)
         shifts = np.arange(-args.max_gr_shift, args.max_gr_shift + 1e-9, args.gr_shift_step)
@@ -271,6 +358,54 @@ def candidate_paths(
                         },
                     )
                 )
+            ncc_prefix_shift, _, ncc_prefix_score, ncc_prefix_gain = best_ncc_shift(
+                gr_full[prefix_gr],
+                tw,
+                true_tvt[prefix_gr],
+                shifts,
+            )
+            for base in [candidate for candidate in candidates if candidate.method in {"last_value", "recent_plateau_quantile"}]:
+                eval_shift, zero_corr, best_corr, corr_gain = best_ncc_shift(
+                    gr_full[eval_idx][eval_gr_mask],
+                    tw,
+                    base.values[eval_gr_mask],
+                    shifts,
+                )
+                if abs(ncc_prefix_shift) > args.max_prefix_shift_abs:
+                    status = "fallback"
+                    shifted = base.values.copy()
+                    detail = "prefix_ncc_shift_unstable"
+                elif (
+                    not np.isfinite(best_corr)
+                    or best_corr < args.min_ncc_corr
+                    or corr_gain < args.min_ncc_gain
+                    or abs(eval_shift) < 1e-9
+                ):
+                    status = "fallback"
+                    shifted = base.values.copy()
+                    detail = f"ncc_not_confident;corr={best_corr:.4f};gain={corr_gain:.4f}"
+                else:
+                    status = "ok"
+                    ramp = 1.0 - np.exp(-np.arange(len(eval_idx), dtype=float) / max(30.0, 0.10 * len(eval_idx)))
+                    shifted = base.values + np.clip(args.ncc_alpha * eval_shift * ramp, -args.max_move, args.max_move)
+                    detail = f"eval_shift={eval_shift:.3f};corr={best_corr:.4f};gain={corr_gain:.4f}"
+                candidates.append(
+                    PathCandidate(
+                        f"ncc_shift__{base.method}",
+                        shifted,
+                        status=status,
+                        detail=detail,
+                        diagnostics={
+                            "prefix_ncc_shift": ncc_prefix_shift,
+                            "prefix_ncc_score": ncc_prefix_score,
+                            "prefix_ncc_gain": ncc_prefix_gain,
+                            "eval_ncc_shift": eval_shift,
+                            "eval_ncc_zero": zero_corr,
+                            "eval_ncc_best": best_corr,
+                            "eval_ncc_gain": corr_gain,
+                        },
+                    )
+                )
 
     return candidates
 
@@ -305,7 +440,9 @@ def is_guarded_candidate(method: str, allow_gr_shift: bool) -> bool:
         return False
     if method in {"damped_tail_linear_md", "gr_shift__damped_tail_linear_md"}:
         return False
-    if method.startswith("damped_tail_linear_") or method == "recent_plateau_quantile":
+    if method.startswith("ncc_shift__"):
+        return False
+    if method.startswith("damped_tail_linear_") or method in {"recent_plateau_quantile", "self_corr_prefix_shape"}:
         return True
     return False
 
@@ -405,6 +542,24 @@ def select_router_method(
     }
 
 
+def select_confidence_guarded_method(candidates: list[PathCandidate], guarded_method: str, args: argparse.Namespace) -> tuple[str, str]:
+    if guarded_method != "last_value":
+        return guarded_method, "kept_prefix_holdout_guard"
+    self_corr_candidates = [
+        candidate
+        for candidate in candidates
+        if candidate.method == "self_corr_prefix_shape"
+        and candidate.status == "ok"
+        and candidate.diagnostics
+        and float(candidate.diagnostics.get("self_corr", float("nan"))) >= args.router_self_corr_min_corr
+    ]
+    if self_corr_candidates:
+        best = max(self_corr_candidates, key=lambda candidate: float(candidate.diagnostics.get("self_corr", float("nan"))))
+        corr = float(best.diagnostics.get("self_corr", float("nan"))) if best.diagnostics else float("nan")
+        return best.method, f"self_corr_confidence_gate;corr={corr:.4f}"
+    return guarded_method, "default_last_value_after_confidence_gate"
+
+
 def run_split(
     well: str,
     split_name: str,
@@ -437,6 +592,11 @@ def run_split(
         guarded_method = "last_value"
     guarded_values = method_to_values.get(guarded_method, candidates[0].values)
     candidates.append(PathCandidate("router_guarded_prefix_holdout", guarded_values, detail=f"selected={guarded_method}"))
+    confidence_method, confidence_detail = select_confidence_guarded_method(candidates, guarded_method, args)
+    if confidence_method not in method_to_values:
+        confidence_method = guarded_method if guarded_method in method_to_values else "last_value"
+    confidence_values = method_to_values.get(confidence_method, candidates[0].values)
+    candidates.append(PathCandidate("router_confidence_guarded", confidence_values, detail=f"selected={confidence_method};{confidence_detail}"))
 
     rows = []
     for row in method_diagnostics(candidates, eval_true):
@@ -458,6 +618,8 @@ def run_split(
         "eval_rows": len(eval_idx),
         "selected_eval_method": chosen_method,
         "guarded_eval_method": guarded_method,
+        "confidence_eval_method": confidence_method,
+        "confidence_detail": confidence_detail,
         **router,
     }
     return rows, decision
@@ -508,7 +670,12 @@ def write_report(scores: pd.DataFrame, summary: pd.DataFrame, decisions: pd.Data
         if not decisions.empty and "guarded_eval_method" in decisions.columns
         else pd.DataFrame()
     )
-    worst_router = scores[scores["method"] == "router_guarded_prefix_holdout"].sort_values("rmse", ascending=False).head(10)
+    confidence_counts = (
+        decisions["confidence_eval_method"].value_counts().rename_axis("confidence_eval_method").reset_index(name="count")
+        if not decisions.empty and "confidence_eval_method" in decisions.columns
+        else pd.DataFrame()
+    )
+    worst_router = scores[scores["method"] == "router_confidence_guarded"].sort_values("rmse", ascending=False).head(10)
     lines = [
         "# Multi-Hypothesis Router CV Report",
         "",
@@ -532,6 +699,10 @@ def write_report(scores: pd.DataFrame, summary: pd.DataFrame, decisions: pd.Data
         "## Guarded Router Selection Counts",
         "",
         markdown_table(guarded_counts),
+        "",
+        "## Confidence Router Selection Counts",
+        "",
+        markdown_table(confidence_counts),
         "",
         "## Worst Router Splits",
         "",
@@ -557,6 +728,7 @@ def write_report(scores: pd.DataFrame, summary: pd.DataFrame, decisions: pd.Data
         "",
         "- `router_prefix_holdout_best` chooses a candidate family using only a holdout from the known prefix.",
         "- `router_guarded_prefix_holdout` falls back to `last_value` unless holdout improvement, margin, and family safety gates pass.",
+        "- `router_confidence_guarded` starts from the guarded router, then allows high-confidence self-correlation evidence visible in the evaluation GR.",
         "- A useful router should improve weighted RMSE or at least reduce worst-split risk versus `last_value`.",
         "- If the router underperforms, inspect `experiments/multi_hypothesis_router_cv_decisions.csv` to see which candidate families the prefix holdout over-selected.",
         "",
@@ -596,16 +768,25 @@ def main() -> int:
     parser.add_argument("--plateau-window", type=int, default=256)
     parser.add_argument("--plateau-quantile", type=float, default=0.50)
     parser.add_argument("--plateau-blend", type=float, default=1.0)
+    parser.add_argument("--self-corr-window", type=int, default=256)
+    parser.add_argument("--self-corr-stride", type=int, default=16)
+    parser.add_argument("--self-corr-min-eval-rows", type=int, default=80)
+    parser.add_argument("--self-corr-min-pairs", type=int, default=50)
+    parser.add_argument("--self-corr-min-corr", type=float, default=0.72)
     parser.add_argument("--router-holdout-frac", type=float, default=0.20)
     parser.add_argument("--router-min-holdout-rows", type=int, default=80)
     parser.add_argument("--router-min-improvement-rmse", type=float, default=0.75)
     parser.add_argument("--router-min-improvement-frac", type=float, default=0.15)
     parser.add_argument("--router-min-margin-rmse", type=float, default=0.10)
     parser.add_argument("--router-allow-gr-shift", action="store_true")
+    parser.add_argument("--router-self-corr-min-corr", type=float, default=0.75)
     parser.add_argument("--min-gr-rows", type=int, default=50)
     parser.add_argument("--max-gr-shift", type=float, default=30.0)
     parser.add_argument("--gr-shift-step", type=float, default=5.0)
     parser.add_argument("--gr-alpha", type=float, default=0.20)
+    parser.add_argument("--ncc-alpha", type=float, default=0.15)
+    parser.add_argument("--min-ncc-corr", type=float, default=0.35)
+    parser.add_argument("--min-ncc-gain", type=float, default=0.05)
     parser.add_argument("--max-prefix-shift-abs", type=float, default=10.0)
     parser.add_argument("--min-eval-improvement", type=float, default=0.03)
     parser.add_argument("--baseline-method", default="last_value")
