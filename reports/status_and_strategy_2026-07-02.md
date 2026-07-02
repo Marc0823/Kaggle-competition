@@ -8,19 +8,19 @@ router track and public-notebook reproductions.
 
 - Team: `lee Marc223` (accounts `joezzzzz`, `leemarc223`).
 - Best confirmed public score: **7.182** (active-account baseline reproduction),
-  ≈ rank **150 / 4031** (top ~3.7%).
-- First place: **5.285**. Gap from 7.182 = **−1.897 RMSE ≈ 46% MSE reduction**.
-- Leaderboard cutoffs: #10 = 6.321, #50 = 6.986, #100 = 7.162.
+  rank **164 / 4092** on the 2026-07-02 03:46 UTC API snapshot (top ~4.0%).
+- First place: **5.262**. Gap from 7.182 = **−1.920 RMSE ≈ 46.3% MSE reduction**.
+- Leaderboard cutoffs: #10 = 6.300, #50 = 6.954, #100 = 7.157.
 
 The leaderboard has a huge **plateau at 7.10–7.30** — hundreds of teams forking
 the same public stacks. We are near the front of that plateau. Below 7.10
-(ranks ~20–75, 6.3–7.1) and the top-20 (5.28–6.57) use methods that are **not in
+(ranks ~20–75, 6.3–7.1) and the top-20 (5.26–6.54) use methods that are **not in
 the public notebooks**.
 
 ## 2. Submission Budget
 
 - Official limit: **5 per team per UTC day**, shared across all team members.
-- Resets at 00:00 UTC. As of 2026-07-02 ~03:35 UTC: **0/5 used today (5 fresh).**
+- Resets at 00:00 UTC. As of 2026-07-02 03:46 UTC: **0/5 used today (5 fresh).**
 - On 2026-07-01 the teammate used 4/5 (see §4).
 
 ## 3. What Has Been Tried
@@ -74,9 +74,9 @@ Four submissions, none beat 7.182:
 
 ## 4. Honest Strategic Assessment
 
-- **Beating #1 (5.285) is not realistic via any approach available to us.** Public
+- **Beating #1 (5.262) is not realistic via any approach available to us.** Public
   material tops out ~7.10–7.15; the top tier uses a fundamentally stronger
-  signal/architecture not shared publicly. 7.18 → 5.28 is a different class, not a
+  signal/architecture not shared publicly. 7.18 → 5.26 is a different class, not a
   tuning/fork/ensemble result.
 - **Realistic gain:** incremental, 7.18 → ~7.10–7.15 (up ~50–70 ranks) by landing
   a working 7.153/7.159 and/or ensembling with 7.182. Modest.
