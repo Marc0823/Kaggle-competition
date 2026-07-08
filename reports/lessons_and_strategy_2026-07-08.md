@@ -85,6 +85,49 @@ Instead, for every fork fix:
 
 This turns "1 h per failed guess" into "minutes per validated step."
 
+### 2c. DWT honest base — SOLVED (the full recipe, confirmed 2026-07-08)
+
+The DWT 9.251 fork now RUNS end-to-end and submits. Internal native-mask CV
+(optuna post-proc best) = **10.40** — our honest private proxy (its 9.251 is the
+*public* board; honest models' internal CV ≈ private, so ~10.4 is the realistic
+private-side number). Every failure above was one of THREE unrelated breakages,
+each caught cheaply by a smoke kernel before any 1 h full run:
+
+1. **koolbox dependency** (`from koolbox import Trainer`, private wheel we never
+   had). The ravaghi artifacts are pickled `koolbox.Trainer` objects. Fix = graft
+   a self-contained **`CVTrainer`** class + register it under `sys.modules` for
+   `koolbox`, `koolbox.trainer`, `koolbox.trainer.trainer` so joblib unpickles it.
+   `load_trainer(dir)` globs `*.pkl` and returns the object. The pickled trainer's
+   model list lives in attribute **`estimators`** (5 fold models), NOT `models_`;
+   `_models_for_predict()` tries known aliases and adapts. `.oof_preds` (len =
+   3,783,989 = len(train_df)) and `.overall_score` come straight off the pickle;
+   `.predict(X_test)` averages the 5 fold models (handles `best_iteration_`).
+   Patch both `train_lightgbm`/`train_catboost` fast-load branches to:
+   `_tr=load_trainer(path); oof=_tr.oof_preds; test=_tr.predict(X_test)` — this
+   sidesteps the raw-Booster-vs-sklearn `best_iteration`/`best_iteration_` API gap.
+2. **Wrong artifacts mount path.** Current Kaggle layout is
+   `/kaggle/input/{competitions|datasets}/{owner}/{slug}`. Competition data =
+   `/kaggle/input/competitions/rogii-wellbore-geology-prediction` (correct as-is);
+   ravaghi artifacts = `/kaggle/input/datasets/ravaghi/wellbore-geology-prediction-artifacts`
+   (NOT `/kaggle/input/wellbore-geology-prediction-artifacts`). A wrong path makes
+   the `.exists()` fast-load guard False → notebook silently **retrains from
+   scratch** (rebuilds the 7.3 GB train.csv into output AND hits the GPU params →
+   `LightGBMError: No OpenCL device found`). Robust fix = auto-detect: glob
+   `"/kaggle/input/**/models/lightgbm-1"`, pick the root that has BOTH
+   `models/lightgbm-1` and `data/train.csv`, assert it, then `CFG.artifacts_path=`.
+3. **Missing `catboost-3` artifact.** Ravaghi published only `lightgbm-1/2/3` +
+   `catboost-1/2` (5 dirs, no cb-3). The `for i in range(3)` catboost loop would
+   request cb-3 → not found → retrain branch. Fix = guard each loop iteration with
+   `if not (CFG.artifacts_path/"models"/name).exists(): continue` (load-only mode).
+   Also **strip GPU params** defensively (`device_type="gpu"`, `task_type="GPU"`)
+   so any accidental retrain runs on CPU instead of crashing.
+
+The generic lesson: a "path fix" that flips a fast-load guard to False fails
+SILENTLY into a slow retrain — it doesn't error at the guard, it errors ~80 min
+later deep in training. Always assert the fast-load path is actually taken (print
+`Loading` vs `Training`; assert the artifact dir exists right after setting the
+path).
+
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
 Competitive public notebooks are NOT portable. Each fork needs surgery:
