@@ -64,6 +64,27 @@ Key negative results (do not re-try blindly):
   capacity is not the bottleneck. Add best-checkpoint restore + multi-cut
   augmentation if revisiting.
 
+## 2b. Fork-run DISCIPLINE — smoke-test the fix on a tiny/cheap run first
+
+**Never validate a fix by launching the full run.** These notebooks read
+multi-GB feature tables (ravaghi `data/train.csv` = **7.4 GB**, ~1 h just to read)
+and run optuna/PF for hours, so a bug at minute-80 costs an hour to surface. Each
+DWT attempt burned ~1.4 h to hit the *next* error.
+
+Instead, for every fork fix:
+1. **Isolate the thing you fixed** into a minimal cell/kernel that exercises ONLY
+   that code path (e.g. `load_trainer(one_model_dir)` + assert it has `.oof_preds`
+   / `.models_`) — it mounts the dataset but does NOT read the 7.4 GB table, so it
+   finishes in minutes.
+2. If the smoke test passes, only THEN wire the fix into the full pipeline and run
+   the slow/full version.
+3. Add a `FAST`/`nrows`/`max_wells` toggle so the full notebook itself can run a
+   cheap end-to-end pass. (Caveat: if the pipeline uses precomputed full-size OOF,
+   you cannot simply subsample the train table — the OOF length won't align; smoke
+   test the *loading* separately instead.)
+
+This turns "1 h per failed guess" into "minutes per validated step."
+
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
 Competitive public notebooks are NOT portable. Each fork needs surgery:
