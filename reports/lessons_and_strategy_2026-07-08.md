@@ -90,7 +90,10 @@ This turns "1 h per failed guess" into "minutes per validated step."
 The DWT 9.251 fork now RUNS end-to-end and submits. Internal native-mask CV
 (optuna post-proc best) = **10.40** — our honest private proxy (its 9.251 is the
 *public* board; honest models' internal CV ≈ private, so ~10.4 is the realistic
-private-side number). Every failure above was one of THREE unrelated breakages,
+private-side number). **Submitted → public board = 9.519** (sub 54453597), which
+nearly reproduces the origin DWT 9.251 — we are ~0.27 worse only because ravaghi
+published 5/6 trainers (no catboost-3). This is now our banked honest base:
+public 9.519 / internal-CV 10.40, far above our from-scratch best (neural 12.87). Every failure above was one of THREE unrelated breakages,
 each caught cheaply by a smoke kernel before any 1 h full run:
 
 1. **koolbox dependency** (`from koolbox import Trainer`, private wheel we never
