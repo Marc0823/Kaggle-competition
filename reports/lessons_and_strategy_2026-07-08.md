@@ -131,6 +131,31 @@ later deep in training. Always assert the fast-load path is actually taken (prin
 `Loading` vs `Training`; assert the artifact dir exists right after setting the
 path).
 
+### 2d. Honest levers TESTED and KILLED (2026-07-09/10) — do not retry
+
+Ran the two candidate honest levers locally (system python3.12 has full pandas/
+numpy/scipy/lightgbm; native TVT_input mask = hidden split). Both failed the
+"beat DWT 9.519" gate → **not submitted** (0 slots burned; retreated to DWT).
+
+- **Offset-well STRUCTURAL SURFACES (ANCC/ASTNU/ASTNL/EGFDU/EGFDL/BUDA).** In the
+  masked toe of TRAIN these are ~100% populated (X/Y/Z too; GR only 36%), and a
+  leave-well-out LightGBM on them predicts raw toe TVT at RMSE ~46 vs naive
+  projection 107. BUT the **TEST horizontal wells do NOT carry these columns**
+  (test cols = `MD,X,Y,Z,GR,TVT_input` only) → the feature literally cannot be
+  computed at inference. Dead. (This is also why DWT's 195 features are GR/typewell/
+  geometry-based, never surfaces.) Probe: `scratchpad/dip_probe.py`.
+- **GR↔typewell DIP ALIGNMENT** (segment-NCC anchor-bounded warp, the "real"
+  geosteering move). Honest native-mask weighted RMSE = **16.23**, actually WORSE
+  than the trivial last_value baseline **16.16** (win-rate 0.36; prefix-holdout
+  router-gate still nets +0.02; no drift-quartile shows gain). DWT's 195 GR
+  features already subsume this. Proto: `scratchpad/tw_align_proto.py`.
+
+Bottom line: no cheap honest lever beats DWT 9.519. The only remaining honest
+upside is either (a) recover the missing **catboost-3** to lift DWT 9.519→~9.251
+(bounded, low-risk, ~0.27), or (b) a multi-day rebuild of a GR aligner good enough
+to out-feature a tuned 195-feature ensemble (low odds). See memory
+`dwt-honest-base-9519.md`.
+
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
 Competitive public notebooks are NOT portable. Each fork needs surgery:
