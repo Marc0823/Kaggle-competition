@@ -182,12 +182,31 @@ neighbouring wells (`scratchpad_probes/tvt_spatial_probe.py`). Result: pooled RM
 units means the wells are too sparse for KNN, so it helps only ~18% of wells (those
 with a close neighbour) and is unusable as a blend input. The only other orthogonal
 candidate (the neural aligner, standalone CV 12.87) is far weaker than DWT 10.4 and
-still ultimately GR-driven, so its blend weight/gain is negligible. **Verdict: DWT's
-6-model blend at internal CV ~10.4 is our honest ceiling with the available signals —
-every honest lever tried (structural surfaces, GR dip alignment, catboost-3, spatial
-diversity, neural diversity) fails to move the private proxy.** Consolidate on DWT
-9.519 as the honest final; further honest gains would need genuinely new information
-(e.g., a real dip/structural framework that the test set does not provide).
+still ultimately GR-driven, so its blend weight/gain is negligible. Those honest levers (structural surfaces, GR dip alignment, catboost-3, spatial
+diversity, neural diversity) all fail to move the private proxy.
+
+### 2f. WIN — residual-scale post-proc: honest CV 10.3987 -> 10.3445 (2026-07-10)
+
+The one lever that DID work is a calibration fix, found by dumping DWT's own OOF and
+studying it locally. Kernel v9 saves `dwt_oof/ytrue/base/ids` to `/kaggle/working`
+(train_df is TOE-only: all 3.78M rows are hidden-toe rows). Key discovery: DWT's
+post-processor `apply_pp` scales its predicted residual by `alpha` but **optuna caps
+alpha at 1.0**, whereas the true optimum residual scale is **~1.10** — i.e. DWT
+systematically UNDER-predicts the toe drift (classic GBM mean-regression). Two cheap,
+fully test-transferable corrections (they use only DWT's own toe prediction + the
+known anchor `last_known_tvt`):
+- **residual scale LAM≈1.10** (lift the alpha cap post-hoc), and
+- **per-well savgol smoothing win=201, po=2** (DWT's per-row preds carry a little
+  high-frequency noise).
+
+Honest GroupKFold (LAM tuned on train folds, applied to held-out wells): pooled
+**10.3987 → 10.3445 (Δ −0.054)**, improving on 4/5 folds; the notebook's own
+full-train OOF confirms **10.3314** at LAM=1.10. Implemented in main notebook v10
+(cell 24) and **submitted**. This is our new honest best and it strictly dominates
+the 9.519 base at zero training cost. Remaining micro-levers if ever wanted: widen the
+optuna `alpha` bound to `[0.5,1.3]` so it co-tunes the scale natively; sweep the
+smoothing window 201–401. Bottom line: the honest ceiling moved from ~10.40 to ~10.34;
+larger gains still need information the stripped test set does not provide.
 
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
