@@ -173,9 +173,21 @@ highly correlated with the existing five, so it adds ~nothing to the honest prox
 difference — both sit at internal CV ~10.4; the 0.27 is public-split noise. Recovering
 cb-3 therefore only lifts the PUBLIC vanity number, not the private proxy → **not
 submitted** (gate = material CV gain; slots preserved). The 6-model notebook is banked
-and ready if we ever want the marginal 5→6 variance reduction. The genuine remaining
-lever is **ensemble diversity** (independent honest model families blended with DWT)
-to cut private variance, not more same-family models.
+and ready if we ever want the marginal 5→6 variance reduction.
+
+**Ensemble diversity — also tested and dead (2026-07-10).** The most GR-orthogonal
+honest signal is a spatial-geology KNN on the `r=TVT+Z` field over `(X,Y)` of
+neighbouring wells (`scratchpad_probes/tvt_spatial_probe.py`). Result: pooled RMSE
+**178** vs last_value **15.65** — catastrophic; median neighbour distance ~1548 XY
+units means the wells are too sparse for KNN, so it helps only ~18% of wells (those
+with a close neighbour) and is unusable as a blend input. The only other orthogonal
+candidate (the neural aligner, standalone CV 12.87) is far weaker than DWT 10.4 and
+still ultimately GR-driven, so its blend weight/gain is negligible. **Verdict: DWT's
+6-model blend at internal CV ~10.4 is our honest ceiling with the available signals —
+every honest lever tried (structural surfaces, GR dip alignment, catboost-3, spatial
+diversity, neural diversity) fails to move the private proxy.** Consolidate on DWT
+9.519 as the honest final; further honest gains would need genuinely new information
+(e.g., a real dip/structural framework that the test set does not provide).
 
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
