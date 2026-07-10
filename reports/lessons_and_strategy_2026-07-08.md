@@ -156,6 +156,27 @@ upside is either (a) recover the missing **catboost-3** to lift DWT 9.519→~9.2
 to out-feature a tuned 195-feature ensemble (low odds). See memory
 `dwt-honest-base-9519.md`.
 
+### 2e. catboost-3 RECOVERED — but the 0.27 public gap was NOT real quality (2026-07-10)
+
+Trained the missing catboost-3 ourselves (kernel `joezzzzz/cb3-train`: single-GPU
+`devices="0"` — the origin's `"0:1"` assumes 2 GPUs and errors on a 1-GPU kernel;
+iterations cap 4000, 5-fold GroupKFold on `well`, ~16 min, individual OOF RMSE 10.55).
+Saved as a `load_trainer`-compatible `CVTrainer` at `models/catboost-3/trainer.pkl`.
+Main notebook v7 consumes it via `kernel_sources: ["joezzzzz/cb3-train"]` plus a new
+`find_model_dir(name)` helper that globs each model dir under ANY `/kaggle/input`
+root (ravaghi holds lgb1-3+cb1-2; the cb3-train output holds catboost-3). All 6
+models load cleanly.
+
+**Result: final optuna internal CV = 10.3987 vs 10.40 with 5 models — FLAT.** cb-3 is
+highly correlated with the existing five, so it adds ~nothing to the honest proxy.
+**Key finding:** the 0.27 public gap (origin 9.251 vs our 9.519) is NOT a real quality
+difference — both sit at internal CV ~10.4; the 0.27 is public-split noise. Recovering
+cb-3 therefore only lifts the PUBLIC vanity number, not the private proxy → **not
+submitted** (gate = material CV gain; slots preserved). The 6-model notebook is banked
+and ready if we ever want the marginal 5→6 variance reduction. The genuine remaining
+lever is **ensemble diversity** (independent honest model families blended with DWT)
+to cut private variance, not more same-family models.
+
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
 Competitive public notebooks are NOT portable. Each fork needs surgery:
