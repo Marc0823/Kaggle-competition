@@ -272,3 +272,47 @@ Kaggle lets you pick **2 final submissions** — pick for PRIVATE robustness:
    from-scratch alignment (aliasing wall) or heavy non-portable stacks.
 3. Reserve slots; every submission is a planned experiment. Two finals = 1 honest
    + 1 hedge.
+
+## 7. Deep honest-lever audit (2026-07-11) — error structure + geosteering, all rigorously tested
+
+Worked entirely off the dumped DWT OOF `combo_state.npz` (oof/yt/base/well/ridx/cut,
+773 wells) + the full local 773-well train set (`data/rogii/train`, all columns). Every
+claim below is honest 5-fold GroupKFold nested-CV, not in-sample.
+
+**Error structure (the map of where DWT loses).**
+- Pooled toe RMSE = 10.3987 (= our "CV 10.40"). RMSE is dominated by the far-toe: 59% of
+  rows sit at distance-from-anchor >2000 ft with RMSE 12.3; everything <500 ft is ~0 error.
+- DWT's within-well error is **99.9% low-frequency (smooth), 0.1% noise** — not per-point
+  jitter; each well's whole toe is systematically offset (a structural mis-pick).
+- Oracle ceilings (perfect corrector): remove per-well **mean offset** → RMSE **6.30**
+  (63% of SS); per-well **affine-in-distance** → **4.44** (82%). So most of the error is
+  "recoverable structure" *in the oracle sense* (i.e. if you knew the truth).
+
+**Residual-scale λ — a fragile distribution bet, not a robust lever.**
+- Per-well far-field optimal scale: mean **1.003**, median 1.015, IQR [0.58, 1.44]; only 51%
+  of wells want >1. The pooled optimum 1.096 is an RMSE-weighted artifact of a few high-drift
+  wells. Honest nested-CV gain of global λ (and distance-gated λ, which adds nothing) is only
+  **−0.047** (10.399→10.351).
+- Correction to §2f: the three 2026-07-10 submissions that "disproved λ" all also changed
+  savgol 17→201 and/or added cb3 — **confounded**. v11 (λ=1.0, smooth201) alone scored 10.230,
+  so the public villain was heavy smoothing, not λ. The clean isolation (5-model, LAM=1.09,
+  original smooth17) was submitted 2026-07-11 (kernel v13) to finally read λ on public.
+
+**Geosteering / typewell structural matching — rigorously DEAD (do not retry).**
+- Built a real matcher: DP alignment of horizontal GR onto the typewell GR-vs-TVT profile,
+  windowed-NCC emission, smoothness penalty, heel-TVT start pin, per-well confidence gate.
+- Foundation is sound: horizontal GR matches typewell GR @ true TVT with **median corr 0.82**
+  (98.7% of wells >0.5). So the signal physically exists.
+- Yet honest nested-CV blend weight = **0 in all 5 folds and every confidence gate**. Reason:
+  matcher error is **0.65–0.68 correlated** with DWT and 1.7× weaker (16–18 vs 10.3) — DWT's
+  195 GR features already extract the typewell signal; the explicit matcher is a weaker
+  re-derivation with no independent information. Closed-form: it would need strength ~13 (not
+  17) to help at that correlation — unreachable by a hand-rolled matcher vs a tuned ensemble.
+- **Test typewell carries only TVT + GR** (Geology and all structural surfaces are
+  train-stripped). So there is **no independent input signal at test** beyond
+  GR + typewell-GR + trajectory, all of which DWT consumes. This is an **information ceiling**.
+
+**Verdict.** Post-processing DWT's own output can only tweak calibration (fragile, ~0.5%
+coin-flip); no independent estimator built from the available inputs decorrelates enough to
+help a blend. The honest frontier for this data IS the 5-model DWT **9.519 / CV 10.40**
+(banked ref 54453597). Final-2 unchanged: DWT 9.519 (honest) + an overlap hedge.
