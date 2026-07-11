@@ -185,28 +185,33 @@ candidate (the neural aligner, standalone CV 12.87) is far weaker than DWT 10.4 
 still ultimately GR-driven, so its blend weight/gain is negligible. Those honest levers (structural surfaces, GR dip alignment, catboost-3, spatial
 diversity, neural diversity) all fail to move the private proxy.
 
-### 2f. WIN — residual-scale post-proc: honest CV 10.3987 -> 10.3445 (2026-07-10)
+### 2f. Post-proc "win" was CV-OVERFIT — DISPROVEN by public (2026-07-10)
 
-The one lever that DID work is a calibration fix, found by dumping DWT's own OOF and
-studying it locally. Kernel v9 saves `dwt_oof/ytrue/base/ids` to `/kaggle/working`
-(train_df is TOE-only: all 3.78M rows are hidden-toe rows). Key discovery: DWT's
-post-processor `apply_pp` scales its predicted residual by `alpha` but **optuna caps
-alpha at 1.0**, whereas the true optimum residual scale is **~1.10** — i.e. DWT
-systematically UNDER-predicts the toe drift (classic GBM mean-regression). Two cheap,
-fully test-transferable corrections (they use only DWT's own toe prediction + the
-known anchor `last_known_tvt`):
-- **residual scale LAM≈1.10** (lift the alpha cap post-hoc), and
-- **per-well savgol smoothing win=201, po=2** (DWT's per-row preds carry a little
-  high-frequency noise).
+A tempting lever, found by dumping DWT's OOF (kernel v9 saves `dwt_oof/ytrue/base/ids`;
+train_df is TOE-only, 3.78M rows): DWT's `apply_pp` caps its residual scale `alpha≤1.0`,
+but the OOF optimum is ~1.10 (DWT appears to under-predict drift), and heavy per-well
+savgol (win=201) further cut OOF RMSE. Honest GroupKFold looked great: 10.3987 → 10.3445.
 
-Honest GroupKFold (LAM tuned on train folds, applied to held-out wells): pooled
-**10.3987 → 10.3445 (Δ −0.054)**, improving on 4/5 folds; the notebook's own
-full-train OOF confirms **10.3314** at LAM=1.10. Implemented in main notebook v10
-(cell 24) and **submitted**. This is our new honest best and it strictly dominates
-the 9.519 base at zero training cost. Remaining micro-levers if ever wanted: widen the
-optuna `alpha` bound to `[0.5,1.3]` so it co-tunes the scale natively; sweep the
-smoothing window 201–401. Bottom line: the honest ceiling moved from ~10.40 to ~10.34;
-larger gains still need information the stripped test set does not provide.
+**Then public demolished it.** Three controlled submissions:
+
+| config | public | CV |
+|---|---|---|
+| base: 5-model, smooth17, no λ (ref 54453597) | **9.519** | 10.40 |
+| v12: 5-model, smooth201, λ1.10 | 9.839 | ~10.35 |
+| v10: 6-model, smooth201, λ1.10 | 9.968 | 10.34 |
+| v11: 6-model, smooth201, λ1.0 | 10.230 | ~10.39 |
+
+Every local-CV "improvement" (cb-3, λ rescale, heavy smoothing) **improved held-out CV
+but WORSENED real public**. The post-proc overfits train-well OOF idiosyncrasies and
+does not transfer; λ only "helped" among the smooth201 variants by partly undoing the
+over-shrinkage of heavy smoothing (coupled, not independent); cb-3 adds ~0.13 public
+harm on top. **Definitive lesson for ROGII: held-out CV is MISLEADING for
+post-processing / blend changes — the original DWT light post-proc (sg_smooth win=17,
+no λ) is the robust optimum. Trust the honest PUBLIC score for post-proc, not CV.**
+Everything reverted; the honest final is the 5-model DWT **9.519** (already banked,
+ref 54453597). Net honest ceiling stays ~10.40 CV / 9.519 public; the stripped test set
+provides no further honest signal we have found. See probe scripts
+`scratchpad_probes/combo_*.py`.
 
 ## 3. Fork-ops reality (whack-a-mole — budget for it)
 
