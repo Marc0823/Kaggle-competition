@@ -296,7 +296,10 @@ claim below is honest 5-fold GroupKFold nested-CV, not in-sample.
 - Correction to §2f: the three 2026-07-10 submissions that "disproved λ" all also changed
   savgol 17→201 and/or added cb3 — **confounded**. v11 (λ=1.0, smooth201) alone scored 10.230,
   so the public villain was heavy smoothing, not λ. The clean isolation (5-model, LAM=1.09,
-  original smooth17) was submitted 2026-07-11 (kernel v13) to finally read λ on public.
+  original smooth17, kernel v13) scored **public 10.138 vs base 9.519 = +0.62 WORSE** — so even
+  cleanly isolated, λ genuinely HURTS real test. Native-mask CV said −0.047, public said +0.62:
+  a huge divergence that DEFINITIVELY confirms "held-out CV is misleading for post-proc" here.
+  Honest final = base 9.519, no λ, no extra post-proc. Do not retry residual scaling.
 
 **Geosteering / typewell structural matching — rigorously DEAD (do not retry).**
 - Built a real matcher: DP alignment of horizontal GR onto the typewell GR-vs-TVT profile,
