@@ -319,3 +319,36 @@ claim below is honest 5-fold GroupKFold nested-CV, not in-sample.
 coin-flip); no independent estimator built from the available inputs decorrelates enough to
 help a blend. The honest frontier for this data IS the 5-model DWT **9.519 / CV 10.40**
 (banked ref 54453597). Final-2 unchanged: DWT 9.519 (honest) + an overlap hedge.
+
+## 8. Multi-hypothesis / selection lines (2026-07-11) — Joe's 3 ideas, all locally validated
+
+All three got a genuine implementation + honest well-split validation on the local 773-well
+train set vs the DWT OOF. NONE submitted to Kaggle (validate-first, by directive). The key
+diagnostic for each is the ORACLE test: is a beat-DWT hypothesis even reachable?
+
+| Line | idea | ORACLE ceiling | achievable | blend w* | verdict |
+|---|---|---|---|---|---|
+| 1 | misfit heatmap + top-K paths + learned selector | 10.29 (ties DWT 10.42) | selector 13.70 | ≈0 | capped |
+| 2 | Siamese/CNN scorer + DP top-K | 10.20 (>DWT 9.70; beat NCC 10.38) | best-cost 15.8 | needs oracle | capped |
+| 3 | MTP multi-hypothesis GRU (K heads, WTA loss) | 10.24 (ties DWT 10.00) | soft 15.5 / hard 16.4 | ≈0 | capped |
+
+**Unifying result (triply confirmed across independent method families).** In every line the
+ORACLE ceiling merely *ties* DWT — no alternative hypothesis systematically beats it — and
+selection-from-inputs *fails* (all achievable selectors land 13–16 vs their ~10.2 oracle). Only
+the *oracle* blend (which requires knowing the truth) captures the ~10% prize (8.7–9.1). So the
+entire problem reduces to **selecting the correct stratigraphic interpretation**, and the
+discriminating information is **not in the test-available inputs** (GR + typewell-GR +
+trajectory) — which is precisely why DWT's dominant error is a whole-well toe offset (it picked
+one interpretation and can't verify it). This is the same **information ceiling** as §7.
+
+Notable sub-findings: (2) Joe's hunch was right — a learned scorer *does* beat raw NCC (oracle
+10.38→10.20) — but not enough to clear DWT; the Siamese pos/neg window-similarity gap is only
+~0.07, i.e. typewell GR at the true TVT vs ±6–45 ft off is genuinely near-identical
+(cycle-skipping / repeated lithology). (3) the MTP heads collapse under selection (hard-select
+16.4 is *worse* than the soft average 15.5), and corr-with-DWT rises with training (0.69→0.77).
+
+**One untried selection lever (speculative):** known-tail validation — train MTP/paths from an
+*earlier* anchor, leave a gap of the KNOWN section as a holdout, score each hypothesis on that
+known-but-held-out tail (truth available there even at test), and use tail-fit to route. Only
+worth it if known-tail accuracy predicts toe accuracy (uncertain — the toe is further
+extrapolation). Verdict stands: honest final = DWT 9.519; the frontier for these inputs is real.
