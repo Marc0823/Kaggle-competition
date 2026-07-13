@@ -422,3 +422,30 @@ already rejected. **Next search space:** honest-base review (Area 6) — assess 
 *honest* (non-overlap) public method scores below 9.519 (our notes reference an 8.099-class "real
 model"), via local honest validation and an explicit overlap-vs-honest classification, without
 chasing the public board. Artifacts: local_gbm.py, robust_check.py, lgbm_feats.npz in scratch.
+
+## 11. Round 2026-07-11(d) — known-tail routing + the blend-neutral frontier
+
+- **Known-tail leak-free routing (Directive dir.1).** Held out a slice of the KNOWN region
+  (rows before the cut; truth available at test) as a leak-free validation tail; ran the matcher
+  there and asked whether known-tail reliability predicts toe reliability. Result:
+  corr(known-tail RMSE, toe RMSE)=0.19; corr(known-tail skill, DWT−matcher toe advantage)=**0.03**.
+  Top-25% known-tail-skill wells: matcher-beats-DWT only 17%→20%, matcher still 13.5 vs DWT 8.0.
+  Near-cut reliability does not transfer to the far toe (consistent with the older "prefix hold-out
+  doesn't predict hidden-suffix" note). No stable routing signal observed.
+- **Geometry-only drift GBM (new information channel, no GR).** RMSE 14.15, corr(err,DWT)=**0.717**
+  — genuinely more decorrelated than the GR-GBM (0.906), i.e. position/geometry is a different
+  channel — but too weak; nested blend 10.41 (flat).
+- **The blend-neutral frontier (quantitative characterization).** Across ALL same-input candidates
+  the error-correlation sits almost exactly on ρ ≈ σ_DWT/σ_candidate (matcher 17.0/0.61 vs 0.65;
+  MTP 15.5/0.67 vs 0.77; geom 14.15/0.735 vs 0.717; GR-GBM 11.4/0.912 vs 0.906). That is precisely
+  the w*=0 condition (σ_D²=ρσ_Dσ_M). It means every candidate behaves as **"DWT + independent
+  noise"** — it carries no information independent of DWT, so no blend improves regardless of the
+  candidate's strength. This is the quantitative signature that DWT is at the information frontier
+  for the available test-time inputs.
+
+Implication: a blend-based improvement requires a model built on information DWT does NOT use.
+The only such candidate space is **transductive cross-test-well structure** (jointly using the
+whole test batch's known heels + trajectories), which (a) introduces genuinely new inference-time
+information and (b) cannot be validated on the 3 visible local test wells; the train wells are
+spatially sparse (median neighbour ~1548 units; earlier spatial-KNN RMSE 178). Artifacts:
+known_tail.py, known_tail.csv, geom_gbm.py in scratch.
