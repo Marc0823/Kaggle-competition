@@ -398,3 +398,27 @@ search space:** DWT-family model diversity (Area 1/3) — new sub-models within 
 feature set (different loss/weighting/residual target) trained on Kaggle, validated on internal
 CV via the climber before any submission. Higher cost, uncertain payoff, but the untapped space.
 Artifacts: build_feats.py, well_feats.csv, experiment_c.py in $CLAUDE_JOB_DIR/tmp.
+
+## 10. Round 2026-07-11(c) — ensemble diversity from the same inputs (local OOF)
+
+- **From-scratch tabular drift GBM (Area 3), 16 engineered test-available features, honest
+  5-fold OOF.** RMSE 11.40 (weaker than DWT 10.40) and **corr(err,DWT)=0.906**; nested blend
+  10.40 (no change). Quantified structural point: a *stronger* same-input model converges toward
+  DWT (corr→0.9), while the decorrelated candidates (matcher 0.65, MTP 0.77) are decorrelated only
+  because they are weaker. No strong-and-decorrelated point on this frontier.
+- **Loss diversity (Area 1), same features, {l2, huber, mae, quantile}.** Only Huber shows a
+  nested-OOF blend gain (10.40→10.35, ≈−0.05); l2/mae/quantile flat; the 4-way lstsq stack (10.378)
+  is worse than Huber-alone (overfits correlated predictors). **Robustness check flagged it as a
+  residual-rescaling artifact, not diversity:** the blend weight is *negative* (w̄≈−0.10) and stays
+  negative across 3 fold-seeds AND without the DWT-drift feature (w̄=−0.094). Mechanism: Huber's
+  robust loss under-predicts tail drift, so the negative-weight blend (~1.1·DWT − 0.1·Huber)
+  amplifies DWT's drift — i.e. the same λ≈1.09 residual-scaling that was cleanly disproven on public
+  (§7: clean λ scored public 10.138, +0.62 vs 9.519). Set aside on risk-reward; also dis-justifies a
+  Kaggle DWT-family Huber retrain (would recreate the rescaling at larger magnitude).
+
+Round read: the "second honest model from the same inputs" space is characterized — candidates are
+either correlated (~0.9, flat blend) or differ only via a disguised drift-rescaling that public
+already rejected. **Next search space:** honest-base review (Area 6) — assess whether any genuinely
+*honest* (non-overlap) public method scores below 9.519 (our notes reference an 8.099-class "real
+model"), via local honest validation and an explicit overlap-vs-honest classification, without
+chasing the public board. Artifacts: local_gbm.py, robust_check.py, lgbm_feats.npz in scratch.
