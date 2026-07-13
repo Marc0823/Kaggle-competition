@@ -3,6 +3,25 @@
 Consolidated understanding after a long multi-day push. Written so future sessions
 do not repeat the same detours. **Read this before spending more effort or slots.**
 
+## Working directives (persistent — read first)
+
+Two standing instructions govern all work on this project (full text in the repo-root `CLAUDE.md`):
+
+1. **Keep searching, systematically.** Not a one-shot attempt and never stop at "no method found":
+   continuously propose candidate directions -> validate honestly (train masked-CV / OOF as the
+   private-ranking proxy) -> record evidence -> drop unsupported hypotheses -> expand the search
+   space. Prefer low-cost, honest, reproducible checks; scale up a promising small result before
+   concluding; never treat an oracle (truth-selected) result as an achievable gain. If a candidate
+   shows a clear reproducible honest OOF gain vs the DWT base (or a stable gain on a clear
+   well-family via a guarded router) and passes the pre-submit audit, submit to Kaggle under the
+   established conditions and record submission id / public score / commit / source / local gap.
+
+2. **Neutral technical language.** Avoid emotional or strongly-directive words ("gamble", "dead",
+   "give up", "ceiling"). Use: candidate direction, validation result, no stable improvement
+   observed, insufficient current evidence, next search space, submittable conditions, risk points,
+   locally applicable, needs further validation. Report a negative as "no stable OOF improvement
+   observed on this attempt; moving to the next search space", not as a dead end.
+
 ## 0. TL;DR — the single most important thing
 
 **Diagnose what actually moves the score BEFORE modeling.** Most of our wasted
