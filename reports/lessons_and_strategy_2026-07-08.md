@@ -371,3 +371,30 @@ Notable sub-findings: (2) Joe's hunch was right — a learned scorer *does* beat
 known-but-held-out tail (truth available there even at test), and use tail-fit to route. Only
 worth it if known-tail accuracy predicts toe accuracy (uncertain — the toe is further
 extrapolation). Verdict stands: honest final = DWT 9.519; the frontier for these inputs is real.
+
+## 9. Round 2026-07-11(b) — offset-correction + per-family routing (local OOF)
+
+Working notebook restored to the clean DWT 9.519 config (LAM removed; identical to
+DWT_backup_preCb3, matches banked ref 54453597). Two low-cost local candidates, both
+validated on honest 5-fold GroupKFold OOF over the 773-well DWT OOF:
+
+- **Per-well offset-correction meta-model (Area 5/1).** Target = DWT per-well residual
+  offset (mean over toe; the dominant error, std 7.9). Features: test-available only
+  (well morphology, toe/heel GR stats, heel↔typewell matchability, prefix length,
+  trajectory inclination/undulation, matcher-derived offset/confidence, DWT drift shape).
+  Result: **OOF R² = −0.15** (corr 0.02); affine target also negative. Applying the
+  correction *raises* pooled RMSE 10.40→10.91 (shrink ×0.25 still 10.43). No stable
+  improvement observed. Read: the per-well offset is the interpretation-selection quantity
+  and is not encoded in aggregate test-available features (consistent with §7–§8).
+- **Guarded DWT+matcher router by well-family (Area 2).** Honest per-quintile OOF blend
+  weight across heel-match / prefix-frac / drift-absmax / z-reversals / gr-toe-std /
+  max-dist: **w̄ ≈ 0 in every family**. Globally only 13% of wells beat DWT by >1 RMSE and
+  they are not family-identifiable. No guarded-router opportunity observed with this matcher.
+
+Cumulative read of the local post-processing space (correcting/blending DWT's OOF): λ, offset,
+affine, per-family routing all show no stable OOF improvement — because DWT's dominant error is
+a per-well level/interpretation error not predictable from available aggregate signals. **Next
+search space:** DWT-family model diversity (Area 1/3) — new sub-models within DWT's strong 195-
+feature set (different loss/weighting/residual target) trained on Kaggle, validated on internal
+CV via the climber before any submission. Higher cost, uncertain payoff, but the untapped space.
+Artifacts: build_feats.py, well_feats.csv, experiment_c.py in $CLAUDE_JOB_DIR/tmp.
