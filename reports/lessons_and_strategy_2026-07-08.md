@@ -468,3 +468,11 @@ Input-channel coverage note: the complete test-available input set is {horizonta
 GR/TVT, trajectory X/Y/Z/MD, known-heel TVT, cross-well spatial}. Every channel has now been tested
 as a model or blend candidate; each is either already extracted by DWT (→ blend-neutral) or
 uninformative (spatial). Geology / structural surfaces are train-only (unavailable at test).
+
+- **Uncertainty / risk-flag (item 6).** Tested whether a test-available signal ranks per-well DWT
+  error: model disagreement (DWT vs matcher) corr 0.16; drift magnitude corr 0.21 (best), Spearman
+  0.20; heel-match −0.06. Top-quintile-by-drift wells average error 10.0 vs overall 8.0. So a usable
+  per-well confidence/risk flag exists (mainly = far-reach/high-drift wells), but it only identifies
+  higher-error wells — it does not reduce error and is not actionable for RMSE on its own. Retain as
+  a diagnostic; could weight a per-well guard only if a genuinely better alternative model existed
+  for those wells (none observed so far).
