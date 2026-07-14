@@ -449,3 +449,22 @@ whole test batch's known heels + trajectories), which (a) introduces genuinely n
 information and (b) cannot be validated on the 3 visible local test wells; the train wells are
 spatially sparse (median neighbour ~1548 units; earlier spatial-KNN RMSE 178). Artifacts:
 known_tail.py, known_tail.csv, geom_gbm.py in scratch.
+
+## 12. Round 2026-07-14 — transductive cross-well field + final-2 strategy
+
+- **Transductive cross-well structural field (test-time-visible inputs only; no leakage).** Built a
+  KDTree structural field from OTHER wells' visible logs (other-fold full TVT as train reference +
+  held-out well's own known heel), queried at each held-out toe point; validated honestly with
+  train-as-pseudo-batch GroupKFold. Nearest field sample is median **380 units** away. Result:
+  geometry-only OOF 15.94 (corr 0.663); geometry+field 16.22 (corr 0.666) — the field adds nothing;
+  field-only 17.08 with nested-blend −0.028 (noise). Both on the blend-neutral line. The spatial
+  field is uninformative for the far toe (structure changes over the ~380-unit sampling gap). This
+  is the honest, locally-validatable version of the transductive idea — no stable improvement observed.
+- **Final-2 strategy** documented separately in `reports/final_submission_strategy.md`: honest
+  primary = DWT 9.519 (ref 54453597); public-hedge = Plane Top2 Gate Safe 7.212 (ref 54289934),
+  kept strictly separate and labeled as overlap/public (not honest). Both refs banked & selectable.
+
+Input-channel coverage note: the complete test-available input set is {horizontal GR, typewell
+GR/TVT, trajectory X/Y/Z/MD, known-heel TVT, cross-well spatial}. Every channel has now been tested
+as a model or blend candidate; each is either already extracted by DWT (→ blend-neutral) or
+uninformative (spatial). Geology / structural surfaces are train-only (unavailable at test).
