@@ -476,3 +476,33 @@ uninformative (spatial). Geology / structural surfaces are train-only (unavailab
   higher-error wells — it does not reduce error and is not actionable for RMSE on its own. Retain as
   a diagnostic; could weight a per-well guard only if a genuinely better alternative model existed
   for those wells (none observed so far).
+
+## 13. Round 2026-07-14(b) — 5 small + 5 big directions, each with a minimal viable probe
+
+All honest OOF / no-leakage; category and test-time availability noted. None submitted (none met the
+submittable bar). Scripts: probes_A/B/C/D.py in scratch.
+
+### Small directions (local, low-cost)
+| # | hypothesis | inputs test-time? | validation | result | submittable | risk |
+|---|---|---|---|---|---|---|
+| S1 | DWT residual SHAPE (offset/slope/curv) predictable from visible feats | yes | 5-fold OOF R² | R² −0.10 / −0.13 / −0.09 (all neg) | no | — |
+| S2 | monotonic/smoothness constraint on DWT drift | yes (no-leak) | all-well RMSE | isotonic 11.01 (worse), savgol31 10.397 (flat) | no | undulating wells break monotonicity |
+| S3 | trajectory-cluster (dogleg/MD-len/heel-geom) routing DWT+matcher | yes | per-cluster honest OOF blend | w̄=0 in all 5 clusters | no | — |
+| S4 | public-hedge downside audit vs honest DWT | hedge=public/overlap | visible(overlap) wells + format audit | hedge 1.46 vs DWT 7.23 on overlap wells; format/finite/range OK | (hedge only) | novel-well downside NOT locally measurable |
+| S5 | heel-continuity re-centering correction | yes (no-leak) | corr(rate-mismatch, offset) | 0.686 (DWT continues heel) but mismatch↔offset corr −0.06 | no | mismatch uninformative about error |
+
+### Big directions (new frameworks / feasibility probes)
+| # | hypothesis | inputs test-time? | validation | result | submittable | risk |
+|---|---|---|---|---|---|---|
+| B1 | conformal calibrated intervals for final-selection/risk | yes | per-distance-bin coverage | 90%→90.0%, 50%→50.0%, half-width 11.3 — **calibration works** | (diagnostic) | not an RMSE gain; irreducible width large |
+| B2 | retrieval-based analog well library (GR-similarity, no-leak) | yes | OOF blend | RMSE 16.7, corr 0.715, blend weight **negative** (−0.08..−0.14) = λ-disguise drift-amplification | no | public-rejected mechanism |
+| B3 | mixture-of-experts {DWT,anchor,matcher}+reject, gated | yes | nested-CV pooled RMSE | oracle best-of-3 available ~8% (per-well), gate 76.5% acc, but gated pooled 10.57 > DWT 10.40 | no | asymmetric misroute cost dominates pooled |
+| B4 | counterfactual failure-classifier (predict DWT-fail wells) | yes | OOF AUC | AUC 0.573 (weak) | (diagnostic) | too weak to route on |
+| B6 | physics dip-REVERSION residual process (heel-calibrated) | yes (no-leak) | OOF blend | best L=200, RMSE 16.0, corr 0.692, blend 10.42 (flat/worse) | no | sits on blend-neutral line |
+
+Round read: two working diagnostics (B1 conformal calibration; B4 weak failure signal) and one hedge
+characterization (S4 quantifies the overlap benefit + documents the unmeasurable novel-well downside).
+No direction produced a stable honest RMSE improvement over DWT 9.519; every model/blend candidate
+again landed on the blend-neutral frontier or resolved to the public-rejected drift-rescaling artifact
+(negative blend weight). B1's calibrated-uncertainty framework is retained for the final-selection/risk
+layer (see final_submission_strategy.md), not as an RMSE lever.
