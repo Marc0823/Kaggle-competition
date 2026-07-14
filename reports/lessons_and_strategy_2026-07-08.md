@@ -506,3 +506,24 @@ No direction produced a stable honest RMSE improvement over DWT 9.519; every mod
 again landed on the blend-neutral frontier or resolved to the public-rejected drift-rescaling artifact
 (negative blend weight). B1's calibrated-uncertainty framework is retained for the final-selection/risk
 layer (see final_submission_strategy.md), not as an RMSE lever.
+
+## 14. Round 2026-07-14(c) — 7 public-research-inspired directions (A–G)
+
+Full write-up in `reports/direction_search_public_research_2026-07-14.md`; scripts in
+`scratchpad_probes/` (domain_validation_probe, ssl_gr_embedding_probe, facies_token_alignment_probe,
+bayesian_state_space_probe, spectral_soft_alignment_probe, synthetic_selector_probe). All honest OOF /
+masked-CV; none submitted (none met the submittable bar). Directions: A prediction-domain/adversarial
+validation + GroupDRO; B ROCKET random-conv representation; C facies-token alignment; D Bayesian
+particle-smoother posterior; E multi-scale spectral alignment; F external-data compliance audit;
+G synthetic-selector.
+
+Two reusable findings: (1) **DWT is domain-robust** — worst spatial-block RMSE (11.22) ≈ worst
+random-fold (11.37) despite adversarial covariate-shift AUC 0.927, so the internal native-mask CV
+(~10.40) is a sound private proxy. (2) **The path/interpretation-selection problem is not identifiable
+from the current features even with unlimited clean synthetic labels** (synthetic selector 16.32 >
+best-cost 14.75) — this makes all prior selector/router/MoE negatives intrinsic, not tuning issues.
+Every model/blend candidate again landed on the blend-neutral frontier or the negative-blend-weight
+drift-rescaling (λ-disguise, public-rejected). Reusable screen: reject any "OOF gain" whose nested
+blend weight vs DWT is negative. No GPU full-run justified (all probes CPU-bound); the only
+GPU-worthy avenue (external-data SSL encoder, dir F) is gated on manual Kaggle-rule verification +
+a domain-relevant offline resource. honest final base unchanged = DWT 9.519 (ref 54453597).
