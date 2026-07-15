@@ -527,3 +527,24 @@ drift-rescaling (λ-disguise, public-rejected). Reusable screen: reject any "OOF
 blend weight vs DWT is negative. No GPU full-run justified (all probes CPU-bound); the only
 GPU-worthy avenue (external-data SSL encoder, dir F) is gated on manual Kaggle-rule verification +
 a domain-relevant offline resource. honest final base unchanged = DWT 9.519 (ref 54453597).
+
+## 15. Round 2026-07-15 — Direction F (external data / SSL-facies encoder), compliance + preflight
+
+Full write-up: `reports/external_data_ssl_direction_2026-07-15.md`; preflight script
+`scratchpad_probes/ssl_gr_encoder_preflight.py`.
+- **Compliance:** standard Kaggle framework allows freely/publicly-available external data + pretrained
+  models in code comps unless Host-prohibited; the **ROGII-specific clause needs manual confirmation**
+  (rules page JS/auth-gated). Submission runs offline (`enable_internet:false`) → external data must be a
+  public Kaggle Dataset. FORCE-2020 (GR present; NLOD-2.0 / CC-BY-4.0; Zenodo/GitHub) is the clean,
+  offline-packageable candidate; Volve is CC-BY-NC-SA (compliance-risky); WLFM/ViT-MAE weights unconfirmed.
+- **Decisive local preflight:** a *learned* self-supervised contrastive GR encoder (InfoNCE) on ROGII GR
+  gives residual RMSE 15.95 / corr(err,DWT) 0.723 / **nested blend weight −0.096** — essentially identical
+  to the untrained ROCKET random-conv probe (15.96 / 0.721 / −0.093). **GR-representation quality is
+  irrelevant**: random or learned, the embedding-residual lands on the blend-neutral frontier with a
+  negative (λ-disguise) blend weight. The bottleneck is informational (GR is one channel DWT saturates),
+  not representational.
+- **Verdict:** external-data + Kaggle-GPU is **not warranted now** — the smoke's local-acceptance criterion
+  (positive-weight blend) is already failed by the ROGII-only encoder, and external data only changes the
+  training corpus, not the informational limit. Smoke design + kernel-metadata template are documented for
+  readiness (gated). No GPU run, no submission. Reusable rule reinforced: reject any residual/blend whose
+  nested blend weight vs DWT is negative (drift-amplification, public-rejected). honest base unchanged = 9.519.
