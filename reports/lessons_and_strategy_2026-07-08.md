@@ -548,3 +548,19 @@ Full write-up: `reports/external_data_ssl_direction_2026-07-15.md`; preflight sc
   training corpus, not the informational limit. Smoke design + kernel-metadata template are documented for
   readiness (gated). No GPU run, no submission. Reusable rule reinforced: reject any residual/blend whose
   nested blend weight vs DWT is negative (drift-amplification, public-rejected). honest base unchanged = 9.519.
+
+## 15. Next search space (2026-07-15) — see `reports/next_direction_backlog_2026-07-15.md`
+
+F external-data **SSL-branch preflight** (learned contrastive GR encoder on ROGII): RMSE 15.95, corr
+0.723, blend weight **−0.096** — same negative-weight pattern as ROCKET. Representation quality is not
+the limiter; the GR channel is saturated by DWT → external-data **SSL** pretraining is not
+GPU-warranted. The remaining external lever is **labeled facies** (different signal), gated on a
+GR→facies foundation check. New backlog (9 candidates): BIG N-A predicted structural framework
+(supervised facies markers + structural surfaces as predicted features, compliant), N-B multi-task
+DWT-family retrain with structural-auxiliary heads (Kaggle GPU, gated), S-A decision-theoretic final-2
+optimization (CPU, improves the deliverable), S-B external FORCE-2020 labeled-facies encoder (Kaggle
+GPU, gated on rule + N-A); SMALL V1 marker-predictability gate, V2 structural-surface predictability,
+V3 stratified blend audit, V4 submission-level honest-model diversity, V5 visible-well pre-submit audit
+tool. Recommended first: V1+V2 (labeled-info foundation), V4→S-A (deliverable), V5 (audit tool). No GPU
+until V1/V2 show positive labeled-info signal and (for S-B) the external-data rule is manually confirmed.
+Scripts: scratchpad_probes/ssl_gr_encoder_preflight.py, marker_predictability_probe.py.
