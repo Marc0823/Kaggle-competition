@@ -112,8 +112,10 @@ N-A depends on V1/V2; N-B and S-B are Kaggle-GPU and gated on those.
 - **Compliance:** Geology trains the classifier; test inputs are GR only. Compute: **CPU probe**.
 - **Validation:** GR-window→formation, GroupKFold-by-well accuracy vs majority; then predicted-marker
   probs → residual GBM on horizontal toe rows, 5-fold well-OOF, blend weight sign.
-- **Result:** typewell rows 1.04M, 43 formations, majority 0.282. GR→formation OOF accuracy and
-  predicted-marker blend weight: _[running — to be filled]_.
+- **Result (2026-07-15):** typewell rows 1.04M, 43 formations, majority 0.282. GR→formation OOF
+  accuracy **0.486** (> chance, so GR partially identifies formation), BUT predicted-marker residual
+  RMSE 15.87, corr(err,DWT) 0.724, blend weight **−0.095 (negative)**. → the facies signal GR carries
+  is already in DWT; predicted-marker features add **no independent info**. **V1 STOP condition met.**
 - **Pass:** accuracy ≫ 0.28 AND blend weight > 0 → N-A facies branch has foundation. **Stop:**
   accuracy ≈ chance OR blend weight ≤ 0.
 
@@ -179,3 +181,39 @@ N-A depends on V1/V2; N-B and S-B are Kaggle-GPU and gated on those.
 3. **V5**: build the visible-well pre-submit audit tool (reused by every future candidate).
 GPU (N-B / S-B) only after V1/V2 show positive labeled-info signal AND (for S-B) the external-data
 rule is manually confirmed.
+
+## Addendum (2026-07-15 session) — three additional candidates not covered above
+- **B1' Real second honest PIPELINE OOF + measured-ρ blend.** Never measured a *real full pipeline's*
+  error-correlation with DWT (prior "diversity" tests were same-input toys at ρ≈0.7–0.9). Re-run one
+  honest public fork (e.g. romantamrazov 9.956, the 9.538 training kernel) to dump its train OOF; gate
+  first with a cheap ρ-proxy on the 3 visible wells (SMALL). Pass = ρ<0.85 + positive nested blend
+  weight + no worst-block regression. Kaggle GPU for the fork OOF; CPU for the ρ-proxy gate.
+- **B3' Transductive structure from the FULL HIDDEN TEST batch (submission-time).** Genuinely new
+  inference-time info: at scoring all hidden test wells are present; if the hidden test is spatially
+  dense (pads), the batch jointly constrains a structural field the per-well model misses. Probe =
+  (a) simulate a dense-batch field on the densest TRAIN clusters → beat DWT there? (b) ONE
+  non-submitting Kaggle diagnostic logging hidden-test well count + nn-distance distribution.
+- **B4' Single-submission GUARDED honest+overlap.** One slot that is DWT-honest by default and applies
+  the exact-match override ONLY on hidden wells detected as high-confidence train duplicates — dominates
+  the pure-honest slot on private if duplicates exist, without the pure-hedge novel-well downside. CPU +
+  notebook; gated on the same host-rule confirmation as the hedge. Complements the separate-hedge plan.
+
+---
+
+## Update 2026-07-15 (after V1) — revised priorities
+- **V1 outcome:** GR→formation is learnable (0.486 vs 0.282) but the predicted-marker features give a
+  **negative** blend weight → the facies signal is already inside DWT. This **de-prioritizes the facies
+  branch of N-A and all of S-B** (external labeled facies): the limiter is not label quantity but that
+  facies is a GR-derived signal DWT already captures. Do not spend GPU on external facies unless V2
+  (structural surfaces, a different signal) or a genuinely new signal shows positive-weight evidence.
+- **Remaining actionable, evidence-supported priorities:**
+  1. **V2** structural-surface predictability (the untested branch of N-A; surfaces are continuous
+     structural depths, richer than categorical facies — check OOF R² + blend-weight sign). CPU.
+  2. **V4 → S-A** decision-theoretic final-2 optimization — improves the deliverable (private rank)
+     independent of the blend-neutral wall. CPU.
+  3. **V5** visible-well pre-submit audit tool. CPU.
+  4. **V3** stratified blend audit. CPU.
+- **N-B / S-B (Kaggle GPU):** now gated specifically on **V2** showing a positive-weight structural
+  signal (the facies route is closed by V1). If V2 is also negative, no GPU direction remains supported
+  and the honest base stays DWT 9.519; effort shifts to S-A (submission strategy) as the deliverable
+  lever.
