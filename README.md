@@ -10,7 +10,8 @@ The goal is to collaborate on high-quality, reproducible Kaggle submissions whil
 - Task type: regression / sequence reconstruction
 - Target: `tvt`
 - Metric: RMSE, lower is better
-- Current confirmed public best in our logs: `7.235`
+- Current confirmed team public best in our logs: `7.182`
+- Current public reference reproduced in this repository: `6.626`
 
 The problem is not a simple row-wise tabular regression problem. Strong solutions reconstruct the hidden TVT trajectory for each well using:
 
@@ -32,6 +33,7 @@ The problem is not a simple row-wise tabular regression problem. Strong solution
 ├── kaggle_kernel_baidalin7201_v2/                        # 7.201 reproduction target
 ├── kaggle_kernel_henry_v10_sunny80_blend/                # artifact/physical blend candidate
 ├── kaggle_kernel_david_v12_budget_guarded_clean_gpu/     # 7.263 backup reference
+├── kaggle_kernel_kaiwalya_public_tvt_6626_repro/          # public 6.626 stack reproduction
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -102,6 +104,8 @@ Important: this does **not** know hidden labels and cannot exactly predict Publi
 
 Confirmed useful references from our tracker:
 
+- `6.626`: Kaiwalya public TVT solution reference, reproduced as a private team kernel
+- `7.182`: current confirmed team best
 - `7.235`: Wellbore wizard physics PF stack, current best in our logs
 - `7.263`: David v12 budget guarded clean GPU
 - `7.588` to `7.606`: Ricardo/Fleongg-style blends
@@ -119,6 +123,20 @@ Rejected or risky:
 2. Run and audit `Baidalin 7.201` fork after that.
 3. Monitor Henry TabICL / Sunny blend and Romantamrazov GPU runs.
 4. Use local surrogate scoring before deciding whether a generated output is worth submitting.
+
+## Public 6.626 Reproduction
+
+The folder `kaggle_kernel_kaiwalya_public_tvt_6626_repro/` contains the
+minimal Kaggle Code Competition package for the public Kaiwalya TVT stack:
+
+- `rogii-public-tvt-solution.ipynb`: complete scoring notebook
+- `kernel-metadata.json`: accelerator and Kaggle dataset dependencies
+- `README.md`: provenance, run instructions, and score caveat
+
+The `6.626` score belongs to the referenced public notebook version. Our
+private reproduction generated a valid, schema-identical submission, but its
+own leaderboard score must be recorded only after Kaggle finishes scoring the
+team submission.
 
 ## Why This Repo Is Lean
 

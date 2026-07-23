@@ -52,6 +52,8 @@ kaggle_kernel_*/
 !kaggle_kernel_henry_v10_sunny80_blend/**
 !kaggle_kernel_david_v12_budget_guarded_clean_gpu/
 !kaggle_kernel_david_v12_budget_guarded_clean_gpu/**
+!kaggle_kernel_kaiwalya_public_tvt_6626_repro/
+!kaggle_kernel_kaiwalya_public_tvt_6626_repro/**
 
 # OS / editor noise
 .DS_Store
